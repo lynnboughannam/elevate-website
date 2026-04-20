@@ -1,0 +1,17 @@
+# Dev server
+node_modules/
+
+# Claude Code internal
+.claude/
+
+# Screenshots (temp)
+temporary screenshots/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+*.code-workspace

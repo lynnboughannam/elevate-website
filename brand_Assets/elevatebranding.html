@@ -1,0 +1,390 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; }
+
+  /* ── ELEVATE ESTATES TOKENS ── */
+  :root {
+    --brown:       #7A5230;
+    --brown-dark:  #4E3219;
+    --brown-light: #A87850;
+    --cream:       #EDE8E0;
+    --cream-dark:  #DDD5C8;
+    --white:       #FAF7F3;
+    --ink:         #2E1F0E;
+    --border:      rgba(122,82,48,.18);
+  }
+
+  /* Section headers */
+  .section { padding: 2.5rem 2rem; border-bottom: 0.5px solid var(--border); }
+  .section:last-child { border-bottom: none; }
+  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--brown-light); margin-bottom: 1.5rem; }
+
+  /* ── COVER ── */
+  .cover { background: var(--brown); padding: 4rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+  .cover-left h1 { font-family: 'Nunito Sans', sans-serif; font-size: 52px; font-weight: 700; color: #fff; letter-spacing: -1.5px; line-height: 1; margin-bottom: 0.5rem; }
+  .cover-left h1 em { font-style: normal; color: rgba(255,255,255,.55); font-weight: 300; }
+  .cover-left p { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-top: .4rem; }
+  .cover-right { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .cover-tag { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0.5px; }
+  .cover-tag span { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+  /* ── LOGO SECTION ── */
+  .logo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .logo-box { border-radius: 12px; padding: 2.5rem 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  .logo-box.light { background: var(--white); border: 0.5px solid var(--border); }
+  .logo-box.dark  { background: var(--brown); }
+  .logo-box.mid   { background: var(--cream-dark); border: 0.5px solid var(--border); }
+  .logo-stacked { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .logo-mark { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 40px; height: 40px; }
+  .logo-wordmark { font-family: 'Nunito Sans', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height:1; }
+  .logo-wordmark .sub { display:block; font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; margin-top:1px; }
+  .logo-wordmark.white { color: #fff; }
+  .logo-wordmark.white .sub { color: rgba(255,255,255,.55); }
+  .logo-wordmark.dark-text { color: var(--brown); }
+  .logo-wordmark.dark-text .sub { color: var(--brown-light); }
+  .logo-tag { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; color: var(--brown-light); }
+  .logo-tag.light-tag { color: rgba(255,255,255,.4); }
+
+  /* Favicon / icon-only */
+  .favicon-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .favicon-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .favicon-size { font-size: 10px; color: #aaa; }
+  .fv { border-radius: 20%; background: var(--brown); display: flex; align-items: center; justify-content: center; }
+
+  /* ── COLORS ── */
+  .color-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .swatch { border-radius: 10px; overflow: hidden; flex: 1; min-width: 100px; }
+  .swatch-fill { height: 80px; }
+  .swatch-info { padding: 10px 12px; background: var(--white); border: 0.5px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; }
+  .swatch-name { font-size: 12px; font-weight: 700; margin-bottom: 2px; color: var(--ink); }
+  .swatch-hex  { font-size: 11px; color: #888; font-family: monospace; }
+  .swatch-role { font-size: 10px; color: #aaa; margin-top: 2px; letter-spacing: 0.3px; }
+
+  /* ── TYPOGRAPHY ── */
+  .type-specimens { display: flex; flex-direction: column; gap: 2rem; }
+  .type-specimen { background: var(--white); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.75rem; }
+  .type-meta { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #aaa; font-weight: 700; margin-bottom: 1rem; }
+  .type-display { font-family: 'Playfair Display', serif; font-size: 48px; letter-spacing: -1px; line-height: 1.05; color: var(--brown-dark); }
+  .type-display-italic { font-family: 'Playfair Display', serif; font-size: 36px; letter-spacing: -0.5px; line-height: 1.1; color: var(--brown); font-style: italic; }
+  .type-heading { font-family: 'Nunito Sans', sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.2px; color: var(--brown-dark); }
+  .type-body { font-family: 'Nunito Sans', sans-serif; font-size: 15px; font-weight: 400; color: #555; line-height: 1.7; }
+  .type-label { font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--brown-light); }
+  .type-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .type-detail { font-size: 11px; color: #bbb; margin-top: 6px; }
+
+  /* ── UI ELEMENTS ── */
+  .ui-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .btn-primary { background: var(--brown); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: default; }
+  .btn-outline { background: var(--white); color: var(--brown-dark); border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: default; }
+  .btn-wa { background: #25D366; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: default; }
+  .btn-dark { background: var(--brown-dark); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: default; }
+  .tag-brown  { background: #EFE3D5; color: var(--brown-dark); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Nunito Sans', sans-serif; }
+  .tag-green  { background: #EAF3DE; color: #3B6D11; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Nunito Sans', sans-serif; }
+  .tag-gold   { background: #FAF0DC; color: #7A5A0B; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Nunito Sans', sans-serif; }
+  .tag-amber  { background: #FAEEDA; color: #854F0B; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Nunito Sans', sans-serif; }
+  .tag-red    { background: #FCEBEB; color: #A32D2D; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Nunito Sans', sans-serif; }
+
+  /* REF BLOCK */
+  .ref-demo { background: #EFE3D5; border: 1px solid #D4B89A; border-radius: 12px; padding: 14px 20px; display: inline-flex; flex-direction: column; gap: 3px; }
+  .ref-demo-label { font-size: 9px; color: var(--brown); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-family: 'Nunito Sans', sans-serif; }
+  .ref-demo-num { font-size: 22px; font-weight: 700; color: var(--brown-dark); letter-spacing: 3px; font-family: 'Nunito Sans', sans-serif; }
+
+  /* SPACING */
+  .spacing-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .space-box { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .space-fill { background: var(--brown); border-radius: 4px; width: 40px; opacity: 0.75; }
+  .space-label { font-size: 10px; color: #888; font-family: monospace; }
+
+  /* TAGLINES */
+  .tagline-list { display: flex; flex-direction: column; gap: 10px; }
+  .tagline-item { background: var(--white); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+  .tagline-text { font-family: 'Playfair Display', serif; font-size: 20px; letter-spacing: -0.2px; color: var(--brown-dark); }
+  .tagline-use { font-size: 11px; color: #aaa; margin-top: 4px; }
+</style>
+
+<div style="font-family:'Nunito Sans',sans-serif">
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-left">
+  <img src="white-elevate-logo.png" alt="" style="width: 200px; height: auto; display: block;">
+
+    <p>Brand Identity System · 2025</p>
+  </div>
+  <div class="cover-right">
+    <div class="cover-tag">Primary color <span>#7A5230</span></div>
+    <div class="cover-tag">Dark <span>#4E3219</span></div>
+    <div class="cover-tag">Typeface <span>Playfair Display + Nunito Sans</span></div>
+    <div class="cover-tag">Version <span>1.0</span></div>
+  </div>
+</div>
+
+<!-- LOGO -->
+<div class="section">
+  <div class="section-label">Logo — full wordmark</div>
+  <div class="logo-grid">
+
+    <!-- Light bg -->
+    <div class="logo-box light">
+      <div class="logo-stacked">
+        <div class="logo-mark">
+          <!-- Elevate Estates chevron-house icon (brown on light) -->
+  <img src="dark-elevate-logo.png" alt="" style="width: 200px; height: auto; display: block;">
+        
+        </div>
+      </div>
+      <div class="logo-tag">On white / light backgrounds</div>
+    </div>
+
+    <!-- Dark / brown bg -->
+    <div class="logo-box dark">
+      <div class="logo-stacked">
+        <div class="logo-mark">
+         
+          <div class="logo-wordmark white">
+           <img src="white-elevate-logo.png" alt="" style="width: 200px; height: auto; display: block;">
+
+          </div>
+        </div>
+      </div>
+      <div class="logo-tag light-tag">On dark / brown backgrounds</div>
+    </div>
+
+    <!-- Cream mid bg -->
+    <div class="logo-box mid">
+      <div class="logo-stacked">
+        <div class="logo-mark">
+         <img src="dark-elevate-logo.png" alt="" style="width: 200px; height: auto; display: block;">
+
+        </div>
+      </div>
+      <div class="logo-tag">On cream / sand backgrounds</div>
+    </div>
+
+  </div>
+
+  <!-- Logomark only / favicon -->
+  <div style="margin-top:1.5rem">
+    <div class="section-label" style="margin-bottom:1rem">Logomark — icon only</div>
+    <div class="favicon-row">
+      <div class="favicon-box">
+        <div class="fv" style="width:64px;height:64px">
+                <img src="white-icon.png" alt="" width="42" height="42" viewBox="0 0 40 40">
+    
+        </div>
+        <div class="favicon-size">64px</div>
+      </div>
+      <div class="favicon-box">
+        <div class="fv" style="width:48px;height:48px;border-radius:22%">
+        
+                <img src="white-icon.png" alt="" width="30" height="30" viewBox="0 0 40 40">
+
+        </div>
+        <div class="favicon-size">48px</div>
+      </div>
+      <div class="favicon-box">
+        <div class="fv" style="width:32px;height:32px;border-radius:25%">
+   
+                <img src="white-icon.png" alt="" width="20" height="20" viewBox="0 0 40 40">
+          
+        </div>
+        <div class="favicon-size">32px</div>
+      </div>
+      <!-- Light variant -->
+      <div style="margin-left:1.5rem;display:flex;gap:12px">
+        <div class="favicon-box">
+          <div style="width:64px;height:64px;border-radius:20%;background:var(--white);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">
+           
+                <img src="dark-icon.png" alt="" width="42" height="42 viewBox="0 0 40 40">
+
+          </div>
+          <div class="favicon-size">Light variant</div>
+        </div>
+        <!-- Cream variant -->
+        <div class="favicon-box">
+          <div style="width:64px;height:64px;border-radius:20%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center">
+                       <img src="dark-icon.png" alt="" width="42" height="42 viewBox="0 0 40 40">
+
+          </div>
+          <div class="favicon-size">Cream variant</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COLORS -->
+<div class="section">
+  <div class="section-label">Color palette</div>
+  <div class="color-row">
+    <div class="swatch">
+      <div class="swatch-fill" style="background:#7A5230"></div>
+      <div class="swatch-info"><div class="swatch-name">Estate Brown</div><div class="swatch-hex">#7A5230</div><div class="swatch-role">Primary · CTAs · Logo</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-fill" style="background:#4E3219"></div>
+      <div class="swatch-info"><div class="swatch-name">Dark Oak</div><div class="swatch-hex">#4E3219</div><div class="swatch-role">Headings · Nav · Dark UI</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-fill" style="background:#A87850"></div>
+      <div class="swatch-info"><div class="swatch-name">Warm Tan</div><div class="swatch-hex">#A87850</div><div class="swatch-role">Hover · Labels · Accent</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-fill" style="background:#25D366"></div>
+      <div class="swatch-info"><div class="swatch-name">WhatsApp Green</div><div class="swatch-hex">#25D366</div><div class="swatch-role">WhatsApp actions</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-fill" style="background:#EDE8E0;border:0.5px solid #D4CFC6;"></div>
+      <div class="swatch-info" style="border-top:0.5px solid var(--border)"><div class="swatch-name">Linen</div><div class="swatch-hex">#EDE8E0</div><div class="swatch-role">Page background</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-fill" style="background:#2E1F0E"></div>
+      <div class="swatch-info"><div class="swatch-name">Espresso</div><div class="swatch-hex">#2E1F0E</div><div class="swatch-role">Body text</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.25rem">
+    <div class="section-label" style="margin-bottom:.75rem">Status & semantic colors</div>
+    <div class="color-row">
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#EAF3DE"></div>
+        <div class="swatch-info"><div class="swatch-name">Approved</div><div class="swatch-hex">#EAF3DE · #3B6D11</div><div class="swatch-role">Success / Live</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#FAEEDA"></div>
+        <div class="swatch-info"><div class="swatch-name">Pending</div><div class="swatch-hex">#FAEEDA · #854F0B</div><div class="swatch-role">Under review</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#FCEBEB"></div>
+        <div class="swatch-info"><div class="swatch-name">Rejected</div><div class="swatch-hex">#FCEBEB · #A32D2D</div><div class="swatch-role">Errors / Delete</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#FAF0DC"></div>
+        <div class="swatch-info"><div class="swatch-name">Luxury</div><div class="swatch-hex">#FAF0DC · #7A5A0B</div><div class="swatch-role">Premium listings</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-fill" style="background:#EFE3D5"></div>
+        <div class="swatch-info"><div class="swatch-name">Ref Block</div><div class="swatch-hex">#EFE3D5 · #4E3219</div><div class="swatch-role">Reference # blocks</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TYPOGRAPHY -->
+<div class="section">
+  <div class="section-label">Typography</div>
+  <div class="type-specimens">
+    <div class="type-specimen">
+      <div class="type-meta">Display — Playfair Display · Headlines</div>
+      <div class="type-pair">
+        <div>
+          <div class="type-display">Find your<br>next space.</div>
+          <div class="type-detail">Playfair Display · Bold · 48px · −1px tracking</div>
+        </div>
+        <div>
+          <div class="type-display-italic">Elevated living,<br><em>refined.</em></div>
+          <div class="type-detail">Playfair Display · Italic · 36px · Estate Brown</div>
+        </div>
+      </div>
+    </div>
+    <div class="type-specimen">
+      <div class="type-meta">UI Heading — Nunito Sans · Subheadings & labels</div>
+      <div class="type-heading" style="margin-bottom:.5rem">Residential · Commercial · Luxury · Rentals</div>
+      <div class="type-detail">Nunito Sans · 600 · 22px · −0.2px tracking</div>
+    </div>
+    <div class="type-specimen">
+      <div class="type-meta">Body — Nunito Sans · Descriptions & prose</div>
+      <div class="type-body">A beautifully maintained family home set on a quiet tree-lined street. Features an open-plan kitchen, generous rear garden, and double garage — close to top-rated schools and local amenities.</div>
+      <div class="type-detail" style="margin-top:.5rem">Nunito Sans · 400 · 15px · 1.7 line-height</div>
+    </div>
+    <div class="type-specimen">
+      <div class="type-meta">Label / Overline — Nunito Sans · Metadata & tags</div>
+      <div class="type-label">Property type · Reference number · Status</div>
+      <div class="type-detail" style="margin-top:.5rem">Nunito Sans · 700 · 11px · 2px letter-spacing · Uppercase</div>
+    </div>
+  </div>
+</div>
+
+<!-- UI COMPONENTS -->
+<div class="section">
+  <div class="section-label">UI components & elements</div>
+
+  <div style="margin-bottom:1.25rem">
+    <div class="section-label" style="margin-bottom:.6rem">Buttons</div>
+    <div class="ui-row">
+      <button class="btn-primary">View details</button>
+      <button class="btn-outline">List a property</button>
+      <button class="btn-dark">Admin login</button>
+      <button class="btn-wa">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:1.25rem">
+    <div class="section-label" style="margin-bottom:.6rem">Status & type badges</div>
+    <div class="ui-row">
+      <span class="tag-brown">For Rent</span>
+      <span class="tag-green">For Sale · Live</span>
+      <span class="tag-gold">Luxury</span>
+      <span class="tag-amber">Pending review</span>
+      <span class="tag-red">Rejected</span>
+      <span style="background:#E1F5EE;color:#0F6E56;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Nunito Sans',sans-serif">New listing</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label" style="margin-bottom:.6rem">Reference number block</div>
+    <div class="ui-row">
+      <div class="ref-demo">
+        <div class="ref-demo-label">Reference number</div>
+        <div class="ref-demo-num">EE-017331</div>
+      </div>
+      <div style="font-size:13px;color:#888;max-width:300px;line-height:1.6">Every listing gets a unique <strong>EE-XXXXXX</strong> reference. Clients quote this when calling or messaging — our team can locate the listing instantly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SPACING -->
+<div class="section">
+  <div class="section-label">Spacing scale</div>
+  <div class="spacing-row">
+    <div class="space-box"><div class="space-fill" style="height:4px"></div><div class="space-label">4px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:8px"></div><div class="space-label">8px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:12px"></div><div class="space-label">12px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:16px"></div><div class="space-label">16px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:24px"></div><div class="space-label">24px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:32px"></div><div class="space-label">32px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:48px"></div><div class="space-label">48px</div></div>
+    <div class="space-box"><div class="space-fill" style="height:64px"></div><div class="space-label">64px</div></div>
+  </div>
+  <div style="margin-top:1rem;font-size:12px;color:#aaa;line-height:1.6">Border radius: <strong style="color:#666">8px</strong> (inputs, chips), <strong style="color:#666">12px</strong> (cards, modals), <strong style="color:#666">20px</strong> (pills/badges).<br>Border weight: <strong style="color:#666">0.5px</strong> default, <strong style="color:#666">1px</strong> for focus/emphasis, <strong style="color:#666">2px</strong> for featured cards.</div>
+</div>
+
+<!-- TAGLINES -->
+<div class="section">
+  <div class="section-label">Brand voice & taglines</div>
+  <div class="tagline-list">
+    <div class="tagline-item">
+      <div class="tagline-text">Find your next space.</div>
+      <div class="tagline-use">Primary tagline — hero headline</div>
+    </div>
+    <div class="tagline-item">
+      <div class="tagline-text">Every home tells a story.</div>
+      <div class="tagline-use">Brand narrative — about page, campaigns</div>
+    </div>
+    <div class="tagline-item">
+      <div class="tagline-text">One reference. One call. Done.</div>
+      <div class="tagline-use">Feature callout — contact flow</div>
+    </div>
+    <div class="tagline-item">
+      <div class="tagline-text">Reviewed. Verified. Listed.</div>
+      <div class="tagline-use">Trust signal — submission process</div>
+    </div>
+  </div>
+</div>
+
+</div>

@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Elevate Estates</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
+      background: #2E1F0E; display: flex; flex-direction: column; z-index: 50;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; font-size: 13px; font-weight: 700;
+      color: rgba(255,255,255,0.5); cursor: pointer; border-radius: 8px;
+      margin: 1px 8px; transition: background 0.2s, color 0.2s; text-decoration: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: #7A5230; color: #fff; }
+
+    /* ── MAIN AREA ── */
+    #main { margin-left: 240px; min-height: 100vh; }
+    #topbar {
+      background: rgba(250,247,243,0.97); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(122,82,48,0.12);
+      position: sticky; top: 0; z-index: 40;
+      padding: 0 2rem; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-card {
+      background: #FAF7F3; border-radius: 14px; padding: 1.5rem;
+      border: 1px solid rgba(122,82,48,0.1);
+    }
+    .stat-num { font-size: 32px; font-weight: 700; letter-spacing: -1px; color: #4E3219; font-family: 'Playfair Display', serif; }
+    .stat-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #A87850; margin-top: 4px; }
+
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; }
+    th { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #A87850; padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(122,82,48,0.12); background: #EDE8E0; }
+    td { padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(122,82,48,0.08); color: #2E1F0E; vertical-align: middle; }
+    tr:hover td { background: rgba(122,82,48,0.03); }
+
+    /* ── STATUS BADGES ── */
+    .status-approved { background: #EAF3DE; color: #3B6D11; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .status-pending  { background: #FAEEDA; color: #854F0B; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .status-rejected { background: #FCEBEB; color: #A32D2D; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+    /* ── TABS ── */
+    .tab-btn { padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 8px; cursor: pointer; border: none; background: transparent; color: #888; transition: background 0.2s, color 0.2s; font-family: 'Nunito Sans', sans-serif; }
+    .tab-btn.active { background: #7A5230; color: #fff; }
+    .tab-btn:not(.active):hover { background: rgba(122,82,48,0.08); color: #4E3219; }
+
+    /* ── ACTION BTNS ── */
+    .btn-approve { background: #EAF3DE; color: #3B6D11; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: 'Nunito Sans', sans-serif; }
+    .btn-approve:hover { background: #c8e6a8; }
+    .btn-reject  { background: #FCEBEB; color: #A32D2D; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: 'Nunito Sans', sans-serif; }
+    .btn-reject:hover  { background: #f5c6c6; }
+    .btn-delete  { background: transparent; color: #aaa; border: 1px solid #ddd; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s; font-family: 'Nunito Sans', sans-serif; }
+    .btn-delete:hover  { background: #FCEBEB; color: #A32D2D; border-color: #f5c6c6; }
+    .btn-view  { background: #EFE3D5; color: #4E3219; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: 'Nunito Sans', sans-serif; text-decoration: none; display: inline-block; }
+    .btn-view:hover { background: #D4B89A; }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-box { background: #FAF7F3; border-radius: 16px; padding: 2rem; max-width: 680px; width: 90%; max-height: 85vh; overflow-y: auto; }
+
+    /* ── FORM ── */
+    .form-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #A87850; display: block; margin-bottom: 5px; }
+    .form-input { width: 100%; padding: 10px 14px; border: 1px solid rgba(122,82,48,0.2); border-radius: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 13px; color: #2E1F0E; background: #EDE8E0; outline: none; }
+    .form-input:focus { border-color: #7A5230; background: #fff; }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      position: fixed; inset: 0; background: #2E1F0E; z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #EDE8E0; }
+    ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
+
+    /* ══ RESPONSIVE ════════════════════════════════════════ */
+    #mob-sidebar-btn { display: none; }
+
+    @media (max-width: 900px) {
+      #sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 200;
+      }
+      #sidebar.open { transform: translateX(0); }
+      #sidebar-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.5); z-index: 190;
+      }
+      #sidebar.open ~ #sidebar-overlay,
+      #sidebar-overlay.open { display: block; }
+      #main { margin-left: 0 !important; }
+      #mob-sidebar-btn { display: flex; }
+      #topbar { padding: 0 1rem !important; }
+
+      /* Stat cards 4 → 2 */
+      #dash-stats { grid-template-columns: repeat(2,1fr) !important; }
+
+      /* Dashboard 2-col → 1 */
+      #dash-panels { grid-template-columns: 1fr !important; }
+
+      /* Pending card: stacked */
+      .pending-card-inner { grid-template-columns: 1fr !important; }
+      .pending-card-thumb { display: none; }
+
+      /* Panels padding */
+      #panel-dashboard,
+      #panel-listings,
+      #panel-pending,
+      #panel-add { padding: 1rem !important; }
+
+      /* Table: make scrollable */
+      div[style*="overflow:hidden;overflow-x:auto"] { overflow-x: auto !important; }
+      table { min-width: 700px; }
+
+      /* Add form grids */
+      div[style*="grid-template-columns:1fr 1fr"],
+      div[style*="grid-template-columns:repeat(4,1fr)"],
+      div[style*="grid-template-columns:1fr 1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+    }
+
+    @media (max-width: 600px) {
+      #dash-stats { grid-template-columns: 1fr 1fr !important; }
+      .stat-card { padding: 1rem !important; }
+      .stat-num { font-size: 24px !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div style="width:100%;max-width:420px;padding:2rem">
+    <div style="text-align:center;margin-bottom:2.5rem">
+      <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:40px;width:auto;margin-bottom:1.5rem;display:block;margin-left:auto;margin-right:auto">
+      <h1 class="font-display" style="font-size:28px;color:#fff;letter-spacing:-0.5px;margin-bottom:6px">Admin Login</h1>
+      <p style="font-size:13px;color:rgba(255,255,255,0.4)">Secure access for Elevate Estates staff</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem">
+      <div style="margin-bottom:1.25rem">
+        <label class="form-label" style="color:rgba(255,255,255,0.4)">Password</label>
+        <input type="password" id="login-pw" class="form-input" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="login-error" style="display:none;background:#FCEBEB;color:#A32D2D;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:1rem">
+        Incorrect password. Try again.
+      </div>
+      <button onclick="doLogin()" style="width:100%;background:#7A5230;color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#A87850'" onmouseout="this.style.background='#7A5230'">
+        Sign In
+      </button>
+    </div>
+    <p style="text-align:center;margin-top:1rem;font-size:12px;color:rgba(255,255,255,0.25)">Demo password: <strong style="color:rgba(255,255,255,0.45)">elevate2025</strong></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+  <div style="padding:1.5rem 20px 1rem">
+    <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:30px;width:auto;display:block;margin-bottom:2px">
+    <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25)">Admin Panel</span>
+  </div>
+  <div style="flex:1;padding:0.5rem 0;overflow-y:auto">
+    <div class="nav-item active" onclick="showPanel('dashboard')" id="nav-dashboard">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showPanel('listings')" id="nav-listings">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      All Listings
+    </div>
+    <div class="nav-item" onclick="showPanel('pending')" id="nav-pending">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Pending Review
+      <span id="pending-badge" style="margin-left:auto;background:#854F0B;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px"></span>
+    </div>
+    <div class="nav-item" onclick="showPanel('add')" id="nav-add">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add Listing
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:8px 12px"></div>
+    <a href="index.html" class="nav-item" target="_blank">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Site
+    </a>
+  </div>
+  <div style="padding:1rem 12px;border-top:1px solid rgba(255,255,255,0.07)">
+    <button onclick="doLogout()" style="width:100%;display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,0.05);border:none;border-radius:8px;color:rgba(255,255,255,0.4);font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════════ -->
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="main">
+  <!-- Topbar -->
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button id="mob-sidebar-btn" onclick="toggleSidebar()" style="background:none;border:none;cursor:pointer;padding:4px;align-items:center;justify-content:center;color:#4E3219">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h2 id="topbar-title" style="font-size:16px;font-weight:700;color:#4E3219">Dashboard</h2>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:700;color:#4E3219">Admin</div>
+        <div style="font-size:11px;color:#A87850">Elevate Estates</div>
+      </div>
+      <div style="width:36px;height:36px;border-radius:50%;background:#7A5230;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">A</div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="panel-dashboard" style="padding:2rem">
+    <div style="margin-bottom:2rem">
+      <h1 class="font-display" style="font-size:28px;color:#4E3219;letter-spacing:-0.5px;margin-bottom:4px">Good morning 👋</h1>
+      <p style="font-size:14px;color:#999">Here's what's happening on Elevate Estates today.</p>
+    </div>
+
+    <div id="dash-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:2.5rem"></div>
+
+    <!-- Recent activity -->
+    <div id="dash-panels" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <!-- Pending listings -->
+      <div style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <h3 style="font-size:15px;font-weight:700;color:#4E3219">Pending Review</h3>
+          <button onclick="showPanel('pending')" style="font-size:12px;font-weight:700;color:#7A5230;background:none;border:none;cursor:pointer">View all →</button>
+        </div>
+        <div id="dash-pending"></div>
+      </div>
+      <!-- Recent approved -->
+      <div style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <h3 style="font-size:15px;font-weight:700;color:#4E3219">Recently Approved</h3>
+          <button onclick="showPanel('listings')" style="font-size:12px;font-weight:700;color:#7A5230;background:none;border:none;cursor:pointer">View all →</button>
+        </div>
+        <div id="dash-approved"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ALL LISTINGS ── -->
+  <div id="panel-listings" style="display:none;padding:2rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px">All Listings</h1>
+      <button onclick="showPanel('add')" style="background:#7A5230;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+        <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Listing
+      </button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap">
+      <button class="tab-btn active" onclick="filterTable('all',this)" data-tab="all">All</button>
+      <button class="tab-btn" onclick="filterTable('approved',this)" data-tab="approved">Approved</button>
+      <button class="tab-btn" onclick="filterTable('pending',this)" data-tab="pending">Pending</button>
+      <button class="tab-btn" onclick="filterTable('rejected',this)" data-tab="rejected">Rejected</button>
+    </div>
+
+    <!-- Search -->
+    <div style="position:relative;margin-bottom:1.25rem;max-width:320px">
+      <input type="text" id="table-search" placeholder="Search by title, location, ref..." oninput="renderTable()" style="width:100%;padding:9px 12px 9px 34px;border:1px solid rgba(122,82,48,0.2);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;background:#FAF7F3;color:#2E1F0E;outline:none">
+      <svg width="14" height="14" fill="none" stroke="#aaa" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </div>
+
+    <!-- Table -->
+    <div style="background:#FAF7F3;border-radius:14px;border:1px solid rgba(122,82,48,0.1);overflow:hidden;overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Ref</th>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="listings-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── PENDING ── -->
+  <div id="panel-pending" style="display:none;padding:2rem">
+    <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px;margin-bottom:1.5rem">Pending Review</h1>
+    <div id="pending-cards"></div>
+  </div>
+
+  <!-- ── ADD LISTING ── -->
+  <div id="panel-add" style="display:none;padding:2rem">
+    <div style="max-width:760px">
+      <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px;margin-bottom:1.5rem">Add New Listing</h1>
+      <div style="background:#FAF7F3;border-radius:16px;padding:2rem;border:1px solid rgba(122,82,48,0.1)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div><label class="form-label">Title *</label><input type="text" id="a-title" class="form-input" placeholder="Listing title"></div>
+          <div><label class="form-label">Location *</label><input type="text" id="a-location" class="form-input" placeholder="City, District"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div>
+            <label class="form-label">Type</label>
+            <select id="a-type" class="form-input">
+              <option value="apartment">Apartment</option>
+              <option value="villa">Villa</option>
+              <option value="commercial">Commercial</option>
+              <option value="land">Land</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Purpose</label>
+            <select id="a-purpose" class="form-input">
+              <option value="sale">For Sale</option>
+              <option value="rent">For Rent</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Area</label>
+            <select id="a-area" class="form-input">
+              <option value="Beirut">Beirut</option>
+              <option value="Mount Lebanon">Mount Lebanon</option>
+              <option value="Metn">Metn</option>
+              <option value="Keserwan">Keserwan</option>
+              <option value="North Lebanon">North Lebanon</option>
+              <option value="South Lebanon">South Lebanon</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+          <div><label class="form-label">Price (USD) *</label><input type="number" id="a-price" class="form-input" placeholder="e.g. 450000"></div>
+          <div><label class="form-label">m²</label><input type="number" id="a-sqm" class="form-input" placeholder="Area"></div>
+          <div><label class="form-label">Beds</label><input type="number" id="a-beds" class="form-input" value="0" min="0" max="10"></div>
+          <div><label class="form-label">Baths</label><input type="number" id="a-baths" class="form-input" value="1" min="0" max="10"></div>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label class="form-label">Description *</label>
+          <textarea id="a-desc" class="form-input" rows="4" placeholder="Property description..." style="resize:vertical"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div><label class="form-label">Phone</label><input type="tel" id="a-phone" class="form-input" placeholder="+961 XX XXX XXX"></div>
+          <div><label class="form-label">WhatsApp number</label><input type="tel" id="a-wa" class="form-input" placeholder="+961 XX XXX XXX"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+          <div>
+            <label class="form-label">Tag</label>
+            <select id="a-tag" class="form-input">
+              <option value="sale">For Sale</option>
+              <option value="rent">For Rent</option>
+              <option value="luxury">Luxury</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:12px;padding-bottom:2px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#4E3219">
+              <input type="checkbox" id="a-featured" style="accent-color:#7A5230;width:16px;height:16px">
+              Featured listing
+            </label>
+          </div>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label class="form-label">Status</label>
+          <select id="a-status" class="form-input">
+            <option value="approved">Approved (Live)</option>
+            <option value="pending">Pending Review</option>
+          </select>
+        </div>
+        <div id="add-error" style="display:none;background:#FCEBEB;color:#A32D2D;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:1rem"></div>
+        <div id="add-success" style="display:none;background:#EAF3DE;color:#3B6D11;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:1rem"></div>
+        <div style="display:flex;gap:10px">
+          <button onclick="adminAddListing()" style="background:#7A5230;color:#fff;border:none;padding:12px 28px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+            Save Listing
+          </button>
+          <button onclick="resetAddForm()" style="background:#EDE8E0;color:#4E3219;border:none;padding:12px 20px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="edit-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeEdit()">
+  <div class="modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <h3 style="font-size:18px;font-weight:700;color:#4E3219">Edit Listing</h3>
+      <button onclick="closeEdit()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:20px">×</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div><label class="form-label">Title</label><input type="text" id="e-title" class="form-input"></div>
+      <div><label class="form-label">Location</label><input type="text" id="e-location" class="form-input"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div>
+        <label class="form-label">Status</label>
+        <select id="e-status" class="form-input">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div><label class="form-label">Price</label><input type="number" id="e-price" class="form-input"></div>
+      <div>
+        <label class="form-label">Featured</label>
+        <select id="e-featured" class="form-input">
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:1rem">
+      <label class="form-label">Description</label>
+      <textarea id="e-desc" class="form-input" rows="4" style="resize:vertical"></textarea>
+    </div>
+    <input type="hidden" id="e-id">
+    <div style="display:flex;gap:10px">
+      <button onclick="saveEdit()" style="background:#7A5230;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Save Changes</button>
+      <button onclick="closeEdit()" style="background:#EDE8E0;color:#4E3219;border:none;padding:12px 20px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+  initStore();
+
+  // ── Mobile sidebar ──
+  function toggleSidebar() {
+    const s = document.getElementById('sidebar');
+    const o = document.getElementById('sidebar-overlay');
+    s.classList.toggle('open');
+    o.classList.toggle('open');
+  }
+
+  // ── AUTH ──
+  function doLogin() {
+    const pw = document.getElementById('login-pw').value;
+    if (adminLogin(pw)) {
+      document.getElementById('login-screen').style.display = 'none';
+      refreshAll();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+  function doLogout() {
+    adminLogout();
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+  if (isAdminLoggedIn()) {
+    document.getElementById('login-screen').style.display = 'none';
+    refreshAll();
+  }
+
+  // ── PANEL NAV ──
+  let currentPanel = 'dashboard';
+  let tableFilter = 'all';
+
+  function showPanel(name) {
+    ['dashboard','listings','pending','add'].forEach(p => {
+      document.getElementById(`panel-${p}`).style.display = p === name ? 'block' : 'none';
+      document.getElementById(`nav-${p}`).classList.toggle('active', p === name);
+    });
+    const titles = { dashboard: 'Dashboard', listings: 'All Listings', pending: 'Pending Review', add: 'Add Listing' };
+    document.getElementById('topbar-title').textContent = titles[name] || name;
+    currentPanel = name;
+    if (name === 'listings') renderTable();
+    if (name === 'pending')  renderPending();
+    if (name === 'dashboard') renderDashboard();
+    // Close mobile sidebar after nav
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
+
+  // ── DASHBOARD ──
+  function renderDashboard() {
+    const all      = getListings();
+    const approved = all.filter(l => l.status === 'approved');
+    const pending  = all.filter(l => l.status === 'pending');
+    const rejected = all.filter(l => l.status === 'rejected');
+
+    document.getElementById('dash-stats').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-num">${all.length}</div>
+        <div class="stat-label">Total Listings</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid #3B6D11">
+        <div class="stat-num" style="color:#3B6D11">${approved.length}</div>
+        <div class="stat-label">Live / Approved</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid #854F0B">
+        <div class="stat-num" style="color:#854F0B">${pending.length}</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid #A32D2D">
+        <div class="stat-num" style="color:#A32D2D">${rejected.length}</div>
+        <div class="stat-label">Rejected</div>
+      </div>`;
+
+    // Pending mini list
+    const dp = document.getElementById('dash-pending');
+    if (pending.length === 0) {
+      dp.innerHTML = `<p style="font-size:13px;color:#aaa;text-align:center;padding:1rem">No pending listings 🎉</p>`;
+    } else {
+      dp.innerHTML = pending.slice(0,5).map(l => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(122,82,48,0.08)">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#4E3219">${l.title}</div>
+            <div style="font-size:11px;color:#aaa">${l.id} · ${l.submittedBy}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-approve" onclick="changeStatus('${l.id}','approved');renderDashboard()">✓</button>
+            <button class="btn-reject"  onclick="changeStatus('${l.id}','rejected');renderDashboard()">✕</button>
+          </div>
+        </div>`).join('');
+    }
+
+    // Recent approved
+    const da = document.getElementById('dash-approved');
+    da.innerHTML = approved.slice(0,5).map(l => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(122,82,48,0.08)">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#4E3219">${l.title}</div>
+          <div style="font-size:11px;color:#aaa">${l.id} · ${l.location}</div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:#7A5230">${formatPrice(l.price,l.purpose)}</span>
+      </div>`).join('');
+
+    updatePendingBadge();
+  }
+
+  function updatePendingBadge() {
+    const count = getListings().filter(l => l.status === 'pending').length;
+    const badge = document.getElementById('pending-badge');
+    badge.textContent = count > 0 ? count : '';
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+
+  // ── TABLE ──
+  function filterTable(status, btn) {
+    tableFilter = status;
+    document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === status));
+    renderTable();
+  }
+
+  function renderTable() {
+    const kw = (document.getElementById('table-search')?.value || '').toLowerCase();
+    let list = getListings();
+    if (tableFilter !== 'all') list = list.filter(l => l.status === tableFilter);
+    if (kw) list = list.filter(l =>
+      l.title.toLowerCase().includes(kw) ||
+      l.location.toLowerCase().includes(kw) ||
+      l.id.toLowerCase().includes(kw)
+    );
+    const tbody = document.getElementById('listings-tbody');
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#aaa;font-size:13px">No listings found</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(l => `
+      <tr>
+        <td><span style="font-family:monospace;font-size:12px;font-weight:700;color:#7A5230">${l.id}</span></td>
+        <td>
+          <div style="font-weight:700;color:#2E1F0E;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.title}</div>
+          <div style="font-size:11px;color:#aaa">${l.type} · ${l.purpose}</div>
+        </td>
+        <td style="font-size:12px;color:#666;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.location}</td>
+        <td style="font-size:12px;color:#666;text-transform:capitalize">${l.type}</td>
+        <td style="font-weight:700;color:#4E3219">${formatPrice(l.price,l.purpose)}</td>
+        <td><span class="status-${l.status}">${l.status.charAt(0).toUpperCase()+l.status.slice(1)}</span></td>
+        <td style="font-size:12px;color:#aaa">${l.createdAt}</td>
+        <td>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            ${l.status === 'pending' ? `<button class="btn-approve" onclick="changeStatus('${l.id}','approved')">Approve</button>` : ''}
+            ${l.status === 'pending' ? `<button class="btn-reject"  onclick="changeStatus('${l.id}','rejected')">Reject</button>` : ''}
+            ${l.status === 'approved' ? `<button class="btn-reject" onclick="changeStatus('${l.id}','rejected')">Unpublish</button>` : ''}
+            ${l.status === 'rejected' ? `<button class="btn-approve" onclick="changeStatus('${l.id}','approved')">Approve</button>` : ''}
+            <button class="btn-view" onclick="openEdit('${l.id}')">Edit</button>
+            <a href="property.html?id=${l.id}" target="_blank" class="btn-view">View</a>
+            <button class="btn-delete" onclick="confirmDelete('${l.id}')">Del</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  // ── PENDING CARDS ──
+  function renderPending() {
+    const list = getListings().filter(l => l.status === 'pending');
+    const container = document.getElementById('pending-cards');
+    if (list.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:4rem 2rem;background:#FAF7F3;border-radius:14px;border:1px solid rgba(122,82,48,0.1)">
+          <div style="font-size:48px;margin-bottom:1rem">✨</div>
+          <h3 style="font-size:18px;font-weight:700;color:#4E3219;margin-bottom:8px">All clear!</h3>
+          <p style="font-size:14px;color:#999">No listings pending review.</p>
+        </div>`;
+      return;
+    }
+    container.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">` +
+      list.map(l => `
+        <div style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1);display:grid;grid-template-columns:140px 1fr auto;gap:1.25rem;align-items:start">
+          <div style="height:100px;border-radius:10px;overflow:hidden">
+            <img src="${l.img}" alt="${l.title}" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span style="font-family:monospace;font-size:11px;font-weight:700;color:#7A5230;background:#EFE3D5;padding:2px 8px;border-radius:4px">${l.id}</span>
+              <span class="status-pending">Pending</span>
+            </div>
+            <h3 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:4px">${l.title}</h3>
+            <p style="font-size:13px;color:#777;margin-bottom:8px">${l.location} · ${l.type} · ${formatPrice(l.price,l.purpose)}</p>
+            <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:8px">${(l.description||'').slice(0,200)}…</p>
+            <div style="font-size:12px;color:#aaa">Submitted by: <strong style="color:#4E3219">${l.submittedBy}</strong> · ${l.phone} · ${l.createdAt}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn-approve" style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="changeStatus('${l.id}','approved');renderPending()">
+              ✓ Approve
+            </button>
+            <button class="btn-reject" style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="changeStatus('${l.id}','rejected');renderPending()">
+              ✕ Reject
+            </button>
+            <button class="btn-view" style="text-align:center;padding:8px 12px" onclick="openEdit('${l.id}')">Edit</button>
+          </div>
+        </div>`).join('') + `</div>`;
+  }
+
+  // ── STATUS CHANGE ──
+  function changeStatus(id, status) {
+    updateListing(id, { status });
+    if (currentPanel === 'listings') renderTable();
+    if (currentPanel === 'pending')  renderPending();
+    if (currentPanel === 'dashboard') renderDashboard();
+    updatePendingBadge();
+    showToast(status === 'approved' ? 'Listing approved ✓' : status === 'rejected' ? 'Listing rejected' : 'Status updated');
+  }
+
+  // ── DELETE ──
+  function confirmDelete(id) {
+    const l = getListing(id);
+    if (!l) return;
+    if (confirm(`Delete "${l.title}" (${l.id})?\n\nThis cannot be undone.`)) {
+      deleteListing(id);
+      if (currentPanel === 'listings') renderTable();
+      updatePendingBadge();
+      showToast('Listing deleted');
+    }
+  }
+
+  // ── EDIT MODAL ──
+  function openEdit(id) {
+    const l = getListing(id);
+    if (!l) return;
+    document.getElementById('e-id').value       = l.id;
+    document.getElementById('e-title').value    = l.title;
+    document.getElementById('e-location').value = l.location;
+    document.getElementById('e-status').value   = l.status;
+    document.getElementById('e-price').value    = l.price;
+    document.getElementById('e-featured').value = String(l.featured);
+    document.getElementById('e-desc').value     = l.description || '';
+    document.getElementById('edit-modal').style.display = 'flex';
+  }
+  function closeEdit() {
+    document.getElementById('edit-modal').style.display = 'none';
+  }
+  function saveEdit() {
+    const id = document.getElementById('e-id').value;
+    updateListing(id, {
+      title:       document.getElementById('e-title').value,
+      location:    document.getElementById('e-location').value,
+      status:      document.getElementById('e-status').value,
+      price:       parseInt(document.getElementById('e-price').value),
+      featured:    document.getElementById('e-featured').value === 'true',
+      description: document.getElementById('e-desc').value,
+    });
+    closeEdit();
+    if (currentPanel === 'listings') renderTable();
+    if (currentPanel === 'pending')  renderPending();
+    if (currentPanel === 'dashboard') renderDashboard();
+    updatePendingBadge();
+    showToast('Listing updated ✓');
+  }
+
+  // ── ADD LISTING ──
+  function adminAddListing() {
+    const title = document.getElementById('a-title').value.trim();
+    const loc   = document.getElementById('a-location').value.trim();
+    const price = parseInt(document.getElementById('a-price').value);
+    const desc  = document.getElementById('a-desc').value.trim();
+
+    const errEl = document.getElementById('add-error');
+    const sucEl = document.getElementById('add-success');
+    errEl.style.display = 'none';
+    sucEl.style.display = 'none';
+
+    if (!title || !loc || !price || !desc) {
+      errEl.textContent = 'Please fill in all required fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const purpose = document.getElementById('a-purpose').value;
+    const phone   = document.getElementById('a-phone').value || '+961 71 000 000';
+    const wa      = (document.getElementById('a-wa').value || phone).replace(/\D/g,'');
+    const newId   = generateId();
+
+    addListing({
+      id: newId,
+      title,
+      location: loc,
+      area: document.getElementById('a-area').value,
+      type: document.getElementById('a-type').value,
+      purpose,
+      price,
+      beds:  parseInt(document.getElementById('a-beds').value)  || 0,
+      baths: parseInt(document.getElementById('a-baths').value) || 1,
+      sqm:   parseInt(document.getElementById('a-sqm').value)   || 0,
+      parking: 0,
+      floor: '', age: '',
+      description: desc,
+      amenities: [],
+      tag: document.getElementById('a-tag').value,
+      status: document.getElementById('a-status').value,
+      featured: document.getElementById('a-featured').checked,
+      img: `https://picsum.photos/seed/${newId}/800/540`,
+      submittedBy: 'Admin',
+      phone, whatsapp: wa,
+      createdAt: new Date().toISOString().split('T')[0],
+    });
+
+    sucEl.textContent = `✓ Listing "${title}" added with reference ${newId}`;
+    sucEl.style.display = 'block';
+    resetAddForm();
+    updatePendingBadge();
+  }
+
+  function resetAddForm() {
+    ['a-title','a-location','a-price','a-sqm','a-phone','a-wa','a-desc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('a-beds').value = '0';
+    document.getElementById('a-baths').value = '1';
+    document.getElementById('a-featured').checked = false;
+    document.getElementById('add-error').style.display = 'none';
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:#4E3219;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(16px);opacity:0;transition:transform 0.25s ease,opacity 0.25s ease;pointer-events:none`;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => { t.style.transform = 'translateY(0)'; t.style.opacity = '1'; });
+    setTimeout(() => { t.style.transform = 'translateY(8px)'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+  }
+
+  function refreshAll() {
+    renderDashboard();
+    updatePendingBadge();
+  }
+</script>
+</body>
+</html>

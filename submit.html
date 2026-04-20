@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List Your Property — Elevate Estates</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    nav { background: rgba(250,247,243,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(122,82,48,0.12); box-shadow: 0 2px 20px rgba(78,50,25,0.08); position: sticky; top: 0; z-index: 100; }
+
+    /* Step indicator */
+    .step-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+    .step-dot.done    { background: #7A5230; color: #fff; border: 2px solid #7A5230; }
+    .step-dot.active  { background: #fff; color: #7A5230; border: 2px solid #7A5230; box-shadow: 0 0 0 4px rgba(122,82,48,0.15); }
+    .step-dot.pending { background: #EDE8E0; color: #aaa; border: 2px solid #ccc; }
+    .step-line { flex: 1; height: 2px; transition: background 0.3s; }
+
+    /* Form inputs */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #A87850; }
+    .form-input {
+      width: 100%; padding: 12px 16px;
+      border: 1px solid rgba(122,82,48,0.2); border-radius: 10px;
+      font-family: 'Nunito Sans', sans-serif; font-size: 14px; color: #2E1F0E;
+      background: #FAF7F3; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus { border-color: #7A5230; box-shadow: 0 0 0 3px rgba(122,82,48,0.1); }
+    .form-input.error { border-color: #A32D2D; }
+    .form-hint { font-size: 12px; color: #aaa; }
+    .form-error { font-size: 12px; color: #A32D2D; display: none; }
+
+    /* Option cards */
+    .opt-card { border: 2px solid rgba(122,82,48,0.2); border-radius: 12px; padding: 16px; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: #FAF7F3; text-align: center; }
+    .opt-card:hover { border-color: #A87850; background: #FAF7F3; }
+    .opt-card.selected { border-color: #7A5230; background: #EFE3D5; }
+    .opt-card .opt-icon { font-size: 28px; margin-bottom: 6px; }
+    .opt-card .opt-label { font-size: 13px; font-weight: 700; color: #4E3219; }
+
+    /* Upload area */
+    .upload-area { border: 2px dashed rgba(122,82,48,0.3); border-radius: 12px; padding: 2.5rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+    .upload-area:hover { border-color: #7A5230; background: rgba(122,82,48,0.03); }
+
+    /* Progress bar */
+    .progress-bar { height: 4px; background: #DDD5C8; border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #7A5230; border-radius: 2px; transition: width 0.4s ease; }
+
+    /* Nav buttons */
+    .btn-next { background: #7A5230; color: #fff; border: none; padding: 14px 32px; border-radius: 10px; font-family: 'Nunito Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+    .btn-next:hover { background: #4E3219; transform: translateY(-1px); }
+    .btn-back { background: transparent; color: #7A5230; border: 1px solid rgba(122,82,48,0.3); padding: 14px 24px; border-radius: 10px; font-family: 'Nunito Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .btn-back:hover { background: rgba(122,82,48,0.06); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #EDE8E0; }
+    ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
+
+    /* ══ RESPONSIVE ════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      /* Step indicator — hide labels, shrink dots */
+      .step-dot { width: 28px; height: 28px; font-size: 12px; }
+      .step-line { margin-bottom: 0 !important; }
+
+      /* Form grids → single column */
+      div[style*="grid-template-columns:1fr 1fr"],
+      div[style*="grid-template-columns: 1fr 1fr"],
+      div[style*="grid-template-columns:repeat(3,1fr)"],
+      div[style*="grid-template-columns:repeat(4,1fr)"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Option cards 4-grid → 2 */
+      div[style*="grid-template-columns:repeat(4,1fr)"].opt-grid-type { grid-template-columns: repeat(2,1fr) !important; }
+
+      /* Container padding */
+      div[style*="max-width:760px"] { padding: 1rem !important; }
+      .form-input { font-size: 16px !important; } /* prevent iOS zoom */
+
+      /* Step nav buttons */
+      .btn-next, .btn-back { padding: 12px 20px !important; font-size: 14px !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="max-width:1280px;margin:0 auto;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html"><img src="brand_Assets/dark-elevate-logo.png" alt="Elevate Estates" style="height:32px;width:auto"></a>
+    <div style="display:flex;align-items:center;gap:1.5rem">
+      <a href="listings.html" style="font-size:14px;font-weight:600;color:#4E3219;text-decoration:none">Browse Properties</a>
+      <a href="index.html#contact" style="font-size:14px;font-weight:600;color:#4E3219;text-decoration:none">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO HEADER -->
+<div style="background:#4E3219;padding:3.5rem 2rem 3rem;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\");pointer-events:none"></div>
+  <div style="max-width:640px;margin:0 auto;text-align:center;position:relative;z-index:1">
+    <p style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px">Join Elevate Estates</p>
+    <h1 class="font-display" style="font-size:clamp(28px,5vw,44px);color:#fff;letter-spacing:-1px;margin-bottom:12px">List your property</h1>
+    <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.7">Submit your details and our team will review and publish your listing within 48 hours.</p>
+  </div>
+</div>
+
+<!-- FORM CONTAINER -->
+<div style="max-width:760px;margin:0 auto;padding:2.5rem 2rem 4rem">
+
+  <!-- Progress bar -->
+  <div class="progress-bar" style="margin-bottom:2.5rem">
+    <div class="progress-fill" id="progress-fill" style="width:25%"></div>
+  </div>
+
+  <!-- Step indicator -->
+  <div style="display:flex;align-items:center;margin-bottom:3rem">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div id="dot-1" class="step-dot active">1</div>
+      <span style="font-size:11px;font-weight:700;color:#7A5230">Property</span>
+    </div>
+    <div id="line-1" class="step-line" style="background:#DDD5C8;margin-bottom:16px"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div id="dot-2" class="step-dot pending">2</div>
+      <span style="font-size:11px;font-weight:700;color:#aaa">Details</span>
+    </div>
+    <div id="line-2" class="step-line" style="background:#DDD5C8;margin-bottom:16px"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div id="dot-3" class="step-dot pending">3</div>
+      <span style="font-size:11px;font-weight:700;color:#aaa">Contact</span>
+    </div>
+    <div id="line-3" class="step-line" style="background:#DDD5C8;margin-bottom:16px"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div id="dot-4" class="step-dot pending">4</div>
+      <span style="font-size:11px;font-weight:700;color:#aaa">Review</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: Property basics -->
+  <div id="step-1" class="step-panel">
+    <div style="background:#FAF7F3;border-radius:16px;padding:2rem;border:1px solid rgba(122,82,48,0.1)">
+      <h2 style="font-size:20px;font-weight:700;color:#4E3219;margin-bottom:1.75rem">Property type & purpose</h2>
+
+      <div class="form-group" style="margin-bottom:1.75rem">
+        <label class="form-label">I want to</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="opt-card selected" id="purpose-sale" onclick="selectPurpose('sale')">
+            <div class="opt-icon">🏷️</div>
+            <div class="opt-label">Sell a property</div>
+          </div>
+          <div class="opt-card" id="purpose-rent" onclick="selectPurpose('rent')">
+            <div class="opt-icon">🔑</div>
+            <div class="opt-label">Rent out a property</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.75rem">
+        <label class="form-label">Property type</label>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+          <div class="opt-card selected" id="type-apartment" onclick="selectType('apartment')">
+            <div class="opt-icon">🏢</div>
+            <div class="opt-label">Apartment</div>
+          </div>
+          <div class="opt-card" id="type-villa" onclick="selectType('villa')">
+            <div class="opt-icon">🏡</div>
+            <div class="opt-label">Villa</div>
+          </div>
+          <div class="opt-card" id="type-commercial" onclick="selectType('commercial')">
+            <div class="opt-icon">🏪</div>
+            <div class="opt-label">Commercial</div>
+          </div>
+          <div class="opt-card" id="type-land" onclick="selectType('land')">
+            <div class="opt-icon">🌿</div>
+            <div class="opt-label">Land</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.75rem">
+        <div class="form-group">
+          <label class="form-label">Title <span style="color:#A32D2D">*</span></label>
+          <input type="text" id="f-title" class="form-input" placeholder="e.g. Luxury Villa in Broumana" required>
+          <span class="form-error" id="err-title">Please enter a title</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location <span style="color:#A32D2D">*</span></label>
+          <input type="text" id="f-location" class="form-input" placeholder="e.g. Achrafieh, Beirut" required>
+          <span class="form-error" id="err-location">Please enter a location</span>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.75rem">
+        <label class="form-label">Area / District <span style="color:#A32D2D">*</span></label>
+        <select id="f-area" class="form-input" required>
+          <option value="">Select district...</option>
+          <option value="Beirut">Beirut</option>
+          <option value="Mount Lebanon">Mount Lebanon</option>
+          <option value="Metn">Metn</option>
+          <option value="Keserwan">Keserwan</option>
+          <option value="North Lebanon">North Lebanon</option>
+          <option value="South Lebanon">South Lebanon</option>
+          <option value="Bekaa">Bekaa</option>
+        </select>
+        <span class="form-error" id="err-area">Please select a district</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Asking Price (USD) <span style="color:#A32D2D">*</span></label>
+        <input type="number" id="f-price" class="form-input" placeholder="e.g. 450000" min="0" required>
+        <span class="form-hint" id="price-hint">For rental: monthly rate</span>
+        <span class="form-error" id="err-price">Please enter a valid price</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem">
+      <button class="btn-next" onclick="nextStep(1)">Next: Property Details →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Property details -->
+  <div id="step-2" class="step-panel" style="display:none">
+    <div style="background:#FAF7F3;border-radius:16px;padding:2rem;border:1px solid rgba(122,82,48,0.1)">
+      <h2 style="font-size:20px;font-weight:700;color:#4E3219;margin-bottom:1.75rem">Property details</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem">
+        <div class="form-group">
+          <label class="form-label">Bedrooms</label>
+          <select id="f-beds" class="form-input">
+            <option value="0">Studio / N/A</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bathrooms</label>
+          <select id="f-baths" class="form-input">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parking spots</label>
+          <select id="f-parking" class="form-input">
+            <option value="0">None</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3+</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.75rem">
+        <div class="form-group">
+          <label class="form-label">Area (m²) <span style="color:#A32D2D">*</span></label>
+          <input type="number" id="f-sqm" class="form-input" placeholder="e.g. 180" min="1" required>
+          <span class="form-error" id="err-sqm">Required</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Floor</label>
+          <input type="text" id="f-floor" class="form-input" placeholder="e.g. 4th, Ground, PH">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Building age</label>
+          <input type="text" id="f-age" class="form-input" placeholder="e.g. 5 years, New">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.75rem">
+        <label class="form-label">Description <span style="color:#A32D2D">*</span></label>
+        <textarea id="f-desc" class="form-input" rows="5" placeholder="Describe your property — key features, condition, views, nearby landmarks..." required style="resize:vertical"></textarea>
+        <span class="form-error" id="err-desc">Please add a description</span>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.75rem">
+        <label class="form-label">Amenities & Features</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px" id="amenity-chips">
+          <!-- Rendered by JS -->
+        </div>
+        <p class="form-hint">Click to select all that apply</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Photos (optional)</label>
+        <div class="upload-area" onclick="this.querySelector('input').click()">
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handleUpload(this)">
+          <div id="upload-preview" style="margin-bottom:12px"></div>
+          <svg width="32" height="32" fill="none" stroke="#A87850" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p style="font-size:14px;font-weight:600;color:#4E3219;margin-bottom:4px">Drop photos here or click to upload</p>
+          <p style="font-size:12px;color:#aaa">JPG, PNG — up to 10 images, max 5MB each</p>
+        </div>
+        <p class="form-hint">Note: for this demo, photos are not stored — our team will contact you for images.</p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:1.5rem">
+      <button class="btn-back" onclick="prevStep(2)">← Back</button>
+      <button class="btn-next" onclick="nextStep(2)">Next: Contact Info →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Contact info -->
+  <div id="step-3" class="step-panel" style="display:none">
+    <div style="background:#FAF7F3;border-radius:16px;padding:2rem;border:1px solid rgba(122,82,48,0.1)">
+      <h2 style="font-size:20px;font-weight:700;color:#4E3219;margin-bottom:1.75rem">Your contact details</h2>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.75rem">
+        <div class="form-group">
+          <label class="form-label">Full Name <span style="color:#A32D2D">*</span></label>
+          <input type="text" id="f-name" class="form-input" placeholder="Your full name" required>
+          <span class="form-error" id="err-name">Required</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email <span style="color:#A32D2D">*</span></label>
+          <input type="email" id="f-email" class="form-input" placeholder="your@email.com" required>
+          <span class="form-error" id="err-email">Enter a valid email</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.75rem">
+        <div class="form-group">
+          <label class="form-label">Phone <span style="color:#A32D2D">*</span></label>
+          <input type="tel" id="f-phone" class="form-input" placeholder="+961 XX XXX XXX" required>
+          <span class="form-error" id="err-phone">Required</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp number</label>
+          <input type="tel" id="f-whatsapp" class="form-input" placeholder="+961 XX XXX XXX (if different)">
+          <span class="form-hint">Leave blank if same as phone</span>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.75rem">
+        <label class="form-label">Your role</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="opt-card selected" id="role-owner" onclick="selectRole('owner')">
+            <div class="opt-icon">👤</div>
+            <div class="opt-label">Property Owner</div>
+          </div>
+          <div class="opt-card" id="role-agent" onclick="selectRole('agent')">
+            <div class="opt-icon">🤝</div>
+            <div class="opt-label">Real Estate Agent</div>
+          </div>
+          <div class="opt-card" id="role-developer" onclick="selectRole('developer')">
+            <div class="opt-icon">🏗️</div>
+            <div class="opt-label">Developer</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#EFE3D5;border:1px solid #D4B89A;border-radius:10px;padding:1rem;display:flex;gap:10px">
+        <svg width="18" height="18" fill="none" stroke="#7A5230" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <p style="font-size:13px;color:#555;line-height:1.6">Your contact details are only shared with potential buyers who enquire about your listing. We never sell your data to third parties.</p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:1.5rem">
+      <button class="btn-back" onclick="prevStep(3)">← Back</button>
+      <button class="btn-next" onclick="nextStep(3)">Review Listing →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Review & submit -->
+  <div id="step-4" class="step-panel" style="display:none">
+    <div style="background:#FAF7F3;border-radius:16px;padding:2rem;border:1px solid rgba(122,82,48,0.1);margin-bottom:1rem">
+      <h2 style="font-size:20px;font-weight:700;color:#4E3219;margin-bottom:1.5rem">Review your listing</h2>
+      <div id="review-content" style="display:flex;flex-direction:column;gap:1rem"></div>
+    </div>
+    <div style="background:#EFE3D5;border:1px solid #D4B89A;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
+      <p style="font-size:13px;color:#555;line-height:1.6"><strong style="color:#4E3219">What happens next?</strong> Our team will review your submission within 48 hours. You'll receive a WhatsApp message with your unique EE reference number once your listing is approved and goes live.</p>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:0.5rem">
+      <button class="btn-back" onclick="prevStep(4)">← Edit</button>
+      <button class="btn-next" onclick="submitListing()" style="background:#3B6D11;padding:14px 36px">
+        <span id="submit-btn-text">Submit Listing</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div id="step-success" style="display:none;text-align:center;padding:3rem 2rem">
+    <div style="width:80px;height:80px;background:#EAF3DE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:36px">✓</div>
+    <h2 class="font-display" style="font-size:32px;color:#4E3219;margin-bottom:12px">Listing submitted!</h2>
+    <p style="font-size:15px;color:#666;line-height:1.7;max-width:440px;margin:0 auto 2rem">Your property has been submitted for review. Our team will get back to you within 48 hours on WhatsApp with your EE reference number.</p>
+    <div id="success-ref" style="display:inline-flex;background:#EFE3D5;border:1px solid #D4B89A;border-radius:12px;padding:16px 28px;flex-direction:column;gap:4px;margin-bottom:2rem">
+      <span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A5230">Your reference number</span>
+      <span style="font-size:28px;font-weight:700;color:#4E3219;letter-spacing:3px" id="success-ref-num">—</span>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="listings.html" style="background:#7A5230;color:#fff;padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;font-size:14px">Browse listings</a>
+      <a href="index.html" style="background:#EDE8E0;color:#4E3219;padding:12px 28px;border-radius:10px;font-weight:700;text-decoration:none;font-size:14px">Back to home</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#2E1F0E;color:rgba(255,255,255,0.55);padding:2.5rem 2rem">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:28px;width:auto">
+    <p style="font-size:13px">© 2025 Elevate Estates · Beirut, Lebanon</p>
+    <a href="listings.html" style="font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">Browse Properties</a>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  initStore();
+
+  let currentStep = 1;
+  let formData = { purpose: 'sale', type: 'apartment', role: 'owner', amenities: [] };
+
+  const ALL_AMENITIES = [
+    'Pool','Garden','Parking','Generator','Elevator','Balcony','Terrace',
+    'Sea View','Mountain View','Storage','Sauna','Gym','Security System',
+    'Furnished','Smart Home','Concierge','Air Conditioning','Fiber Internet',
+    'Stone Interior','Wood Floors','Solar Panels','Backup Water',
+  ];
+
+  // Render amenity chips
+  function renderAmenityChips() {
+    document.getElementById('amenity-chips').innerHTML = ALL_AMENITIES.map(a => `
+      <button type="button" onclick="toggleAmenity(this,'${a}')"
+        style="border:1px solid rgba(122,82,48,0.2);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;
+          color:#7A5230;background:transparent;cursor:pointer;font-family:'Nunito Sans',sans-serif;
+          transition:background 0.2s,border-color 0.2s"
+        data-amenity="${a}"
+      >${a}</button>`).join('');
+  }
+  renderAmenityChips();
+
+  function toggleAmenity(btn, a) {
+    const idx = formData.amenities.indexOf(a);
+    if (idx > -1) {
+      formData.amenities.splice(idx, 1);
+      btn.style.background = 'transparent';
+      btn.style.borderColor = 'rgba(122,82,48,0.2)';
+      btn.style.color = '#7A5230';
+    } else {
+      formData.amenities.push(a);
+      btn.style.background = '#7A5230';
+      btn.style.borderColor = '#7A5230';
+      btn.style.color = '#fff';
+    }
+  }
+
+  function selectPurpose(p) {
+    formData.purpose = p;
+    document.getElementById('purpose-sale').classList.toggle('selected', p === 'sale');
+    document.getElementById('purpose-rent').classList.toggle('selected', p === 'rent');
+    document.getElementById('price-hint').textContent = p === 'rent' ? 'Monthly rate in USD' : 'Sale price in USD';
+  }
+
+  function selectType(t) {
+    formData.type = t;
+    ['apartment','villa','commercial','land'].forEach(tp => {
+      document.getElementById(`type-${tp}`).classList.toggle('selected', tp === t);
+    });
+  }
+
+  function selectRole(r) {
+    formData.role = r;
+    ['owner','agent','developer'].forEach(rl => {
+      document.getElementById(`role-${rl}`).classList.toggle('selected', rl === r);
+    });
+  }
+
+  function handleUpload(input) {
+    const files = Array.from(input.files).slice(0, 10);
+    const preview = document.getElementById('upload-preview');
+    preview.innerHTML = `<p style="font-size:13px;color:#7A5230;font-weight:600;margin-bottom:8px">${files.length} photo${files.length>1?'s':''} selected</p>`;
+  }
+
+  // ── Validation ──
+  function validate(step) {
+    let ok = true;
+    if (step === 1) {
+      const checks = [
+        ['f-title', 'err-title', v => v.trim().length > 2],
+        ['f-location', 'err-location', v => v.trim().length > 2],
+        ['f-area', 'err-area', v => v !== ''],
+        ['f-price', 'err-price', v => parseFloat(v) > 0],
+      ];
+      checks.forEach(([id, errId, fn]) => {
+        const el = document.getElementById(id);
+        const err = document.getElementById(errId);
+        const valid = fn(el.value);
+        el.classList.toggle('error', !valid);
+        err.style.display = valid ? 'none' : 'block';
+        if (!valid) ok = false;
+      });
+    }
+    if (step === 2) {
+      const sqm = document.getElementById('f-sqm');
+      const err = document.getElementById('err-sqm');
+      const valid = parseFloat(sqm.value) > 0;
+      sqm.classList.toggle('error', !valid);
+      err.style.display = valid ? 'none' : 'block';
+      if (!valid) ok = false;
+
+      const desc = document.getElementById('f-desc');
+      const errD = document.getElementById('err-desc');
+      const validD = desc.value.trim().length > 20;
+      desc.classList.toggle('error', !validD);
+      errD.style.display = validD ? 'none' : 'block';
+      if (!validD) ok = false;
+    }
+    if (step === 3) {
+      const checks = [
+        ['f-name', 'err-name', v => v.trim().length > 1],
+        ['f-email', 'err-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)],
+        ['f-phone', 'err-phone', v => v.trim().length > 5],
+      ];
+      checks.forEach(([id, errId, fn]) => {
+        const el = document.getElementById(id);
+        const err = document.getElementById(errId);
+        const valid = fn(el.value);
+        el.classList.toggle('error', !valid);
+        err.style.display = valid ? 'none' : 'block';
+        if (!valid) ok = false;
+      });
+    }
+    return ok;
+  }
+
+  // ── Step navigation ──
+  function nextStep(from) {
+    if (!validate(from)) return;
+    showStep(from + 1);
+    if (from + 1 === 4) buildReview();
+  }
+  function prevStep(from) { showStep(from - 1); }
+
+  function showStep(n) {
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById(`step-${i}`).style.display = i === n ? 'block' : 'none';
+    }
+    currentStep = n;
+    updateStepper(n);
+    updateProgress(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateStepper(active) {
+    for (let i = 1; i <= 4; i++) {
+      const dot  = document.getElementById(`dot-${i}`);
+      const line = document.getElementById(`line-${i}`);
+      if (i < active) {
+        dot.className = 'step-dot done';
+        dot.innerHTML = '✓';
+        if (line) line.style.background = '#7A5230';
+      } else if (i === active) {
+        dot.className = 'step-dot active';
+        dot.innerHTML = String(i);
+        if (line) line.style.background = '#DDD5C8';
+      } else {
+        dot.className = 'step-dot pending';
+        dot.innerHTML = String(i);
+        if (line) line.style.background = '#DDD5C8';
+      }
+    }
+  }
+
+  function updateProgress(n) {
+    const pct = ((n - 1) / 3) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  function buildReview() {
+    const f = {
+      title:    document.getElementById('f-title').value,
+      location: document.getElementById('f-location').value,
+      area:     document.getElementById('f-area').value,
+      price:    document.getElementById('f-price').value,
+      sqm:      document.getElementById('f-sqm').value,
+      beds:     document.getElementById('f-beds').value,
+      baths:    document.getElementById('f-baths').value,
+      floor:    document.getElementById('f-floor').value,
+      age:      document.getElementById('f-age').value,
+      desc:     document.getElementById('f-desc').value,
+      name:     document.getElementById('f-name').value,
+      email:    document.getElementById('f-email').value,
+      phone:    document.getElementById('f-phone').value,
+    };
+
+    const row = (label, value) => value ? `
+      <div style="display:flex;gap:16px;padding:10px 0;border-bottom:1px solid rgba(122,82,48,0.08)">
+        <span style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#A87850;min-width:100px">${label}</span>
+        <span style="font-size:14px;color:#2E1F0E;flex:1">${value}</span>
+      </div>` : '';
+
+    document.getElementById('review-content').innerHTML = `
+      <div style="background:#EDE8E0;border-radius:10px;padding:1.25rem;font-size:13px;color:#7A5230;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5rem">Property Details</div>
+      ${row('Purpose', formData.purpose === 'sale' ? 'For Sale' : 'For Rent')}
+      ${row('Type', formData.type.charAt(0).toUpperCase()+formData.type.slice(1))}
+      ${row('Title', f.title)}
+      ${row('Location', f.location)}
+      ${row('District', f.area)}
+      ${row('Price', '$' + parseInt(f.price).toLocaleString() + (formData.purpose==='rent'?'/mo':''))}
+      ${row('Area', f.sqm + ' m²')}
+      ${row('Bedrooms', f.beds > 0 ? f.beds : 'N/A')}
+      ${row('Bathrooms', f.baths)}
+      ${f.floor ? row('Floor', f.floor) : ''}
+      ${f.age ? row('Age', f.age) : ''}
+      ${formData.amenities.length > 0 ? row('Amenities', formData.amenities.join(', ')) : ''}
+      <div style="background:#EDE8E0;border-radius:10px;padding:1.25rem;font-size:13px;color:#7A5230;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:1rem;margin-bottom:0.5rem">Contact Details</div>
+      ${row('Name', f.name)}
+      ${row('Email', f.email)}
+      ${row('Phone', f.phone)}
+      ${row('Role', formData.role)}
+    `;
+  }
+
+  function submitListing() {
+    const btn = document.getElementById('submit-btn-text');
+    btn.textContent = 'Submitting…';
+
+    const newId = generateId();
+    const phone = document.getElementById('f-phone').value;
+    const wa = (document.getElementById('f-whatsapp').value || phone).replace(/\D/g,'');
+
+    const listing = {
+      id: newId,
+      title: document.getElementById('f-title').value,
+      location: document.getElementById('f-location').value,
+      area: document.getElementById('f-area').value,
+      type: formData.type,
+      purpose: formData.purpose,
+      price: parseInt(document.getElementById('f-price').value),
+      beds: parseInt(document.getElementById('f-beds').value),
+      baths: parseInt(document.getElementById('f-baths').value),
+      sqm: parseInt(document.getElementById('f-sqm').value),
+      parking: parseInt(document.getElementById('f-parking').value),
+      floor: document.getElementById('f-floor').value,
+      age: document.getElementById('f-age').value,
+      description: document.getElementById('f-desc').value,
+      amenities: formData.amenities,
+      tag: formData.purpose === 'rent' ? 'rent' : 'sale',
+      status: 'pending',
+      featured: false,
+      img: `https://picsum.photos/seed/${newId}/800/540`,
+      submittedBy: document.getElementById('f-name').value,
+      phone: phone,
+      whatsapp: wa,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+
+    setTimeout(() => {
+      addListing(listing);
+      document.getElementById('success-ref-num').textContent = newId;
+      document.getElementById('step-4').style.display = 'none';
+      document.getElementById('step-success').style.display = 'block';
+      document.getElementById('progress-fill').style.width = '100%';
+    }, 800);
+  }
+</script>
+</body>
+</html>

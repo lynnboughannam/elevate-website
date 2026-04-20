@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevate Estates — Premium Lebanese Real Estate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brown:      '#7A5230',
+            'brown-d':  '#4E3219',
+            'brown-l':  '#A87850',
+            cream:      '#EDE8E0',
+            'cream-d':  '#DDD5C8',
+            linen:      '#FAF7F3',
+            ink:        '#2E1F0E',
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'serif'],
+            sans:    ['"Nunito Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+
+    /* ── TYPOGRAPHY ── */
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    /* ── NAVIGATION ── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      transition: background 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    #nav.transparent { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    #nav.solid {
+      background: rgba(250,247,243,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(122,82,48,0.12);
+      box-shadow: 0 2px 20px rgba(78,50,25,0.08);
+    }
+    #nav .nav-link-light { color: rgba(255,255,255,0.85); }
+    #nav .nav-link-light:hover { color: #fff; }
+    #nav.solid .nav-link-light { color: #4E3219; }
+    #nav.solid .nav-link-light:hover { color: #7A5230; }
+    #nav .logo-white { display: block; }
+    #nav .logo-dark  { display: none; }
+    #nav.solid .logo-white { display: none; }
+    #nav.solid .logo-dark  { display: block; }
+    #nav .btn-nav-white {
+      border: 1px solid rgba(255,255,255,0.5); color: #fff;
+      padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    #nav .btn-nav-white:hover { background: rgba(255,255,255,0.15); }
+    #nav.solid .btn-nav-white {
+      border-color: rgba(122,82,48,0.3); color: #4E3219;
+    }
+    #nav.solid .btn-nav-white:hover { background: rgba(122,82,48,0.06); }
+    #nav .btn-nav-solid {
+      background: #7A5230; color: #fff;
+      padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      transition: background 0.2s, transform 0.15s;
+    }
+    #nav .btn-nav-solid:hover { background: #4E3219; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, rgba(46,31,14,0.88) 0%, rgba(78,50,25,0.55) 50%, rgba(46,31,14,0.82) 100%),
+                  url('https://picsum.photos/seed/hero-lebanese/1920/1080') center/cover no-repeat;
+    }
+    .hero-grain {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+    .hero-content { position: relative; z-index: 2; }
+
+    /* ── SEARCH BOX ── */
+    .search-box {
+      background: rgba(250,247,243,0.97);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(46,31,14,0.4), 0 4px 20px rgba(46,31,14,0.2);
+      overflow: hidden;
+    }
+    .tab-btn { padding: 10px 24px; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; border-radius: 8px; transition: background 0.2s, color 0.2s; cursor: pointer; color: #888; }
+    .tab-btn.active { background: #7A5230; color: #fff; }
+    .tab-btn:not(.active):hover { background: rgba(122,82,48,0.08); color: #4E3219; }
+    .search-select {
+      flex: 1; padding: 14px 16px; background: transparent; border: none; outline: none;
+      font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; color: #2E1F0E; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+    }
+    .search-divider { width: 1px; background: rgba(122,82,48,0.15); align-self: stretch; margin: 8px 0; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: #FAF7F3;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(78,50,25,0.12), 0 2px 8px rgba(78,50,25,0.06);
+      border: 1px solid rgba(122,82,48,0.1);
+    }
+
+    /* ── LISTING CARDS ── */
+    .listing-card {
+      background: #FAF7F3; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(122,82,48,0.1);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+    }
+    .listing-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 64px rgba(122,82,48,0.2), 0 4px 20px rgba(122,82,48,0.1);
+    }
+    .card-img { position: relative; overflow: hidden; height: 220px; }
+    .card-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .listing-card:hover .card-img img { transform: scale(1.06); }
+    .card-img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(46,31,14,0.5) 0%, transparent 60%);
+    }
+    .card-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .badge-luxury { background: #FAF0DC; color: #7A5A0B; }
+    .badge-sale   { background: #EFE3D5; color: #4E3219; }
+    .badge-rent   { background: #EAF3DE; color: #3B6D11; }
+    .badge-new    { background: #E1F5EE; color: #0F6E56; }
+
+    /* ── CATEGORY CARDS ── */
+    .cat-card {
+      position: relative; border-radius: 16px; overflow: hidden; cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .cat-card:hover { transform: translateY(-6px); }
+    .cat-card:hover .cat-overlay { background: rgba(46,31,14,0.35); }
+    .cat-overlay {
+      position: absolute; inset: 0;
+      background: rgba(46,31,14,0.55);
+      transition: background 0.3s ease;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* ── FADE IN ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    /* ── TAGS ── */
+    .tag-brown  { background: #EFE3D5; color: #4E3219; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .tag-green  { background: #EAF3DE; color: #3B6D11; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .tag-gold   { background: #FAF0DC; color: #7A5A0B; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+    /* ── REF BLOCK ── */
+    .ref-block {
+      background: #EFE3D5; border: 1px solid #D4B89A; border-radius: 8px;
+      padding: 5px 12px; display: inline-flex; flex-direction: column; gap: 1px;
+    }
+    .ref-label { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #7A5230; }
+    .ref-num   { font-size: 13px; font-weight: 700; color: #4E3219; letter-spacing: 2px; }
+
+    /* ── WHATSAPP BTN ── */
+    .btn-wa {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #25D366; color: #fff; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s, transform 0.15s; text-decoration: none;
+    }
+    .btn-wa:hover { background: #1da851; transform: translateY(-1px); }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial-card {
+      background: #FAF7F3; border: 1px solid rgba(122,82,48,0.12); border-radius: 16px; padding: 2rem;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .step-num {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: #7A5230; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; font-family: 'Playfair Display', serif;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer a:hover { color: #A87850; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: block; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #EDE8E0; }
+    ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
+
+    /* ══ RESPONSIVE ════════════════════════════════════════════ */
+
+    /* Tablet — 1024px */
+    @media (max-width: 1024px) {
+      #featured-grid, #recent-grid { grid-template-columns: repeat(2,1fr) !important; }
+      #cats-grid { grid-template-columns: repeat(2,1fr) !important; }
+      #testi-grid { grid-template-columns: repeat(2,1fr) !important; }
+      #hiw-grid { gap: 3rem !important; }
+      #footer-cols { grid-template-columns: repeat(2,1fr) !important; gap: 2rem !important; }
+    }
+
+    /* Mobile — 768px */
+    @media (max-width: 768px) {
+      /* Nav */
+      .hidden-mobile { display: none !important; }
+
+      /* Hero */
+      .hero { min-height: 100svh; }
+      .hero-content { padding: 0 1.25rem 2rem !important; padding-top: 90px !important; }
+      .hero-content h1 { font-size: 38px !important; }
+      .hero-content p { font-size: 15px !important; }
+
+      /* Search box */
+      .search-box { border-radius: 12px; }
+      #search-inputs { flex-direction: column !important; padding: 8px 14px 16px !important; gap: 0 !important; }
+      #search-inputs > div[style*="flex:1"] { min-width: 100% !important; padding: 0 !important; border-bottom: 1px solid rgba(122,82,48,0.1); padding-bottom: 10px !important; margin-bottom: 10px !important; }
+      #search-inputs > div[style*="flex-shrink"] { width: 100% !important; padding: 0 !important; }
+      #search-inputs > div[style*="flex-shrink"] button { width: 100% !important; }
+      .search-divider { display: none !important; }
+      .search-select { padding: 6px 0 !important; font-size: 14px !important; }
+
+      /* Stats bar */
+      .stats-bar { grid-template-columns: repeat(2,1fr) !important; }
+      .stats-bar > div:nth-child(2) { border-right: none !important; }
+      .stats-bar > div:nth-child(1),
+      .stats-bar > div:nth-child(2) { border-bottom: 1px solid rgba(122,82,48,0.1); }
+
+      /* Section padding */
+      section { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+      section[style*="5rem"] { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+
+      /* Grids → single column */
+      #featured-grid, #recent-grid { grid-template-columns: 1fr !important; }
+      #cats-grid { grid-template-columns: repeat(2,1fr) !important; }
+      .cat-card { height: 200px !important; }
+      #hiw-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+      #testi-grid { grid-template-columns: 1fr !important; }
+      #contact-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+      #footer-cols { grid-template-columns: 1fr 1fr !important; gap: 1.5rem !important; }
+
+      /* Scroll hint */
+      .hero-content > div[style*="margin-top:3rem"] { display: none !important; }
+    }
+
+    /* Small mobile — 480px */
+    @media (max-width: 480px) {
+      #cats-grid { grid-template-columns: 1fr !important; }
+      .cat-card { height: 160px !important; }
+      #footer-cols { grid-template-columns: 1fr !important; }
+      .stats-bar > div { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════ -->
+<nav id="nav" class="transparent">
+  <div style="max-width:1280px;margin:0 auto;padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between">
+
+    <!-- Logo -->
+    <a href="index.html">
+      <img src="brand_Assets/white-elevate-logo.png" class="logo-white" alt="Elevate Estates" style="height:36px;width:auto">
+      <img src="brand_Assets/dark-elevate-logo.png"  class="logo-dark"  alt="Elevate Estates" style="height:36px;width:auto">
+    </a>
+
+    <!-- Desktop links -->
+    <div style="display:flex;align-items:center;gap:40px" class="hidden-mobile">
+      <a href="listings.html" class="nav-link-light" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Properties</a>
+      <a href="listings.html?purpose=sale" class="nav-link-light" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Buy</a>
+      <a href="listings.html?purpose=rent" class="nav-link-light" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Rent</a>
+      <a href="#contact" class="nav-link-light" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Contact</a>
+    </div>
+
+    <!-- CTA buttons -->
+    <div style="display:flex;align-items:center;gap:10px" class="hidden-mobile">
+      <a href="submit.html" class="btn-nav-white" style="text-decoration:none">List Property</a>
+      <a href="listings.html" class="btn-nav-solid" style="text-decoration:none">Browse Listings</a>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button id="mob-toggle" onclick="toggleMobileMenu()" style="display:none;background:none;border:none;cursor:pointer;padding:4px" aria-label="Menu">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6" stroke="rgba(255,255,255,0.9)"/><line x1="3" y1="12" x2="21" y2="12" stroke="rgba(255,255,255,0.9)"/><line x1="3" y1="18" x2="21" y2="18" stroke="rgba(255,255,255,0.9)"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" style="background:#FAF7F3;border-top:1px solid rgba(122,82,48,0.12);padding:1.5rem 2rem 2rem">
+    <div style="display:flex;flex-direction:column">
+      <a href="listings.html" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(122,82,48,0.08);font-size:16px;font-weight:700;color:#4E3219;text-decoration:none">
+        Properties
+        <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="listings.html?purpose=sale" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(122,82,48,0.08);font-size:16px;font-weight:600;color:#4E3219;text-decoration:none">
+        Buy
+        <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="listings.html?purpose=rent" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(122,82,48,0.08);font-size:16px;font-weight:600;color:#4E3219;text-decoration:none">
+        Rent
+        <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="#contact" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(122,82,48,0.08);font-size:16px;font-weight:600;color:#4E3219;text-decoration:none">
+        Contact
+        <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <div style="padding-top:1.25rem">
+        <a href="submit.html" style="display:block;text-align:center;background:#7A5230;color:#fff;padding:14px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none">
+          List a Property
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-content" style="max-width:1280px;margin:0 auto;padding:0 2rem;width:100%;padding-top:80px">
+
+    <!-- Headline -->
+    <div style="max-width:680px;margin-bottom:3rem">
+      <p style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:1.25rem">Lebanon's Premium Real Estate Platform</p>
+      <h1 class="font-display" style="font-size:clamp(44px,6vw,72px);line-height:1.05;color:#fff;letter-spacing:-1.5px;margin-bottom:1.25rem">
+        Find your next<br><em style="font-style:italic;color:rgba(255,255,255,0.7)">perfect space.</em>
+      </h1>
+      <p style="font-size:17px;color:rgba(255,255,255,0.7);line-height:1.7;font-weight:300;max-width:480px">From luxury mountain villas to heritage Beirut apartments — every listing reviewed, verified, and ready for you.</p>
+    </div>
+
+    <!-- Search box -->
+    <div class="search-box" style="max-width:780px">
+      <!-- Tabs -->
+      <div style="padding:16px 20px 0;display:flex;gap:6px">
+        <button class="tab-btn active" onclick="setTab(this,'sale')" data-purpose="sale">Buy</button>
+        <button class="tab-btn"        onclick="setTab(this,'rent')" data-purpose="rent">Rent</button>
+      </div>
+      <!-- Inputs -->
+      <div id="search-inputs" style="padding:12px 20px 20px;display:flex;align-items:center;gap:0;flex-wrap:wrap">
+        <!-- Location -->
+        <div style="flex:1;min-width:160px">
+          <label style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:4px">Location</label>
+          <select id="search-area" class="search-select">
+            <option value="">All Areas</option>
+            <option value="Beirut">Beirut</option>
+            <option value="Mount Lebanon">Mount Lebanon</option>
+            <option value="Metn">Metn</option>
+            <option value="Keserwan">Keserwan</option>
+            <option value="North Lebanon">North Lebanon</option>
+            <option value="South Lebanon">South Lebanon</option>
+          </select>
+        </div>
+        <div class="search-divider"></div>
+        <!-- Type -->
+        <div style="flex:1;min-width:140px;padding:0 16px">
+          <label style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:4px">Property Type</label>
+          <select id="search-type" class="search-select">
+            <option value="">All Types</option>
+            <option value="apartment">Apartment</option>
+            <option value="villa">Villa</option>
+            <option value="commercial">Commercial</option>
+            <option value="land">Land</option>
+          </select>
+        </div>
+        <div class="search-divider"></div>
+        <!-- Budget -->
+        <div style="flex:1;min-width:140px;padding:0 0 0 16px">
+          <label style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:4px">Max Budget</label>
+          <select id="search-budget" class="search-select">
+            <option value="">Any Budget</option>
+            <option value="200000">Under $200K</option>
+            <option value="500000">Under $500K</option>
+            <option value="1000000">Under $1M</option>
+            <option value="2000000">Under $2M</option>
+          </select>
+        </div>
+        <!-- Search button -->
+        <div style="padding-left:16px;flex-shrink:0">
+          <button onclick="doSearch()" style="background:#7A5230;color:#fff;border:none;padding:14px 28px;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s,transform 0.15s;white-space:nowrap" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div style="margin-top:3rem;display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.4)">
+      <div style="width:1px;height:40px;background:rgba(255,255,255,0.2)"></div>
+      <span style="font-size:11px;letter-spacing:2px;text-transform:uppercase">Scroll to explore</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     STATS BAR
+══════════════════════════════════════════════════════════ -->
+<section style="background:#EDE8E0;padding:0 2rem">
+  <div style="max-width:1280px;margin:0 auto;transform:translateY(-40px)">
+    <div class="stats-bar" style="display:grid;grid-template-columns:repeat(4,1fr);text-align:center">
+      <div style="padding:1.75rem 1rem;border-right:1px solid rgba(122,82,48,0.1)">
+        <div class="font-display" style="font-size:36px;color:#4E3219;letter-spacing:-1px">240+</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-top:4px">Active Listings</div>
+      </div>
+      <div style="padding:1.75rem 1rem;border-right:1px solid rgba(122,82,48,0.1)">
+        <div class="font-display" style="font-size:36px;color:#4E3219;letter-spacing:-1px">1,400+</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-top:4px">Happy Clients</div>
+      </div>
+      <div style="padding:1.75rem 1rem;border-right:1px solid rgba(122,82,48,0.1)">
+        <div class="font-display" style="font-size:36px;color:#4E3219;letter-spacing:-1px">12</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-top:4px">Years Active</div>
+      </div>
+      <div style="padding:1.75rem 1rem">
+        <div class="font-display" style="font-size:36px;color:#4E3219;letter-spacing:-1px">$2.1B</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-top:4px">In Transactions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FEATURED LISTINGS
+══════════════════════════════════════════════════════════ -->
+<section style="padding:0 2rem 5rem;background:#EDE8E0">
+  <div style="max-width:1280px;margin:0 auto">
+
+    <div class="reveal" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">Hand-picked</p>
+        <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px;line-height:1.1">Featured Properties</h2>
+      </div>
+      <a href="listings.html" style="font-size:14px;font-weight:700;color:#7A5230;text-decoration:none;display:flex;align-items:center;gap:6px">
+        View all listings
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div id="featured-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CATEGORIES
+══════════════════════════════════════════════════════════ -->
+<section style="padding:0 2rem 5rem;background:#EDE8E0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="reveal" style="text-align:center;margin-bottom:2.5rem">
+      <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">Browse by type</p>
+      <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px">Explore Categories</h2>
+    </div>
+    <div id="cats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+      <a href="listings.html?type=apartment" class="cat-card reveal reveal-d1" style="height:280px;text-decoration:none">
+        <img src="https://picsum.photos/seed/cat-apt/400/280" alt="Apartments" style="width:100%;height:100%;object-fit:cover">
+        <div class="cat-overlay">
+          <svg width="32" height="32" fill="white" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span class="font-display" style="color:#fff;font-size:22px;letter-spacing:-0.3px">Apartments</span>
+          <span style="color:rgba(255,255,255,0.7);font-size:12px;font-weight:600">Browse →</span>
+        </div>
+      </a>
+      <a href="listings.html?type=villa" class="cat-card reveal reveal-d1" style="height:280px;text-decoration:none">
+        <img src="https://picsum.photos/seed/cat-villa/400/280" alt="Villas" style="width:100%;height:100%;object-fit:cover">
+        <div class="cat-overlay">
+          <svg width="32" height="32" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+          <span class="font-display" style="color:#fff;font-size:22px;letter-spacing:-0.3px">Villas</span>
+          <span style="color:rgba(255,255,255,0.7);font-size:12px;font-weight:600">Browse →</span>
+        </div>
+      </a>
+      <a href="listings.html?type=commercial" class="cat-card reveal reveal-d2" style="height:280px;text-decoration:none">
+        <img src="https://picsum.photos/seed/cat-comm/400/280" alt="Commercial" style="width:100%;height:100%;object-fit:cover">
+        <div class="cat-overlay">
+          <svg width="32" height="32" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          <span class="font-display" style="color:#fff;font-size:22px;letter-spacing:-0.3px">Commercial</span>
+          <span style="color:rgba(255,255,255,0.7);font-size:12px;font-weight:600">Browse →</span>
+        </div>
+      </a>
+      <a href="listings.html?type=land" class="cat-card reveal reveal-d3" style="height:280px;text-decoration:none">
+        <img src="https://picsum.photos/seed/cat-land/400/280" alt="Land" style="width:100%;height:100%;object-fit:cover">
+        <div class="cat-overlay">
+          <svg width="32" height="32" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10"/><path d="M3 21h18"/></svg>
+          <span class="font-display" style="color:#fff;font-size:22px;letter-spacing:-0.3px">Land</span>
+          <span style="color:rgba(255,255,255,0.7);font-size:12px;font-weight:600">Browse →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOW IT WORKS (FOR SELLERS)
+══════════════════════════════════════════════════════════ -->
+<section style="padding:5rem 2rem;background:#FAF7F3">
+  <div style="max-width:1280px;margin:0 auto">
+    <div id="hiw-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center">
+
+      <!-- Left text -->
+      <div class="reveal">
+        <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:12px">List with confidence</p>
+        <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px;line-height:1.15;margin-bottom:1.5rem">
+          Reviewed.<br>Verified.<br><em style="color:#7A5230">Listed.</em>
+        </h2>
+        <p style="color:#666;line-height:1.75;font-size:15px;margin-bottom:2rem">Every property on Elevate Estates goes through our rigorous review process. We verify ownership, inspect the listing details, and only publish what meets our premium standard.</p>
+        <a href="submit.html" style="display:inline-flex;align-items:center;gap:8px;background:#7A5230;color:#fff;padding:14px 28px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+          List your property
+          <svg width="16" height="16" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <!-- Right steps -->
+      <div class="reveal" style="display:flex;flex-direction:column;gap:1.5rem">
+        <div style="display:flex;gap:1.25rem;align-items:flex-start">
+          <div class="step-num">1</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:6px">Submit your listing</h3>
+            <p style="font-size:14px;color:#777;line-height:1.6">Fill in your property details, upload photos, and submit your contact information through our simple form.</p>
+          </div>
+        </div>
+        <div style="margin-left:24px;width:1px;height:24px;background:rgba(122,82,48,0.2)"></div>
+        <div style="display:flex;gap:1.25rem;align-items:flex-start">
+          <div class="step-num">2</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:6px">Our team reviews</h3>
+            <p style="font-size:14px;color:#777;line-height:1.6">Within 48 hours our agents verify your listing details, confirm ownership, and assess suitability for the platform.</p>
+          </div>
+        </div>
+        <div style="margin-left:24px;width:1px;height:24px;background:rgba(122,82,48,0.2)"></div>
+        <div style="display:flex;gap:1.25rem;align-items:flex-start">
+          <div class="step-num">3</div>
+          <div>
+            <h3 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:6px">Go live & connect</h3>
+            <p style="font-size:14px;color:#777;line-height:1.6">Your listing goes live with a unique reference number. Responsible Agents will contact you directly via WhatsApp or phone.</p>
+          </div>
+        </div>
+        <div style="padding:14px 18px;background:#EFE3D5;border-radius:10px;border:1px solid #D4B89A;margin-top:0.5rem">
+          <p style="font-size:12px;color:#7A5230;font-weight:600;margin-bottom:4px">✦ One reference. One call. Done.</p>
+          <p style="font-size:13px;color:#666">Every client quotes your ELV reference number — our team connects you instantly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     RECENT LISTINGS
+══════════════════════════════════════════════════════════ -->
+<section style="padding:5rem 2rem;background:#EDE8E0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="reveal" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">Recently added</p>
+        <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px">Latest Listings</h2>
+      </div>
+      <a href="listings.html" style="font-size:14px;font-weight:700;color:#7A5230;text-decoration:none;display:flex;align-items:center;gap:6px">
+        See all
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div id="recent-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════ -->
+<section style="padding:5rem 2rem;background:#FAF7F3">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="reveal" style="text-align:center;margin-bottom:3rem">
+      <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">What clients say</p>
+      <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px">Every home tells a story.</h2>
+    </div>
+    <div id="testi-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div class="testimonial-card reveal">
+        <div style="display:flex;gap:2px;margin-bottom:1rem">
+          <span style="color:#A87850;font-size:18px">★★★★★</span>
+        </div>
+        <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Found our dream villa in Broumana within two weeks. The team was professional, fast, and genuinely helpful."</p>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
+            <img src="https://picsum.photos/seed/t1/40/40" alt="" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#4E3219">Rania K.</div>
+            <div style="font-size:11px;color:#999">Purchased in Broumana</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-d1">
+        <div style="display:flex;gap:2px;margin-bottom:1rem">
+          <span style="color:#A87850;font-size:18px">★★★★★</span>
+        </div>
+        <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Listed my Achrafieh apartment and had serious inquiries within 48 hours. The EE reference system is brilliant."</p>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
+            <img src="https://picsum.photos/seed/t2/40/40" alt="" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#4E3219">Karim M.</div>
+            <div style="font-size:11px;color:#999">Sold in Achrafieh</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-d2">
+        <div style="display:flex;gap:2px;margin-bottom:1rem">
+          <span style="color:#A87850;font-size:18px">★★★★★</span>
+        </div>
+        <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Rented our office space through Elevate. The quality of leads was exceptional — only serious tenants."</p>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
+            <img src="https://picsum.photos/seed/t3/40/40" alt="" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#4E3219">Lara H.</div>
+            <div style="font-size:11px;color:#999">Leased in Hamra</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CTA BANNER
+══════════════════════════════════════════════════════════ -->
+<section style="padding:5rem 2rem;background:#4E3219;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E\");pointer-events:none"></div>
+  <div style="max-width:1280px;margin:0 auto;text-align:center;position:relative;z-index:1">
+    <p style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:12px">Ready to elevate?</p>
+    <h2 class="font-display" style="font-size:clamp(28px,5vw,52px);color:#fff;letter-spacing:-1px;line-height:1.1;margin-bottom:1.25rem">Have a property to list?</h2>
+    <p style="font-size:16px;color:rgba(255,255,255,0.6);margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7">Join hundreds of owners who trust Elevate Estates to connect them with qualified, serious buyers and tenants.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="submit.html" style="background:#FAF7F3;color:#4E3219;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#EDE8E0'" onmouseout="this.style.background='#FAF7F3'">
+        Submit Your Listing
+      </a>
+      <a href="tel:+96171991088" class="btn-wa" style="padding:14px 24px">
+        <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+        WhatsApp Us
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════════════════════ -->
+<section id="contact" style="padding:5rem 2rem;background:#EDE8E0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div id="contact-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start">
+
+      <div class="reveal">
+        <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:12px">Get in touch</p>
+        <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px;margin-bottom:1.5rem">We're here to help</h2>
+        <p style="color:#666;line-height:1.75;font-size:15px;margin-bottom:2.5rem">Have a question about a listing? Looking for something specific? Our agents are available Monday–Saturday, 9am–7pm.</p>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:#FAF7F3;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(122,82,48,0.12)">
+              <svg width="18" height="18" fill="none" stroke="#7A5230" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.1 2.18 2 2 0 012.08.04h3A2 2 0 017.1 1.7c.388 1.21.87 2.38 1.43 3.51a2 2 0 01-.45 2.11L6.91 8.5a16 16 0 006.6 6.6l1.18-1.17a2 2 0 012.11-.45c1.13.56 2.3 1.04 3.51 1.43a2 2 0 011.66 2.01z"/></svg>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850">Phone</div>
+              <div style="font-size:15px;font-weight:600;color:#4E3219">+961 71 991 088</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:#FAF7F3;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(122,82,48,0.12)">
+              <svg width="18" height="18" fill="#25D366" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850">WhatsApp</div>
+              <div style="font-size:15px;font-weight:600;color:#4E3219">+961 71 991 088</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:#FAF7F3;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(122,82,48,0.12)">
+              <svg width="18" height="18" fill="none" stroke="#7A5230" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <!-- <div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850">Email</div>
+              <div style="font-size:15px;font-weight:600;color:#4E3219">hello@elevateestates.lb</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:#FAF7F3;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(122,82,48,0.12)">
+              <svg width="18" height="18" fill="none" stroke="#7A5230" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>-->
+            <div> 
+              <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850">Office</div>
+              <div style="font-size:15px;font-weight:600;color:#4E3219">Beirut, Lebanon</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick contact form -->
+      <div class="reveal reveal-d1">
+        <div style="background:#FAF7F3;border-radius:16px;padding:2.5rem;border:1px solid rgba(122,82,48,0.1);box-shadow:0 4px 24px rgba(122,82,48,0.08)">
+          <h3 style="font-size:18px;font-weight:700;color:#4E3219;margin-bottom:1.5rem">Send us a message</h3>
+          <form onsubmit="handleContactForm(event)" style="display:flex;flex-direction:column;gap:1rem">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div>
+                <label style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:6px">Name</label>
+                <input type="text" placeholder="Your name" required style="width:100%;padding:10px 14px;border:1px solid rgba(122,82,48,0.2);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:#2E1F0E;background:#fff;outline:none" onfocus="this.style.borderColor='#7A5230'" onblur="this.style.borderColor='rgba(122,82,48,0.2)'">
+              </div>
+              <div>
+                <label style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:6px">Phone</label>
+                <input type="tel" placeholder="+961 XX XXX XXX" style="width:100%;padding:10px 14px;border:1px solid rgba(122,82,48,0.2);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:#2E1F0E;background:#fff;outline:none" onfocus="this.style.borderColor='#7A5230'" onblur="this.style.borderColor='rgba(122,82,48,0.2)'">
+              </div>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:6px">I'm interested in</label>
+              <select style="width:100%;padding:10px 14px;border:1px solid rgba(122,82,48,0.2);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:#2E1F0E;background:#fff;outline:none;appearance:none" onfocus="this.style.borderColor='#7A5230'" onblur="this.style.borderColor='rgba(122,82,48,0.2)'">
+                <option>Buying a property</option>
+                <option>Renting a property</option>
+                <option>Listing my property</option>
+                <option>General enquiry</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;display:block;margin-bottom:6px">Message</label>
+              <textarea rows="3" placeholder="Tell us more about what you're looking for..." style="width:100%;padding:10px 14px;border:1px solid rgba(122,82,48,0.2);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:#2E1F0E;background:#fff;outline:none;resize:vertical" onfocus="this.style.borderColor='#7A5230'" onblur="this.style.borderColor='rgba(122,82,48,0.2)'"></textarea>
+            </div>
+            <button type="submit" id="contact-btn" style="background:#7A5230;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer style="background:#2E1F0E;color:rgba(255,255,255,0.6);padding:4rem 2rem 2rem">
+  <div style="max-width:1280px;margin:0 auto">
+    <div id="footer-cols" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem">
+      <div>
+        <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:32px;width:auto;margin-bottom:1.25rem;display:block">
+        <p style="font-size:14px;line-height:1.7;max-width:280px;margin-bottom:1.5rem">Lebanon's premier real estate platform — connecting discerning buyers with exceptional properties.</p>
+        <div style="display:flex;gap:10px">
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background='rgba(122,82,48,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+            <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background='rgba(122,82,48,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+            <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1rem">Properties</h4>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a href="listings.html?type=apartment" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Apartments</a>
+          <a href="listings.html?type=villa" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Villas</a>
+          <a href="listings.html?type=commercial" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Commercial</a>
+          <a href="listings.html?type=land" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Land</a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1rem">Areas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a href="listings.html?area=Beirut" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Beirut</a>
+          <a href="listings.html?area=Mount+Lebanon" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Mount Lebanon</a>
+          <a href="listings.html?area=Metn" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Metn</a>
+          <a href="listings.html?area=Keserwan" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Keserwan</a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1rem">Company</h4>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a href="submit.html" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">List a Property</a>
+          <a href="#contact" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <p style="font-size:13px">© 2025 Elevate Estates. All rights reserved.</p>
+      <p style="font-size:13px">Achrafieh, Beirut · Lebanon</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════════ -->
+<script src="data.js"></script>
+<script>
+  // ── Init ──
+  initStore();
+
+  // ── Responsive ──
+  function updateMobileVisibility() {
+    const w = window.innerWidth;
+    document.querySelectorAll('.hidden-mobile').forEach(el => {
+      el.style.display = w < 768 ? 'none' : '';
+    });
+    document.getElementById('mob-toggle').style.display = w < 768 ? 'block' : 'none';
+  }
+  updateMobileVisibility();
+  window.addEventListener('resize', updateMobileVisibility);
+
+  // ── Nav scroll ──
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.className = scrollY > 60 ? 'solid' : 'transparent';
+  });
+
+  // ── Mobile menu ──
+  function toggleMobileMenu() {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  }
+
+  // ── Search tabs ──
+  let currentPurpose = 'sale';
+  function setTab(btn, purpose) {
+    currentPurpose = purpose;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ── Search ──
+  function doSearch() {
+    const area = document.getElementById('search-area').value;
+    const type = document.getElementById('search-type').value;
+    const budget = document.getElementById('search-budget').value;
+    const params = new URLSearchParams();
+    params.set('purpose', currentPurpose);
+    if (area)   params.set('area', area);
+    if (type)   params.set('type', type);
+    if (budget) params.set('maxPrice', budget);
+    window.location.href = 'listings.html?' + params.toString();
+  }
+
+  // ── Build card HTML ──
+  function buildCard(l) {
+    const badgeHtml = l.tag === 'luxury'
+      ? '<span class="badge badge-luxury">Luxury</span>'
+      : l.purpose === 'rent'
+        ? '<span class="badge badge-rent">For Rent</span>'
+        : '<span class="badge badge-sale">For Sale</span>';
+
+    const typeHtml = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${l.type.charAt(0).toUpperCase()+l.type.slice(1)}</span>`;
+
+    const beds = l.beds > 0
+      ? `<span style="display:flex;align-items:center;gap:4px"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 9V7a2 2 0 012-2h16a2 2 0 012 2v2M2 9h20M2 9v11M22 9v11M6 14h.01M10 14h.01M14 14h.01M18 14h.01"/></svg>${l.beds} bed</span>` : '';
+    const baths = l.baths > 0
+      ? `<span style="display:flex;align-items:center;gap:4px"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12h16M4 12V6a2 2 0 012-2h4"/><path d="M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"/></svg>${l.baths} bath</span>` : '';
+
+    return `
+      <article class="listing-card">
+        <a href="property.html?id=${l.id}" style="text-decoration:none">
+          <div class="card-img">
+            <img src="${l.img}" alt="${l.title}" loading="lazy">
+            <div class="card-img-overlay"></div>
+            <div class="card-badges">${badgeHtml}${typeHtml}</div>
+          </div>
+          <div style="padding:1.25rem">
+            <div style="font-size:22px;font-weight:700;color:#4E3219;letter-spacing:-0.5px;margin-bottom:4px">${formatPrice(l.price, l.purpose)}</div>
+            <h3 style="font-size:15px;font-weight:700;color:#2E1F0E;margin-bottom:4px;font-family:'Nunito Sans',sans-serif">${l.title}</h3>
+            <p style="font-size:13px;color:#888;display:flex;align-items:center;gap:4px;margin-bottom:1rem">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${l.location}
+            </p>
+            <div style="display:flex;align-items:center;gap:12px;font-size:12px;color:#999;flex-wrap:wrap;margin-bottom:1rem">
+              ${beds}${baths}
+              ${l.sqm > 0 ? `<span>${l.sqm} m²</span>` : ''}
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ref-block">
+                <span class="ref-label">Ref</span>
+                <span class="ref-num">${l.id}</span>
+              </div>
+              <a href="https://wa.me/${l.whatsapp}" target="_blank" class="btn-wa" onclick="event.stopPropagation()">
+                <svg width="13" height="13" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        </a>
+      </article>`;
+  }
+
+  // ── Render featured ──
+  const listings = getListings().filter(l => l.status === 'approved');
+  const featured = listings.filter(l => l.featured).slice(0, 3);
+  document.getElementById('featured-grid').innerHTML = featured.map(buildCard).join('');
+
+  // ── Render recent ──
+  const recent = listings.filter(l => !l.featured).slice(0, 3);
+  document.getElementById('recent-grid').innerHTML = recent.map(buildCard).join('');
+
+  // ── Scroll reveal ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Contact form ──
+  function handleContactForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById('contact-btn');
+    btn.textContent = '✓ Message sent!';
+    btn.style.background = '#3B6D11';
+    setTimeout(() => { btn.textContent = 'Send Message'; btn.style.background = '#7A5230'; }, 3000);
+  }
+</script>
+
+</body>
+</html>

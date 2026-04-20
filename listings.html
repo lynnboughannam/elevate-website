@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Properties — Elevate Estates</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { brown:'#7A5230','brown-d':'#4E3219','brown-l':'#A87850',cream:'#EDE8E0','cream-d':'#DDD5C8',linen:'#FAF7F3',ink:'#2E1F0E' },
+        fontFamily: { display:['"Playfair Display"','serif'], sans:['"Nunito Sans"','sans-serif'] }
+      }}
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    /* Nav */
+    nav { background: rgba(250,247,243,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(122,82,48,0.12); box-shadow: 0 2px 20px rgba(78,50,25,0.08); position: sticky; top: 0; z-index: 100; }
+
+    /* Sidebar */
+    .filter-sidebar { background: #FAF7F3; border-radius: 16px; padding: 1.75rem; border: 1px solid rgba(122,82,48,0.1); position: sticky; top: 90px; }
+    .filter-section { border-bottom: 1px solid rgba(122,82,48,0.1); padding-bottom: 1.25rem; margin-bottom: 1.25rem; }
+    .filter-section:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    .filter-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #A87850; margin-bottom: 10px; display: block; }
+    .filter-chip { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s; border: 1px solid rgba(122,82,48,0.2); background: transparent; color: #7A5230; font-family: 'Nunito Sans', sans-serif; }
+    .filter-chip:hover { background: rgba(122,82,48,0.08); }
+    .filter-chip.active { background: #7A5230; color: #fff; border-color: #7A5230; }
+    .filter-range { width: 100%; accent-color: #7A5230; margin-top: 6px; }
+    .filter-input { width: 100%; padding: 9px 12px; border: 1px solid rgba(122,82,48,0.2); border-radius: 8px; font-family: 'Nunito Sans', sans-serif; font-size: 13px; background: #EDE8E0; color: #2E1F0E; outline: none; }
+    .filter-input:focus { border-color: #7A5230; background: #fff; }
+
+    /* Cards */
+    .listing-card { background: #FAF7F3; border-radius: 16px; overflow: hidden; border: 1px solid rgba(122,82,48,0.1); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease; }
+    .listing-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(122,82,48,0.18), 0 4px 16px rgba(122,82,48,0.08); }
+    .card-img { position: relative; overflow: hidden; height: 200px; }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .listing-card:hover .card-img img { transform: scale(1.05); }
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(46,31,14,0.45) 0%, transparent 55%); }
+    .badge { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
+    .badge-luxury { background: #FAF0DC; color: #7A5A0B; }
+    .badge-sale   { background: #EFE3D5; color: #4E3219; }
+    .badge-rent   { background: #EAF3DE; color: #3B6D11; }
+    .ref-block { background: #EFE3D5; border: 1px solid #D4B89A; border-radius: 8px; padding: 4px 10px; display: inline-flex; flex-direction: column; gap: 1px; }
+    .ref-label { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #7A5230; }
+    .ref-num   { font-size: 12px; font-weight: 700; color: #4E3219; letter-spacing: 2px; }
+    .btn-wa { display: inline-flex; align-items: center; gap: 5px; background: #25D366; color: #fff; border: none; padding: 7px 13px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+    .btn-wa:hover { background: #1da851; }
+
+    /* Sort/count bar */
+    .results-bar { background: #FAF7F3; border-radius: 12px; padding: 12px 16px; border: 1px solid rgba(122,82,48,0.1); display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 4rem 2rem; background: #FAF7F3; border-radius: 16px; border: 1px solid rgba(122,82,48,0.1); }
+
+    /* Footer */
+    footer a:hover { color: #A87850; }
+
+    /* Pagination */
+    .page-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid rgba(122,82,48,0.2); background: transparent; color: #7A5230; transition: background 0.2s; font-family: 'Nunito Sans', sans-serif; }
+    .page-btn:hover { background: rgba(122,82,48,0.08); }
+    .page-btn.active { background: #7A5230; color: #fff; border-color: #7A5230; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #EDE8E0; }
+    ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
+
+    /* ══ RESPONSIVE ════════════════════════════════════════ */
+    .mobile-filter-btn {
+      display: none; width: 100%; margin-bottom: 1rem;
+      background: #FAF7F3; border: 1px solid rgba(122,82,48,0.2);
+      border-radius: 10px; padding: 12px 16px;
+      font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 700;
+      color: #4E3219; cursor: pointer;
+      align-items: center; justify-content: space-between;
+    }
+    @media (max-width: 900px) {
+      #listings-main { grid-template-columns: 1fr !important; }
+      #filter-sidebar-wrap { display: none; }
+      #filter-sidebar-wrap.open { display: block; }
+      .mobile-filter-btn { display: flex; }
+      .filter-sidebar { position: static; }
+      #results-grid { grid-template-columns: repeat(2,1fr) !important; }
+    }
+    @media (max-width: 600px) {
+      #results-grid { grid-template-columns: 1fr !important; }
+      #listings-main { padding: 1rem !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="max-width:1280px;margin:0 auto;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html"><img src="brand_Assets/dark-elevate-logo.png" alt="Elevate Estates" style="height:32px;width:auto"></a>
+    <div style="display:flex;align-items:center;gap:1.5rem">
+      <a href="listings.html" style="font-size:14px;font-weight:700;color:#7A5230;text-decoration:none">Properties</a>
+      <a href="index.html#contact" style="font-size:14px;font-weight:600;color:#4E3219;text-decoration:none">Contact</a>
+      <a href="submit.html" style="background:#7A5230;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">List Property</a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:#FAF7F3;padding:3rem 2rem 2.5rem;border-bottom:1px solid rgba(122,82,48,0.1)">
+  <div style="max-width:1280px;margin:0 auto">
+    <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">All Listings</p>
+    <h1 class="font-display" style="font-size:clamp(28px,4vw,42px);color:#4E3219;letter-spacing:-0.5px">Browse Properties</h1>
+    <div id="breadcrumb" style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap">
+      <a href="index.html" style="font-size:13px;color:#A87850;text-decoration:none">Home</a>
+      <span style="font-size:13px;color:#ccc">/</span>
+      <span style="font-size:13px;color:#777">All Properties</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div id="listings-main" style="max-width:1280px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:280px 1fr;gap:2rem;align-items:start">
+
+  <!-- ── FILTER SIDEBAR ── -->
+  <aside id="filter-sidebar-wrap">
+    <div class="filter-sidebar">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <span style="font-size:15px;font-weight:700;color:#4E3219">Filters</span>
+        <button onclick="clearFilters()" style="font-size:12px;font-weight:700;color:#A87850;background:none;border:none;cursor:pointer;padding:0">Clear all</button>
+      </div>
+
+      <!-- Purpose -->
+      <div class="filter-section">
+        <span class="filter-label">Buy or Rent</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="filter-chip active" data-filter="purpose" data-value="" onclick="applyChip(this)">All</button>
+          <button class="filter-chip" data-filter="purpose" data-value="sale" onclick="applyChip(this)">For Sale</button>
+          <button class="filter-chip" data-filter="purpose" data-value="rent" onclick="applyChip(this)">For Rent</button>
+        </div>
+      </div>
+
+      <!-- Type -->
+      <div class="filter-section">
+        <span class="filter-label">Property Type</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="filter-chip active" data-filter="type" data-value="" onclick="applyChip(this)">All</button>
+          <button class="filter-chip" data-filter="type" data-value="apartment" onclick="applyChip(this)">Apartment</button>
+          <button class="filter-chip" data-filter="type" data-value="villa" onclick="applyChip(this)">Villa</button>
+          <button class="filter-chip" data-filter="type" data-value="commercial" onclick="applyChip(this)">Commercial</button>
+          <button class="filter-chip" data-filter="type" data-value="land" onclick="applyChip(this)">Land</button>
+        </div>
+      </div>
+
+      <!-- Area -->
+      <div class="filter-section">
+        <span class="filter-label">Area</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="filter-chip active" data-filter="area" data-value="" onclick="applyChip(this)">All</button>
+          <button class="filter-chip" data-filter="area" data-value="Beirut" onclick="applyChip(this)">Beirut</button>
+          <button class="filter-chip" data-filter="area" data-value="Mount Lebanon" onclick="applyChip(this)">Mt. Lebanon</button>
+          <button class="filter-chip" data-filter="area" data-value="Metn" onclick="applyChip(this)">Metn</button>
+          <button class="filter-chip" data-filter="area" data-value="Keserwan" onclick="applyChip(this)">Keserwan</button>
+          <button class="filter-chip" data-filter="area" data-value="North Lebanon" onclick="applyChip(this)">North</button>
+        </div>
+      </div>
+
+      <!-- Bedrooms -->
+      <div class="filter-section">
+        <span class="filter-label">Min. Bedrooms</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="filter-chip active" data-filter="beds" data-value="0" onclick="applyChip(this)">Any</button>
+          <button class="filter-chip" data-filter="beds" data-value="1" onclick="applyChip(this)">1+</button>
+          <button class="filter-chip" data-filter="beds" data-value="2" onclick="applyChip(this)">2+</button>
+          <button class="filter-chip" data-filter="beds" data-value="3" onclick="applyChip(this)">3+</button>
+          <button class="filter-chip" data-filter="beds" data-value="4" onclick="applyChip(this)">4+</button>
+        </div>
+      </div>
+
+      <!-- Price -->
+      <div class="filter-section">
+        <span class="filter-label">Max Price</span>
+        <input type="range" id="price-range" class="filter-range" min="0" max="2000000" step="50000" value="2000000" oninput="updatePriceLabel(this.value);renderListings()">
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:11px;color:#999">$0</span>
+          <span id="price-label" style="font-size:12px;font-weight:700;color:#7A5230">Any</span>
+          <span style="font-size:11px;color:#999">$2M+</span>
+        </div>
+      </div>
+
+      <!-- Search keyword -->
+      <div>
+        <span class="filter-label">Keyword</span>
+        <input type="text" id="keyword-input" placeholder="e.g. pool, balcony, sea view..." class="filter-input" oninput="renderListings()">
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── RESULTS ── -->
+  <main>
+    <!-- Mobile filter toggle -->
+    <button class="mobile-filter-btn" onclick="document.getElementById('filter-sidebar-wrap').classList.toggle('open');this.querySelector('span').textContent=document.getElementById('filter-sidebar-wrap').classList.contains('open')?'Hide Filters':'Show Filters'">
+      <span>Show Filters</span>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    </button>
+    <!-- Sort bar -->
+    <div class="results-bar">
+      <span id="result-count" style="font-size:13px;font-weight:700;color:#4E3219"></span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:#999">Sort by:</span>
+        <select id="sort-select" onchange="renderListings()" style="border:1px solid rgba(122,82,48,0.2);border-radius:8px;padding:6px 10px;font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;color:#4E3219;background:#EDE8E0;outline:none;cursor:pointer">
+          <option value="recent">Most Recent</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="sqm">Largest First</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active filter tags -->
+    <div id="active-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem"></div>
+
+    <!-- Grid -->
+    <div id="results-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px"></div>
+
+    <!-- Pagination -->
+    <div id="pagination" style="display:flex;gap:6px;justify-content:center;margin-top:2rem;flex-wrap:wrap"></div>
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#2E1F0E;color:rgba(255,255,255,0.55);padding:2.5rem 2rem;margin-top:3rem">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:28px;width:auto">
+    <p style="font-size:13px">© 2025 Elevate Estates · Beirut, Lebanon</p>
+    <div style="display:flex;gap:1.25rem">
+      <a href="index.html" style="font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">Home</a>
+      <a href="submit.html" style="font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">List Property</a>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  initStore();
+
+  const ITEMS_PER_PAGE = 6;
+  let currentPage = 1;
+  let filters = { purpose: '', type: '', area: '', beds: 0 };
+
+  // ── Parse URL params on load ──
+  const params = new URLSearchParams(location.search);
+  if (params.get('purpose')) filters.purpose = params.get('purpose');
+  if (params.get('type'))    filters.type    = params.get('type');
+  if (params.get('area'))    filters.area    = params.get('area');
+  if (params.get('maxPrice')) document.getElementById('price-range').value = params.get('maxPrice');
+
+  // ── Sync chip states with URL params ──
+  function syncChips() {
+    Object.entries(filters).forEach(([key, val]) => {
+      document.querySelectorAll(`[data-filter="${key}"]`).forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.value === String(val || ''));
+      });
+    });
+  }
+  syncChips();
+  if (params.get('maxPrice')) updatePriceLabel(params.get('maxPrice'));
+
+  // ── Filter chip handler ──
+  function applyChip(btn) {
+    const f = btn.dataset.filter;
+    const v = btn.dataset.value;
+    if (f === 'beds') filters.beds = parseInt(v);
+    else filters[f] = v;
+    document.querySelectorAll(`[data-filter="${f}"]`).forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    currentPage = 1;
+    renderListings();
+  }
+
+  function clearFilters() {
+    filters = { purpose: '', type: '', area: '', beds: 0 };
+    document.getElementById('price-range').value = 2000000;
+    document.getElementById('keyword-input').value = '';
+    updatePriceLabel(2000000);
+    document.querySelectorAll('.filter-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.value === '' || c.dataset.value === '0');
+    });
+    currentPage = 1;
+    renderListings();
+  }
+
+  function updatePriceLabel(v) {
+    const val = parseInt(v);
+    document.getElementById('price-label').textContent = val >= 2000000 ? 'Any' : '$' + val.toLocaleString();
+  }
+
+  // ── Build & render ──
+  function getFiltered() {
+    const kw      = (document.getElementById('keyword-input')?.value || '').toLowerCase();
+    const maxP    = parseInt(document.getElementById('price-range')?.value || 2000000);
+    const sort    = document.getElementById('sort-select')?.value || 'recent';
+
+    let list = getListings().filter(l => l.status === 'approved');
+
+    if (filters.purpose) list = list.filter(l => l.purpose === filters.purpose);
+    if (filters.type)    list = list.filter(l => l.type    === filters.type);
+    if (filters.area)    list = list.filter(l => l.area    === filters.area);
+    if (filters.beds > 0)list = list.filter(l => l.beds    >= filters.beds);
+    if (maxP < 2000000)  list = list.filter(l => l.price   <= maxP);
+    if (kw) list = list.filter(l =>
+      l.title.toLowerCase().includes(kw) ||
+      l.location.toLowerCase().includes(kw) ||
+      (l.description||'').toLowerCase().includes(kw) ||
+      (l.amenities||[]).some(a => a.toLowerCase().includes(kw))
+    );
+
+    if (sort === 'price-asc')  list.sort((a,b) => a.price - b.price);
+    if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+    if (sort === 'sqm')        list.sort((a,b) => b.sqm - a.sqm);
+
+    return list;
+  }
+
+  function buildCard(l) {
+    const badge = l.tag === 'luxury'
+      ? '<span class="badge badge-luxury">Luxury</span>'
+      : l.purpose === 'rent'
+        ? '<span class="badge badge-rent">For Rent</span>'
+        : '<span class="badge badge-sale">For Sale</span>';
+    const typeBadge = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${l.type.charAt(0).toUpperCase()+l.type.slice(1)}</span>`;
+    const beds  = l.beds  > 0 ? `<span>${l.beds} bed</span>` : '';
+    const baths = l.baths > 0 ? `<span>${l.baths} bath</span>` : '';
+    return `
+      <article class="listing-card">
+        <a href="property.html?id=${l.id}" style="text-decoration:none">
+          <div class="card-img">
+            <img src="${l.img}" alt="${l.title}" loading="lazy">
+            <div class="card-overlay"></div>
+            <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px">${badge}${typeBadge}</div>
+          </div>
+          <div style="padding:1.1rem">
+            <div style="font-size:20px;font-weight:700;color:#4E3219;letter-spacing:-0.4px;margin-bottom:3px">${formatPrice(l.price,l.purpose)}</div>
+            <h3 style="font-size:14px;font-weight:700;color:#2E1F0E;margin-bottom:4px">${l.title}</h3>
+            <p style="font-size:12px;color:#999;margin-bottom:10px;display:flex;align-items:center;gap:4px">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${l.location}
+            </p>
+            <div style="display:flex;gap:10px;font-size:11px;color:#aaa;margin-bottom:10px;flex-wrap:wrap">
+              ${beds}${baths}${l.sqm>0?`<span>${l.sqm} m²</span>`:''}
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ref-block"><span class="ref-label">Ref</span><span class="ref-num">${l.id}</span></div>
+              <a href="https://wa.me/${l.whatsapp}" target="_blank" class="btn-wa" onclick="event.stopPropagation()">
+                <svg width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        </a>
+      </article>`;
+  }
+
+  function renderListings() {
+    const all     = getFiltered();
+    const total   = all.length;
+    const pages   = Math.ceil(total / ITEMS_PER_PAGE);
+    if (currentPage > pages) currentPage = 1;
+    const start   = (currentPage - 1) * ITEMS_PER_PAGE;
+    const page    = all.slice(start, start + ITEMS_PER_PAGE);
+
+    document.getElementById('result-count').textContent = `${total} propert${total === 1 ? 'y' : 'ies'} found`;
+
+    const grid = document.getElementById('results-grid');
+    if (page.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:span 2">
+        <div style="font-size:48px;margin-bottom:1rem">🏡</div>
+        <h3 style="font-size:18px;font-weight:700;color:#4E3219;margin-bottom:8px">No properties found</h3>
+        <p style="font-size:14px;color:#999">Try adjusting your filters to see more results.</p>
+        <button onclick="clearFilters()" style="margin-top:1.25rem;background:#7A5230;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Clear filters</button>
+      </div>`;
+    } else {
+      grid.innerHTML = page.map(buildCard).join('');
+    }
+
+    // Active filter tags
+    const tags = [];
+    if (filters.purpose) tags.push(['purpose', filters.purpose === 'sale' ? 'For Sale' : 'For Rent']);
+    if (filters.type)    tags.push(['type', filters.type.charAt(0).toUpperCase()+filters.type.slice(1)]);
+    if (filters.area)    tags.push(['area', filters.area]);
+    if (filters.beds > 0) tags.push(['beds', `${filters.beds}+ beds`]);
+    const af = document.getElementById('active-filters');
+    af.innerHTML = tags.map(([k,v]) => `
+      <span style="background:#EFE3D5;color:#4E3219;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:6px">
+        ${v}
+        <button onclick="clearFilter('${k}')" style="background:none;border:none;cursor:pointer;color:#7A5230;font-size:14px;line-height:1;padding:0">×</button>
+      </span>`).join('');
+
+    // Pagination
+    const pg = document.getElementById('pagination');
+    if (pages <= 1) { pg.innerHTML = ''; return; }
+    let html = '';
+    if (currentPage > 1) html += `<button class="page-btn" onclick="goPage(${currentPage-1})">←</button>`;
+    for (let i = 1; i <= pages; i++) {
+      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    }
+    if (currentPage < pages) html += `<button class="page-btn" onclick="goPage(${currentPage+1})">→</button>`;
+    pg.innerHTML = html;
+  }
+
+  function clearFilter(key) {
+    if (key === 'beds') filters.beds = 0;
+    else filters[key] = '';
+    document.querySelectorAll(`[data-filter="${key}"]`).forEach(c => {
+      c.classList.toggle('active', c.dataset.value === '' || c.dataset.value === '0');
+    });
+    renderListings();
+  }
+
+  function goPage(n) {
+    currentPage = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    renderListings();
+  }
+
+  renderListings();
+</script>
+</body>
+</html>

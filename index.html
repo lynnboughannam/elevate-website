@@ -455,7 +455,7 @@
   <div style="max-width:1280px;margin:0 auto;position:relative;z-index:1">
 
     <!-- Section header -->
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1.5rem">
+    <div id="investment-header" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1.5rem">
       <div>
         <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:5px 14px;margin-bottom:16px">
           <span style="width:6px;height:6px;border-radius:50%;background:#C9A84C;display:inline-block;animation:pulse-gold 2s ease-in-out infinite"></span>
@@ -511,9 +511,14 @@
   }
   @media(max-width:900px){
     #featured-grid { grid-template-columns:1fr 1fr !important; }
+    #investment-section { padding:3.5rem 1.25rem !important; }
+    #investment-header { flex-direction:column !important; align-items:flex-start !important; gap:1.25rem !important; }
   }
   @media(max-width:600px){
     #featured-grid { grid-template-columns:1fr !important; }
+    #investment-section { padding:3rem 1.25rem !important; }
+    .invest-card { border-radius:12px; }
+    .invest-badge { font-size:8px !important; padding:3px 8px !important; }
   }
 </style>
 
@@ -946,7 +951,7 @@
                 <span class="ref-label">Ref</span>
                 <span class="ref-num">${l.id}</span>
               </div>
-              <a href="${waLink(l)}" target="_blank" class="btn-wa" onclick="event.stopPropagation()">
+              <a href="${waLink(l)}" class="btn-wa" onclick="event.stopPropagation()">
                 <svg width="13" height="13" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
                 WhatsApp
               </a>
@@ -1013,7 +1018,7 @@
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">${beds}${baths}${sqm}</div>
             <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(201,168,76,0.1)">
               <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3)">${purposeLabel}</span>
-              <a href="${waLink(l)}" target="_blank" onclick="event.stopPropagation()"
+              <a href="${waLink(l)}" onclick="event.stopPropagation()"
                 style="display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:#C9A84C;font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;text-decoration:none;transition:background 0.2s"
                 onmouseover="this.style.background='rgba(201,168,76,0.22)'" onmouseout="this.style.background='rgba(201,168,76,0.12)'">
                 <svg width="11" height="11" fill="#C9A84C" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>

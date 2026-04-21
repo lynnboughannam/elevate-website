@@ -355,10 +355,12 @@ function tagClass(tag) {
   }[tag] || 'tag-brown';
 }
 
+const WA_CENTER = '96171991088';
+
 function waLink(l) {
   const url = `${location.origin}/property.html?id=${l.id}`;
   const msg = `Hi, I'm interested in property ${l.id} — ${l.title}.\n\nListing: ${url}`;
-  return `https://wa.me/${l.whatsapp}?text=${encodeURIComponent(msg)}`;
+  return `https://wa.me/${WA_CENTER}?text=${encodeURIComponent(msg)}`;
 }
 
 function tagText(tag) {

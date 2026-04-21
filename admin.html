@@ -187,9 +187,9 @@
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
       All Listings
     </div>
-    <div class="nav-item" onclick="showPanel('pending')" id="nav-pending">
+    <div class="nav-item" onclick="showPanel('submissions')" id="nav-submissions">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Pending Review
+      Submissions
       <span id="pending-badge" style="margin-left:auto;background:#854F0B;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px"></span>
     </div>
     <div class="nav-item" onclick="showPanel('add')" id="nav-add">
@@ -306,10 +306,18 @@
     </div>
   </div>
 
-  <!-- ── PENDING ── -->
-  <div id="panel-pending" style="display:none;padding:2rem">
-    <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px;margin-bottom:1.5rem">Pending Review</h1>
-    <div id="pending-cards"></div>
+  <!-- ── SUBMISSIONS ── -->
+  <div id="panel-submissions" style="display:none;padding:2rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+      <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px">Website Submissions</h1>
+      <div style="display:flex;gap:6px">
+        <button class="tab-btn active" onclick="filterSubs('pending',this)">Pending</button>
+        <button class="tab-btn" onclick="filterSubs('approved',this)">Approved</button>
+        <button class="tab-btn" onclick="filterSubs('rejected',this)">Rejected</button>
+        <button class="tab-btn" onclick="filterSubs('all',this)">All</button>
+      </div>
+    </div>
+    <div id="submissions-list"></div>
   </div>
 
   <!-- ── ADD LISTING ── -->
@@ -446,6 +454,9 @@
 <script src="data.js"></script>
 <script>
   initStore();
+  const ADMIN_EDGE = 'https://ikbwslamhyimdcduojuv.supabase.co/functions/v1/admin-action';
+  let subsFilter = 'pending';
+  let allSubmissions = [];
 
   // ── Mobile sidebar ──
   function toggleSidebar() {
@@ -479,16 +490,16 @@
   let tableFilter = 'all';
 
   function showPanel(name) {
-    ['dashboard','listings','pending','add'].forEach(p => {
+    ['dashboard','listings','submissions','add'].forEach(p => {
       document.getElementById(`panel-${p}`).style.display = p === name ? 'block' : 'none';
       document.getElementById(`nav-${p}`).classList.toggle('active', p === name);
     });
-    const titles = { dashboard: 'Dashboard', listings: 'All Listings', pending: 'Pending Review', add: 'Add Listing' };
+    const titles = { dashboard: 'Dashboard', listings: 'All Listings', submissions: 'Submissions', add: 'Add Listing' };
     document.getElementById('topbar-title').textContent = titles[name] || name;
     currentPanel = name;
-    if (name === 'listings') renderTable();
-    if (name === 'pending')  renderPending();
-    if (name === 'dashboard') renderDashboard();
+    if (name === 'listings')     renderTable();
+    if (name === 'submissions')  loadSubmissions();
+    if (name === 'dashboard')    renderDashboard();
     // Close mobile sidebar after nav
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('open');
@@ -501,39 +512,38 @@
     const pending  = all.filter(l => l.status === 'pending');
     const rejected = all.filter(l => l.status === 'rejected');
 
+    const pendingSubsCount = allSubmissions.filter(s => s.status === 'pending').length;
     document.getElementById('dash-stats').innerHTML = `
       <div class="stat-card">
         <div class="stat-num">${all.length}</div>
-        <div class="stat-label">Total Listings</div>
+        <div class="stat-label">Live Listings</div>
       </div>
       <div class="stat-card" style="border-left:3px solid #3B6D11">
         <div class="stat-num" style="color:#3B6D11">${approved.length}</div>
-        <div class="stat-label">Live / Approved</div>
+        <div class="stat-label">From CRM</div>
       </div>
       <div class="stat-card" style="border-left:3px solid #854F0B">
-        <div class="stat-num" style="color:#854F0B">${pending.length}</div>
-        <div class="stat-label">Pending Review</div>
+        <div class="stat-num" style="color:#854F0B">${pendingSubsCount}</div>
+        <div class="stat-label">Pending Submissions</div>
       </div>
-      <div class="stat-card" style="border-left:3px solid #A32D2D">
-        <div class="stat-num" style="color:#A32D2D">${rejected.length}</div>
-        <div class="stat-label">Rejected</div>
+      <div class="stat-card" style="border-left:3px solid #7A5230">
+        <div class="stat-num" style="color:#7A5230">${allSubmissions.length}</div>
+        <div class="stat-label">Total Submissions</div>
       </div>`;
 
-    // Pending mini list
+    // Pending submissions mini list
     const dp = document.getElementById('dash-pending');
-    if (pending.length === 0) {
-      dp.innerHTML = `<p style="font-size:13px;color:#aaa;text-align:center;padding:1rem">No pending listings 🎉</p>`;
+    const pendingSubs = allSubmissions.filter(s => s.status === 'pending');
+    if (pendingSubs.length === 0) {
+      dp.innerHTML = `<p style="font-size:13px;color:#aaa;text-align:center;padding:1rem">No pending submissions 🎉</p>`;
     } else {
-      dp.innerHTML = pending.slice(0,5).map(l => `
+      dp.innerHTML = pendingSubs.slice(0,5).map(s => `
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(122,82,48,0.08)">
           <div>
-            <div style="font-size:13px;font-weight:700;color:#4E3219">${l.title}</div>
-            <div style="font-size:11px;color:#aaa">${l.id} · ${l.submittedBy}</div>
+            <div style="font-size:13px;font-weight:700;color:#4E3219">${s.title}</div>
+            <div style="font-size:11px;color:#aaa">${s.submitter_name} · ${new Date(s.created_at).toLocaleDateString()}</div>
           </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn-approve" onclick="changeStatus('${l.id}','approved');renderDashboard()">✓</button>
-            <button class="btn-reject"  onclick="changeStatus('${l.id}','rejected');renderDashboard()">✕</button>
-          </div>
+          <button onclick="showPanel('submissions')" style="font-size:11px;font-weight:700;color:#7A5230;background:#EFE3D5;border:none;border-radius:6px;padding:4px 10px;cursor:pointer">Review →</button>
         </div>`).join('');
     }
 
@@ -552,10 +562,102 @@
   }
 
   function updatePendingBadge() {
-    const count = getListings().filter(l => l.status === 'pending').length;
+    const count = allSubmissions.filter(s => s.status === 'pending').length;
     const badge = document.getElementById('pending-badge');
     badge.textContent = count > 0 ? count : '';
     badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+
+  // ── SUBMISSIONS ──
+  async function loadSubmissions() {
+    const list = document.getElementById('submissions-list');
+    list.innerHTML = `<div style="text-align:center;padding:3rem;color:#A87850">Loading…</div>`;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=*&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+      });
+      allSubmissions = await res.json();
+      updatePendingBadge();
+      renderSubmissions();
+    } catch(e) {
+      list.innerHTML = `<div style="text-align:center;padding:3rem;color:#A32D2D">Failed to load submissions</div>`;
+    }
+  }
+
+  function filterSubs(status, btn) {
+    subsFilter = status;
+    document.querySelectorAll('#panel-submissions .tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderSubmissions();
+  }
+
+  function renderSubmissions() {
+    const list = document.getElementById('submissions-list');
+    const data = subsFilter === 'all' ? allSubmissions : allSubmissions.filter(s => s.status === subsFilter);
+    if (data.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:4rem 2rem;background:#FAF7F3;border-radius:14px;border:1px solid rgba(122,82,48,0.1)">
+        <div style="font-size:48px;margin-bottom:1rem">✨</div>
+        <h3 style="font-size:18px;font-weight:700;color:#4E3219;margin-bottom:8px">No ${subsFilter === 'all' ? '' : subsFilter} submissions</h3>
+      </div>`;
+      return;
+    }
+    list.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">` + data.map(s => `
+      <div style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1)">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+              <span style="font-family:monospace;font-size:11px;font-weight:700;color:#7A5230;background:#EFE3D5;padding:2px 8px;border-radius:4px">${s.id.slice(0,8).toUpperCase()}</span>
+              <span class="status-${s.status}">${s.status.charAt(0).toUpperCase()+s.status.slice(1)}</span>
+              <span style="font-size:11px;color:#aaa">${new Date(s.created_at).toLocaleDateString()}</span>
+            </div>
+            <h3 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:4px">${s.title}</h3>
+            <p style="font-size:13px;color:#777;margin-bottom:8px">${s.location} · ${s.type} · ${s.purpose === 'rent' ? 'For Rent' : 'For Sale'} · $${(s.price||0).toLocaleString()}</p>
+            <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:10px">${(s.description||'').slice(0,220)}${(s.description||'').length>220?'…':''}</p>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#888">
+              ${s.beds>0?`<span>🛏 ${s.beds} bed</span>`:''}
+              ${s.baths>0?`<span>🚿 ${s.baths} bath</span>`:''}
+              ${s.sqm>0?`<span>📐 ${s.sqm} m²</span>`:''}
+              ${s.amenities?.length>0?`<span>✓ ${s.amenities.join(', ')}</span>`:''}
+            </div>
+            <div style="margin-top:10px;padding:10px 14px;background:#EDE8E0;border-radius:8px;font-size:12px">
+              <strong style="color:#4E3219">${s.submitter_name}</strong>
+              <span style="color:#888"> · ${s.submitter_email} · ${s.submitter_phone} · ${s.submitter_role}</span>
+            </div>
+          </div>
+          ${s.status === 'pending' ? `
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+            <button class="btn-approve" style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="adminAction('approve','${s.id}',this)">✓ Approve & Publish</button>
+            <button class="btn-reject"  style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="adminAction('reject','${s.id}',this)">✕ Reject</button>
+            <button class="btn-delete"  style="padding:8px 12px;font-size:12px;border-radius:8px;text-align:center" onclick="adminAction('delete','${s.id}',this)">Delete</button>
+          </div>` : `
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+            <button class="btn-delete" style="padding:8px 12px;font-size:12px;border-radius:8px" onclick="adminAction('delete','${s.id}',this)">Delete</button>
+          </div>`}
+        </div>
+      </div>`).join('') + `</div>`;
+  }
+
+  async function adminAction(action, id, btn) {
+    const orig = btn.textContent;
+    btn.textContent = '…';
+    btn.disabled = true;
+    try {
+      const res = await fetch(ADMIN_EDGE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, id, adminKey: 'elevate2025' }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      if (action === 'approve') showToast(`✓ Approved & published as ${data.ref}`);
+      if (action === 'reject')  showToast('Submission rejected');
+      if (action === 'delete')  showToast('Submission deleted');
+      await loadSubmissions();
+    } catch(e) {
+      showToast('Action failed — check console');
+      console.error(e);
+      btn.textContent = orig;
+      btn.disabled = false;
+    }
   }
 
   // ── TABLE ──
@@ -605,46 +707,6 @@
       </tr>`).join('');
   }
 
-  // ── PENDING CARDS ──
-  function renderPending() {
-    const list = getListings().filter(l => l.status === 'pending');
-    const container = document.getElementById('pending-cards');
-    if (list.length === 0) {
-      container.innerHTML = `
-        <div style="text-align:center;padding:4rem 2rem;background:#FAF7F3;border-radius:14px;border:1px solid rgba(122,82,48,0.1)">
-          <div style="font-size:48px;margin-bottom:1rem">✨</div>
-          <h3 style="font-size:18px;font-weight:700;color:#4E3219;margin-bottom:8px">All clear!</h3>
-          <p style="font-size:14px;color:#999">No listings pending review.</p>
-        </div>`;
-      return;
-    }
-    container.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">` +
-      list.map(l => `
-        <div style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1);display:grid;grid-template-columns:140px 1fr auto;gap:1.25rem;align-items:start">
-          <div style="height:100px;border-radius:10px;overflow:hidden">
-            <img src="${l.img}" alt="${l.title}" style="width:100%;height:100%;object-fit:cover">
-          </div>
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-              <span style="font-family:monospace;font-size:11px;font-weight:700;color:#7A5230;background:#EFE3D5;padding:2px 8px;border-radius:4px">${l.id}</span>
-              <span class="status-pending">Pending</span>
-            </div>
-            <h3 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:4px">${l.title}</h3>
-            <p style="font-size:13px;color:#777;margin-bottom:8px">${l.location} · ${l.type} · ${formatPrice(l.price,l.purpose)}</p>
-            <p style="font-size:13px;color:#555;line-height:1.6;margin-bottom:8px">${(l.description||'').slice(0,200)}…</p>
-            <div style="font-size:12px;color:#aaa">Submitted by: <strong style="color:#4E3219">${l.submittedBy}</strong> · ${l.phone} · ${l.createdAt}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn-approve" style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="changeStatus('${l.id}','approved');renderPending()">
-              ✓ Approve
-            </button>
-            <button class="btn-reject" style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="changeStatus('${l.id}','rejected');renderPending()">
-              ✕ Reject
-            </button>
-            <button class="btn-view" style="text-align:center;padding:8px 12px" onclick="openEdit('${l.id}')">Edit</button>
-          </div>
-        </div>`).join('') + `</div>`;
-  }
 
   // ── STATUS CHANGE ──
   function changeStatus(id, status) {
@@ -776,9 +838,16 @@
     setTimeout(() => { t.style.transform = 'translateY(8px)'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
   }
 
-  function refreshAll() {
+  async function refreshAll() {
     renderDashboard();
-    updatePendingBadge();
+    // Pre-load submissions for badge count
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,status&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+      });
+      allSubmissions = await res.json();
+      updatePendingBadge();
+    } catch(e) {}
   }
 </script>
 </body>

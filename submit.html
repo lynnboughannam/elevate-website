@@ -617,47 +617,56 @@
     `;
   }
 
-  function submitListing() {
+  async function submitListing() {
     const btn = document.getElementById('submit-btn-text');
     btn.textContent = 'Submitting…';
 
-    const newId = generateId();
-    const phone = document.getElementById('f-phone').value;
-    const wa = (document.getElementById('f-whatsapp').value || phone).replace(/\D/g,'');
-
-    const listing = {
-      id: newId,
-      title: document.getElementById('f-title').value,
-      location: document.getElementById('f-location').value,
-      area: document.getElementById('f-area').value,
-      type: formData.type,
-      purpose: formData.purpose,
-      price: parseInt(document.getElementById('f-price').value),
-      beds: parseInt(document.getElementById('f-beds').value),
-      baths: parseInt(document.getElementById('f-baths').value),
-      sqm: parseInt(document.getElementById('f-sqm').value),
-      parking: parseInt(document.getElementById('f-parking').value),
-      floor: document.getElementById('f-floor').value,
-      age: document.getElementById('f-age').value,
-      description: document.getElementById('f-desc').value,
-      amenities: formData.amenities,
-      tag: formData.purpose === 'rent' ? 'rent' : 'sale',
-      status: 'pending',
-      featured: false,
-      img: `https://picsum.photos/seed/${newId}/800/540`,
-      submittedBy: document.getElementById('f-name').value,
-      phone: phone,
-      whatsapp: wa,
-      createdAt: new Date().toISOString().split('T')[0],
+    const submission = {
+      title:           document.getElementById('f-title').value,
+      location:        document.getElementById('f-location').value,
+      area:            document.getElementById('f-area').value,
+      type:            formData.type,
+      purpose:         formData.purpose,
+      price:           parseInt(document.getElementById('f-price').value),
+      beds:            parseInt(document.getElementById('f-beds').value),
+      baths:           parseInt(document.getElementById('f-baths').value),
+      sqm:             parseInt(document.getElementById('f-sqm').value),
+      parking:         parseInt(document.getElementById('f-parking').value),
+      floor:           document.getElementById('f-floor').value,
+      age:             document.getElementById('f-age').value,
+      description:     document.getElementById('f-desc').value,
+      amenities:       formData.amenities,
+      status:          'pending',
+      submitter_name:  document.getElementById('f-name').value,
+      submitter_email: document.getElementById('f-email').value,
+      submitter_phone: document.getElementById('f-phone').value,
+      submitter_role:  formData.role,
     };
 
-    setTimeout(() => {
-      addListing(listing);
-      document.getElementById('success-ref-num').textContent = newId;
-      document.getElementById('step-4').style.display = 'none';
-      document.getElementById('step-success').style.display = 'block';
-      document.getElementById('progress-fill').style.width = '100%';
-    }, 800);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
+        method: 'POST',
+        headers: {
+          'apikey':       SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/json',
+          'Prefer':       'return=representation',
+        },
+        body: JSON.stringify(submission),
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const [saved] = await res.json();
+      document.getElementById('success-ref-num').textContent = saved.id.slice(0, 8).toUpperCase();
+    } catch (e) {
+      console.error('Submission failed:', e);
+      document.getElementById('success-ref-num').textContent = '—';
+    }
+
+    document.getElementById('step-4').style.display = 'none';
+    document.getElementById('step-success').style.display = 'block';
+    document.getElementById('progress-fill').style.width = '100%';
+    btn.textContent = 'Submit Listing';
   }
 </script>
 </body>

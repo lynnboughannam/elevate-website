@@ -441,25 +441,81 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════
-     FEATURED LISTINGS
+     INVESTMENT PICKS — FEATURED
 ══════════════════════════════════════════════════════════ -->
-<section style="padding:0 2rem 5rem;background:#EDE8E0">
-  <div style="max-width:1280px;margin:0 auto">
+<section id="investment-section" style="padding:5rem 2rem;background:#0F0905;position:relative;overflow:hidden">
 
-    <div class="reveal" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem">
+  <!-- Grain texture overlay -->
+  <div style="position:absolute;inset:0;opacity:0.4;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.08%22/%3E%3C/svg%3E')"></div>
+
+  <!-- Ambient glow -->
+  <div style="position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(201,168,76,0.12) 0%,transparent 70%);pointer-events:none"></div>
+  <div style="position:absolute;bottom:-80px;right:-100px;width:500px;height:300px;background:radial-gradient(ellipse,rgba(122,82,48,0.15) 0%,transparent 70%);pointer-events:none"></div>
+
+  <div style="max-width:1280px;margin:0 auto;position:relative;z-index:1">
+
+    <!-- Section header -->
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1.5rem">
       <div>
-        <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">Hand-picked</p>
-        <h2 class="font-display" style="font-size:clamp(28px,4vw,40px);color:#4E3219;letter-spacing:-0.5px;line-height:1.1">Featured Properties</h2>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:5px 14px;margin-bottom:16px">
+          <span style="width:6px;height:6px;border-radius:50%;background:#C9A84C;display:inline-block;animation:pulse-gold 2s ease-in-out infinite"></span>
+          <span style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C9A84C">Prime Investment Picks</span>
+        </div>
+        <h2 class="font-display" style="font-size:clamp(28px,4vw,48px);color:#FAF7F3;letter-spacing:-1px;line-height:1.05;margin-bottom:10px">Undermarket.<br><em style="color:#C9A84C;font-style:italic">High potential.</em></h2>
+        <p style="font-size:14px;color:rgba(255,255,255,0.4);max-width:420px;line-height:1.7">Hand-selected by our team for exceptional value, location, and return potential. These move fast.</p>
       </div>
-      <a href="listings.html" style="font-size:14px;font-weight:700;color:#7A5230;text-decoration:none;display:flex;align-items:center;gap:6px">
+      <a href="listings.html" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#C9A84C;text-decoration:none;border:1px solid rgba(201,168,76,0.3);padding:10px 20px;border-radius:8px;transition:background 0.2s,border-color 0.2s" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(201,168,76,0.3)'">
         View all listings
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
 
+    <!-- Featured grid -->
     <div id="featured-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+
+    <!-- Empty state -->
+    <div id="featured-empty" style="display:none;text-align:center;padding:3rem;color:rgba(255,255,255,0.3);font-size:14px">No featured properties at the moment.</div>
   </div>
 </section>
+
+<style>
+  @keyframes pulse-gold {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.8); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .invest-card {
+    background: #1A0F07;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
+  }
+  .invest-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(201,168,76,0.5);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(201,168,76,0.08);
+  }
+  .invest-badge {
+    display:inline-flex;align-items:center;gap:5px;
+    background:linear-gradient(135deg,#C9A84C,#E8C96B,#C9A84C);
+    background-size:200% auto;
+    animation: shimmer 3s linear infinite;
+    color:#0F0905;font-size:9px;font-weight:800;
+    letter-spacing:2px;text-transform:uppercase;
+    padding:4px 10px;border-radius:4px;
+  }
+  @media(max-width:900px){
+    #featured-grid { grid-template-columns:1fr 1fr !important; }
+  }
+  @media(max-width:600px){
+    #featured-grid { grid-template-columns:1fr !important; }
+  }
+</style>
 
 <!-- ══════════════════════════════════════════════════════════
      CATEGORIES
@@ -917,13 +973,72 @@
       types.map(t => `<option value="${t}">${t.charAt(0).toUpperCase()+t.slice(1)}</option>`).join('');
   }
 
+  // ── Investment card builder ──
+  function buildInvestmentCard(l) {
+    const price = formatPrice(l.price, l.purpose);
+    const typeLabel = l.type.charAt(0).toUpperCase() + l.type.slice(1);
+    const purposeLabel = l.purpose === 'rent' ? 'For Rent' : 'For Sale';
+    const beds  = l.beds  > 0 ? `<span style="display:flex;align-items:center;gap:4px;color:rgba(255,255,255,0.5);font-size:12px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 9V7a2 2 0 012-2h16a2 2 0 012 2v2M2 9h20M2 9v11M22 9v11"/></svg>${l.beds} bed</span>` : '';
+    const baths = l.baths > 0 ? `<span style="display:flex;align-items:center;gap:4px;color:rgba(255,255,255,0.5);font-size:12px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12h16M4 12V6a2 2 0 012-2h4"/><path d="M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"/></svg>${l.baths} bath</span>` : '';
+    const sqm   = l.sqm  > 0 ? `<span style="color:rgba(255,255,255,0.5);font-size:12px">${l.sqm} m²</span>` : '';
+    return `
+      <article class="invest-card">
+        <a href="property.html?id=${l.id}" style="text-decoration:none;display:block">
+          <!-- Image -->
+          <div style="position:relative;height:220px;overflow:hidden">
+            <img src="${l.img}" alt="${l.title}" loading="lazy"
+              style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;display:block"
+              onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,#0F0905 0%,rgba(15,9,5,0.2) 50%,transparent 100%)"></div>
+            <!-- Gold shimmer border top -->
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent)"></div>
+            <!-- Badges -->
+            <div style="position:absolute;top:14px;left:14px;display:flex;gap:6px;flex-wrap:wrap">
+              <span class="invest-badge">★ Investment Pick</span>
+              <span style="background:rgba(15,9,5,0.7);backdrop-filter:blur(8px);color:rgba(255,255,255,0.7);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px">${typeLabel}</span>
+            </div>
+            <!-- Ref -->
+            <div style="position:absolute;bottom:14px;left:14px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(201,168,76,0.7);text-transform:uppercase">${l.id}</div>
+            </div>
+          </div>
+          <!-- Body -->
+          <div style="padding:1.25rem">
+            <div style="font-size:26px;font-weight:700;color:#C9A84C;letter-spacing:-0.5px;margin-bottom:4px;font-family:'Playfair Display',serif">${price}</div>
+            <h3 style="font-size:14px;font-weight:700;color:#FAF7F3;margin-bottom:6px;line-height:1.3">${l.title}</h3>
+            <p style="font-size:12px;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:4px;margin-bottom:14px">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${l.location}
+            </p>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">${beds}${baths}${sqm}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(201,168,76,0.1)">
+              <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3)">${purposeLabel}</span>
+              <a href="${waLink(l)}" target="_blank" onclick="event.stopPropagation()"
+                style="display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:#C9A84C;font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;text-decoration:none;transition:background 0.2s"
+                onmouseover="this.style.background='rgba(201,168,76,0.22)'" onmouseout="this.style.background='rgba(201,168,76,0.12)'">
+                <svg width="11" height="11" fill="#C9A84C" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+                Enquire
+              </a>
+            </div>
+          </div>
+        </a>
+      </article>`;
+  }
+
   // ── Render home listings ──
   function renderHome() {
     const listings = getListings().filter(l => l.status === 'approved');
-    const featured  = listings.filter(l => l.featured).slice(0, 3);
+    const featured  = listings.filter(l => l.featured).slice(0, 6);
     const recent    = listings.filter(l => !l.featured).slice(0, 3);
-    document.getElementById('featured-grid').innerHTML = featured.map(buildCard).join('');
-    document.getElementById('recent-grid').innerHTML   = recent.map(buildCard).join('');
+    const grid = document.getElementById('featured-grid');
+    const empty = document.getElementById('featured-empty');
+    if (featured.length === 0) {
+      grid.innerHTML = ''; grid.style.display = 'none'; empty.style.display = 'block';
+    } else {
+      grid.style.display = 'grid'; empty.style.display = 'none';
+      grid.innerHTML = featured.map(buildInvestmentCard).join('');
+    }
+    document.getElementById('recent-grid').innerHTML = recent.map(buildCard).join('');
     populateAreas();
     populateTypes();
   }

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Property — Elevate Estates</title>
+  <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -80,14 +81,29 @@
 
 <script src="data.js"></script>
 <script>
-  initStore();
-
   const id = new URLSearchParams(location.search).get('id');
-  const listing = id ? getListing(id) : null;
 
-  if (!listing || listing.status !== 'approved') {
+  if (!id) {
     document.getElementById('not-found').style.display = 'block';
   } else {
+    document.getElementById('page-content').innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;padding:8rem 2rem;gap:12px;color:#A87850">
+        <svg style="animation:spin 1s linear infinite" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span style="font-size:15px;font-weight:600">Loading property…</span>
+      </div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+  }
+
+  function renderProperty() {
+    const listing = getListing(id);
+    if (!listing || listing.status !== 'approved') {
+      document.getElementById('page-content').innerHTML = '';
+      document.getElementById('not-found').style.display = 'block';
+      return;
+    }
+
+    document.title = `${listing.title} — Elevate Estates`;
+    {
     document.title = `${listing.title} — Elevate Estates`;
 
     const badge = listing.tag === 'luxury'
@@ -142,23 +158,22 @@
         <div>
           <!-- Main image -->
           <div style="border-radius:16px;overflow:hidden;height:480px;position:relative;margin-bottom:1rem">
-            <img src="${listing.img}" alt="${listing.title}" style="width:100%;height:100%;object-fit:cover">
-            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(46,31,14,0.4) 0%,transparent 50%)"></div>
+            <img id="main-img" src="${listing.images && listing.images.length ? listing.images[0] : 'brand_Assets/placeholder.svg'}" alt="${listing.title}" style="width:100%;height:100%;object-fit:${listing.images && listing.images.length ? 'cover' : 'contain'};background:#4E3219;transition:opacity 0.3s">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(46,31,14,0.4) 0%,transparent 50%);pointer-events:none"></div>
             <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px">
               ${badge}
               <span class="badge" style="background:rgba(250,247,243,0.9);color:#4E3219">${typeText}</span>
             </div>
-            <div style="position:absolute;bottom:16px;right:16px;background:rgba(46,31,14,0.7);backdrop-filter:blur(8px);color:rgba(255,255,255,0.8);font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px">
-              📷 Contact us for full photo gallery
-            </div>
+            ${listing.images && listing.images.length > 1 ? `<div style="position:absolute;bottom:16px;right:16px;background:rgba(46,31,14,0.7);backdrop-filter:blur(8px);color:rgba(255,255,255,0.8);font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px">📷 ${listing.images.length} photos</div>` : ''}
           </div>
           <!-- Thumbnail strip -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:2rem">
-            ${[1,2,3,4].map(i => `
-              <div style="height:80px;border-radius:10px;overflow:hidden;opacity:${i===1?1:0.6};cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=${i===1?1:0.6}">
-                <img src="https://picsum.photos/seed/${listing.id}-${i}/200/80" alt="" style="width:100%;height:100%;object-fit:cover">
+          ${listing.images && listing.images.length > 1 ? `
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:2rem">
+            ${listing.images.map((src, i) => `
+              <div onclick="switchImg('${src}',this)" style="height:80px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid ${i===0?'#7A5230':'transparent'};transition:border-color 0.2s,opacity 0.2s;opacity:${i===0?1:0.65}" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=this.style.borderColor==='rgb(122, 82, 48)'?1:0.65">
+                <img src="${src}" alt="Photo ${i+1}" style="width:100%;height:100%;object-fit:cover">
               </div>`).join('')}
-          </div>
+          </div>` : '<div style="margin-bottom:2rem"></div>'}
 
           <!-- Title & price -->
           <div style="margin-bottom:2rem">
@@ -227,7 +242,7 @@
             </div>
             <p style="font-size:13px;color:#888;line-height:1.6;margin-bottom:1.5rem">Quote the reference number above when contacting us about this property.</p>
             <div style="display:flex;flex-direction:column;gap:10px">
-              <a href="https://wa.me/${listing.whatsapp}?text=Hi%2C+I'm+interested+in+property+${listing.id}+%E2%80%94+${encodeURIComponent(listing.title)}" target="_blank" class="btn-wa" style="width:100%;justify-content:center">
+              <a href="${waLink(listing)}" target="_blank" class="btn-wa" style="width:100%;justify-content:center">
                 <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
                 WhatsApp Agent
               </a>
@@ -252,17 +267,33 @@
               </div>
               <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555">
                 <svg width="14" height="14" fill="none" stroke="#7A5230" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                No hidden fees
+                Commission as per local regulations
               </div>
               <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555">
                 <svg width="14" height="14" fill="none" stroke="#7A5230" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                Unique EE reference system
+                Unique ELV reference system
               </div>
             </div>
           </div>
         </aside>
       </div>`;
+    }
   }
+
+  function switchImg(src, thumb) {
+    const main = document.getElementById('main-img');
+    main.style.opacity = '0';
+    setTimeout(() => { main.src = src; main.style.opacity = '1'; }, 150);
+    document.querySelectorAll('#page-content [onclick^="switchImg"]').forEach(el => {
+      el.style.borderColor = 'transparent';
+      el.style.opacity = '0.65';
+    });
+    thumb.style.borderColor = '#7A5230';
+    thumb.style.opacity = '1';
+  }
+
+  initStore();
+  window.addEventListener('ee:synced', renderProperty, { once: true });
 </script>
 </body>
 </html>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="540" viewBox="0 0 800 540">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4E3219"/>
+      <stop offset="100%" stop-color="#7A5230"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.04)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="540" fill="url(#bg)"/>
+  <rect width="800" height="540" fill="url(#shine)"/>
+
+  <!-- Subtle grid texture -->
+  <line x1="0" y1="180" x2="800" y2="180" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="0" y1="360" x2="800" y2="360" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="266" y1="0" x2="266" y2="540" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="533" y1="0" x2="533" y2="540" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+  <!-- House icon outline -->
+  <g transform="translate(340,180)" opacity="0.18">
+    <polygon points="60,-30 120,30 120,90 0,90 0,30" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+    <polyline points="0,30 60,-30 120,30" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="40" y="55" width="40" height="35" fill="none" stroke="white" stroke-width="3"/>
+  </g>
+
+  <!-- Brand name -->
+  <text x="400" y="330" font-family="Georgia, serif" font-size="22" font-weight="700"
+        fill="rgba(255,255,255,0.55)" text-anchor="middle" letter-spacing="6">ELEVATE ESTATES</text>
+
+  <!-- Sub label -->
+  <text x="400" y="362" font-family="Arial, sans-serif" font-size="12"
+        fill="rgba(255,255,255,0.28)" text-anchor="middle" letter-spacing="3">NO IMAGE AVAILABLE</text>
+</svg>

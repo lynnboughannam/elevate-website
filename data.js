@@ -1,6 +1,7 @@
-// Elevate Estates — shared data store (localStorage-backed)
+// Elevate Estates — shared data store (Supabase-backed via Lovable CRM)
 
-const SEED_LISTINGS = [
+const SEED_LISTINGS = []; /* removed — all listings come from Supabase */
+const _UNUSED = [
   {
     id: 'EE-017331',
     title: 'Luxury Mountain Villa',
@@ -231,14 +232,66 @@ const SEED_LISTINGS = [
     age: '12 years',
     parking: 1,
   },
-];
+]; /* end _UNUSED */
+
+// ── Supabase config ────────────────────────────────────────────
+const SUPABASE_URL  = 'https://ikbwslamhyimdcduojuv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYndzbGFtaHlpbWRjZHVvanV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2ODk5NTUsImV4cCI6MjA5MjI2NTk1NX0.KjzD0FJw0rjkAtU7uGmNcFdQv0Fz4S8MbqMOb3vN8r0';
+
+async function syncFromSupabase() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/properties?listed=eq.true&select=*&order=created_at.desc`,
+      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
+    );
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0) return;
+
+    const mapped = rows.map(r => {
+      const purpose = (r.purpose || 'sale').toLowerCase();
+      const tags    = Array.isArray(r.tags) ? r.tags.map(t => t.toLowerCase()) : [];
+      return {
+        id:          r.id,
+        title:       r.title       || '',
+        location:    r.location    || '',
+        area:        (r.location   || '').split(',').pop().trim(),
+        type:        (r.type       || 'apartment').toLowerCase(),
+        purpose,
+        price:       r.price       || 0,
+        beds:        r.beds        || 0,
+        baths:       r.baths       || 0,
+        sqm:         r.sqm         || 0,
+        tag:         tags.includes('luxury') ? 'luxury' : (purpose === 'rent' ? 'rent' : 'sale'),
+        status:      'approved',
+        featured:    r.featured    || false,
+        img:         (r.images && r.images[0]) || 'brand_Assets/placeholder.svg',
+        images:      (r.images && r.images.length) ? r.images : [],
+        description: r.description || '',
+        amenities:   r.amenities   || [],
+        submittedBy: r.agent_name  || 'Admin',
+        createdAt:   r.created_at  ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+        phone:       r.agent_phone || '',
+        whatsapp:    (r.agent_phone || '').replace(/\D/g, ''),
+        parking:     r.parking     || 0,
+        agentName:   r.agent_name    || '',
+        agentCompany:r.agent_company || '',
+        agentLogo:   r.agent_logo    || '',
+      };
+    });
+
+    localStorage.setItem('ee_listings_v2', JSON.stringify(mapped));
+    window.dispatchEvent(new CustomEvent('ee:synced'));
+  } catch (e) {
+    console.warn('Supabase sync failed, using local data:', e);
+  }
+}
 
 // ── Store helpers ──────────────────────────────────────────────
 
 function initStore() {
-  if (!localStorage.getItem('ee_listings_v2')) {
-    localStorage.setItem('ee_listings_v2', JSON.stringify(SEED_LISTINGS));
-  }
+  localStorage.setItem('ee_listings_v2', JSON.stringify([]));
+  syncFromSupabase();
 }
 
 function getListings() {
@@ -300,6 +353,12 @@ function tagClass(tag) {
     rent:   'tag-green',
     new:    'tag-teal',
   }[tag] || 'tag-brown';
+}
+
+function waLink(l) {
+  const url = `${location.origin}/property.html?id=${l.id}`;
+  const msg = `Hi, I'm interested in property ${l.id} — ${l.title}.\n\nListing: ${url}`;
+  return `https://wa.me/${l.whatsapp}?text=${encodeURIComponent(msg)}`;
 }
 
 function tagText(tag) {

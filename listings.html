@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Properties — Elevate Estates</title>
+  <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script>
@@ -143,25 +144,16 @@
       <!-- Type -->
       <div class="filter-section">
         <span class="filter-label">Property Type</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div id="type-chips" style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="filter-chip active" data-filter="type" data-value="" onclick="applyChip(this)">All</button>
-          <button class="filter-chip" data-filter="type" data-value="apartment" onclick="applyChip(this)">Apartment</button>
-          <button class="filter-chip" data-filter="type" data-value="villa" onclick="applyChip(this)">Villa</button>
-          <button class="filter-chip" data-filter="type" data-value="commercial" onclick="applyChip(this)">Commercial</button>
-          <button class="filter-chip" data-filter="type" data-value="land" onclick="applyChip(this)">Land</button>
         </div>
       </div>
 
       <!-- Area -->
       <div class="filter-section">
         <span class="filter-label">Area</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div id="area-chips" style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="filter-chip active" data-filter="area" data-value="" onclick="applyChip(this)">All</button>
-          <button class="filter-chip" data-filter="area" data-value="Beirut" onclick="applyChip(this)">Beirut</button>
-          <button class="filter-chip" data-filter="area" data-value="Mount Lebanon" onclick="applyChip(this)">Mt. Lebanon</button>
-          <button class="filter-chip" data-filter="area" data-value="Metn" onclick="applyChip(this)">Metn</button>
-          <button class="filter-chip" data-filter="area" data-value="Keserwan" onclick="applyChip(this)">Keserwan</button>
-          <button class="filter-chip" data-filter="area" data-value="North Lebanon" onclick="applyChip(this)">North</button>
         </div>
       </div>
 
@@ -351,7 +343,7 @@
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between">
               <div class="ref-block"><span class="ref-label">Ref</span><span class="ref-num">${l.id}</span></div>
-              <a href="https://wa.me/${l.whatsapp}" target="_blank" class="btn-wa" onclick="event.stopPropagation()">
+              <a href="${waLink(l)}" target="_blank" class="btn-wa" onclick="event.stopPropagation()">
                 <svg width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
                 WhatsApp
               </a>
@@ -423,7 +415,24 @@
     renderListings();
   }
 
+  function populateChips(containerId, filterKey, values, labelFn) {
+    const container = document.getElementById(containerId);
+    const active    = container.querySelector('.active')?.dataset.value || '';
+    container.innerHTML = `<button class="filter-chip ${active===''?'active':''}" data-filter="${filterKey}" data-value="" onclick="applyChip(this)">All</button>` +
+      values.map(v => `<button class="filter-chip ${active===v?'active':''}" data-filter="${filterKey}" data-value="${v}" onclick="applyChip(this)">${labelFn(v)}</button>`).join('');
+  }
+
+  function populateFilters() {
+    const listings = getListings().filter(l => l.status === 'approved');
+    const areas = [...new Set(listings.map(l => l.area).filter(Boolean))].sort();
+    const types = [...new Set(listings.map(l => l.type).filter(Boolean))].sort();
+    populateChips('area-chips', 'area', areas, a => a);
+    populateChips('type-chips', 'type', types, t => t.charAt(0).toUpperCase() + t.slice(1));
+  }
+
+  populateFilters();
   renderListings();
+  window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
 </script>
 </body>
 </html>

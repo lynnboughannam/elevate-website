@@ -354,22 +354,21 @@
         </div>
 
         <div class="field">
-          <label class="field-label" for="f-location">Where are you located? <span style="color:#A32D2D">*</span></label>
-          <select class="field-input" id="f-location">
-            <option value="">Select your area…</option>
-            <option value="Beirut">Beirut</option>
-            <option value="Metn">Metn</option>
-            <option value="Keserwan">Keserwan</option>
-            <option value="Mount Lebanon">Mount Lebanon</option>
-            <option value="Chouf">Chouf</option>
-            <option value="North Lebanon">North Lebanon</option>
-            <option value="South Lebanon">South Lebanon</option>
-            <option value="Bekaa">Bekaa</option>
-            <option value="Other">Other</option>
-          </select>
-          <span class="field-error" id="err-location">
+          <label class="field-label" style="margin-bottom:8px">Where are you located / Areas you cover <span style="color:#A32D2D">*</span></label>
+          <div class="chip-grid">
+            <label class="chip"><input type="checkbox" name="location" value="Beirut"><span class="chip-box"></span>Beirut</label>
+            <label class="chip"><input type="checkbox" name="location" value="Metn"><span class="chip-box"></span>Metn</label>
+            <label class="chip"><input type="checkbox" name="location" value="Keserwan"><span class="chip-box"></span>Keserwan</label>
+            <label class="chip"><input type="checkbox" name="location" value="Mount Lebanon"><span class="chip-box"></span>Mount Lebanon</label>
+            <label class="chip"><input type="checkbox" name="location" value="Chouf"><span class="chip-box"></span>Chouf</label>
+            <label class="chip"><input type="checkbox" name="location" value="North Lebanon"><span class="chip-box"></span>North Lebanon</label>
+            <label class="chip"><input type="checkbox" name="location" value="South Lebanon"><span class="chip-box"></span>South Lebanon</label>
+            <label class="chip"><input type="checkbox" name="location" value="Bekaa"><span class="chip-box"></span>Bekaa</label>
+            <label class="chip"><input type="checkbox" name="location" value="Other"><span class="chip-box"></span>Other</label>
+          </div>
+          <span class="field-error" id="err-location" style="margin-top:4px">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Please select your location
+            Please select at least one area
           </span>
         </div>
 
@@ -480,7 +479,7 @@
     3: [
       { id: 'f-age',       errId: 'err-age',       check: v => v >= 18 && v <= 75 },
       { id: 'f-transport', errId: 'err-transport',  check: v => v !== '' },
-      { id: 'f-location',  errId: 'err-location',   check: v => v !== '' },
+      { id: null, errId: 'err-location', check: () => document.querySelectorAll('input[name="location"]:checked').length > 0 },
     ],
     4: [
       { id: 'f-motivation', errId: 'err-motivation', check: v => v.trim().length >= 30 },
@@ -490,11 +489,10 @@
   function validateStep(n) {
     let ok = true;
     (rules[n] || []).forEach(({ id, errId, check }) => {
-      const el  = document.getElementById(id);
+      const el  = id ? document.getElementById(id) : null;
       const err = document.getElementById(errId);
-      const pass = check(el.value);
-      el.classList.toggle('invalid', !pass);
-      el.classList.toggle('valid',   pass);
+      const pass = el ? check(el.value) : check();
+      if (el) { el.classList.toggle('invalid', !pass); el.classList.toggle('valid', pass); }
       if (err) err.classList.toggle('show', !pass);
       if (!pass) ok = false;
     });
@@ -545,7 +543,7 @@
       experience:     document.getElementById('f-experience').value,
       current_agency: document.getElementById('f-agency').value.trim() || null,
       age:            parseInt(document.getElementById('f-age').value) || null,
-      location:       document.getElementById('f-location').value,
+      location:       [...document.querySelectorAll('input[name="location"]:checked')].map(c => c.value),
       transportation: document.getElementById('f-transport').value,
       motivation:     document.getElementById('f-motivation').value.trim(),
       status:         'pending',

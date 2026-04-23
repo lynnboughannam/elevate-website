@@ -5,184 +5,199 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Join Our Team — Elevate Estates</title>
   <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
-  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; min-height: 100vh; }
     .font-display { font-family: 'Playfair Display', serif; }
 
-    nav { background: rgba(250,247,243,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(122,82,48,0.12); box-shadow: 0 2px 20px rgba(78,50,25,0.08); position: sticky; top: 0; z-index: 100; }
+    /* ── NAV ── */
+    nav {
+      background: rgba(250,247,243,0.97); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(122,82,48,0.12);
+      box-shadow: 0 2px 20px rgba(78,50,25,0.08);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-link { font-size: 14px; font-weight: 600; text-decoration: none; color: #4E3219; transition: color 0.2s; }
+    .nav-link:hover { color: #7A5230; }
+    .nav-link.active { color: #7A5230; font-weight: 700; }
+    .btn-nav { background: #7A5230; color: #fff; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; transition: background 0.2s; }
+    .btn-nav:hover { background: #4E3219; }
+    #mob-btn { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    #mob-menu { display: none; background: #FAF7F3; border-top: 1px solid rgba(122,82,48,0.12); padding: 1.25rem 1.5rem 1.75rem; }
+    #mob-menu a { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid rgba(122,82,48,0.08); font-size: 15px; font-weight: 600; color: #4E3219; text-decoration: none; }
+    #mob-menu a.active { color: #7A5230; }
+    #mob-menu .mob-cta { display: block; text-align: center; background: #7A5230; color: #fff; padding: 13px; border-radius: 10px; font-weight: 700; margin-top: 1.25rem; border: none; }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #mob-btn { display: flex; }
+    }
 
     /* ── HERO ── */
     .hero-band {
-      background: #1A0E06;
-      position: relative;
-      overflow: hidden;
-      padding: 80px 2rem 72px;
-      text-align: center;
+      background: #1A0E06; position: relative; overflow: hidden;
+      padding: 56px 2rem 52px; text-align: center;
     }
     .hero-band::before {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0; pointer-events: none;
       background:
         radial-gradient(ellipse 60% 80% at 20% 50%, rgba(201,168,76,0.06) 0%, transparent 70%),
         radial-gradient(ellipse 50% 60% at 80% 40%, rgba(122,82,48,0.15) 0%, transparent 70%);
-      pointer-events: none;
     }
     .hero-grain {
-      position: absolute; inset: 0; pointer-events: none; opacity: 0.4;
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
       background-size: 180px;
     }
     .hero-tag {
-      display: inline-block;
-      background: rgba(201,168,76,0.12);
-      border: 1px solid rgba(201,168,76,0.35);
-      color: #C9A84C;
-      font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
-      padding: 6px 16px; border-radius: 100px;
-      margin-bottom: 20px;
+      display: inline-block; background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.35);
+      color: #C9A84C; font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 100px; margin-bottom: 16px;
     }
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(32px, 6vw, 56px);
-      color: #FAF7F3;
-      letter-spacing: -0.5px;
-      line-height: 1.15;
-      margin-bottom: 16px;
-    }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,46px); color: #FAF7F3; letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 10px; }
     .hero-title em { color: #C9A84C; font-style: italic; }
-    .hero-sub {
-      font-size: 16px; color: rgba(250,247,243,0.55);
-      max-width: 540px; margin: 0 auto; line-height: 1.75;
+    .hero-sub { font-size: 15px; color: rgba(250,247,243,0.5); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
+    /* ── PERKS ── */
+    .perks-row { display: flex; justify-content: center; gap: 12px; margin-top: 36px; flex-wrap: wrap; }
+    .perk-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 100px; padding: 8px 16px;
+      font-size: 13px; font-weight: 600; color: rgba(250,247,243,0.7);
     }
+    .perk-pill svg { flex-shrink: 0; }
+
+    /* ── FORM WRAPPER ── */
+    .form-wrap { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+
+    /* ── STEP PROGRESS ── */
+    .progress-header { background: #FAF7F3; border-radius: 16px 16px 0 0; border: 1px solid rgba(122,82,48,0.12); border-bottom: none; padding: 24px 28px 20px; }
+    .step-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #A87850; margin-bottom: 12px; }
+    .step-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #4E3219; }
+    .progress-track { height: 4px; background: #DDD5C8; border-radius: 2px; margin-top: 16px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #7A5230, #A87850); border-radius: 2px; transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+    .step-dots { display: flex; gap: 6px; margin-top: 10px; }
+    .step-dot { width: 6px; height: 6px; border-radius: 50%; background: #DDD5C8; transition: background 0.3s, width 0.3s; }
+    .step-dot.done { background: #A87850; }
+    .step-dot.active { background: #7A5230; width: 20px; border-radius: 3px; }
 
     /* ── FORM CARD ── */
-    .form-card {
-      background: #FAF7F3;
-      border-radius: 20px;
-      border: 1px solid rgba(122,82,48,0.12);
-      box-shadow: 0 8px 40px rgba(46,31,14,0.1), 0 2px 8px rgba(46,31,14,0.05);
-      overflow: hidden;
-    }
-    .form-card-header {
-      background: linear-gradient(135deg, #4E3219 0%, #2E1F0E 100%);
-      padding: 28px 32px;
-      display: flex; align-items: center; gap: 16px;
-    }
-    .form-card-body { padding: 32px; }
+    .form-card { background: #FAF7F3; border-radius: 0 0 16px 16px; border: 1px solid rgba(122,82,48,0.12); border-top: none; padding: 28px 28px 24px; box-shadow: 0 8px 40px rgba(46,31,14,0.08); }
 
     /* ── INPUTS ── */
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #A87850; }
-    .form-input {
-      width: 100%; padding: 12px 16px;
-      border: 1px solid rgba(122,82,48,0.2); border-radius: 10px;
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #A87850; }
+    .field-hint { font-size: 12px; color: #AAA; }
+    .field-input {
+      width: 100%; padding: 13px 16px;
+      border: 1.5px solid rgba(122,82,48,0.18); border-radius: 10px;
       font-family: 'Nunito Sans', sans-serif; font-size: 14px; color: #2E1F0E;
       background: #FFF; outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    .form-input:focus { border-color: #7A5230; box-shadow: 0 0 0 3px rgba(122,82,48,0.1); }
-    .form-input.error { border-color: #A32D2D; }
-    .form-error { font-size: 11px; color: #A32D2D; display: none; }
-    textarea.form-input { resize: vertical; min-height: 120px; line-height: 1.65; }
+    .field-input:focus { border-color: #7A5230; box-shadow: 0 0 0 3px rgba(122,82,48,0.1); background: #FFFEFB; }
+    .field-input.valid { border-color: #3B7A3B; }
+    .field-input.invalid { border-color: #A32D2D; background: #FFF9F9; }
+    .field-error { font-size: 11px; color: #A32D2D; display: none; align-items: center; gap: 4px; }
+    .field-error.show { display: flex; }
+    textarea.field-input { resize: none; line-height: 1.65; min-height: 130px; }
+    .char-count { font-size: 11px; color: #BBB; text-align: right; }
+    .char-count.warn { color: #A87850; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 540px) { .two-col { grid-template-columns: 1fr; } }
 
-    /* ── CHECKBOXES ── */
-    .check-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .check-chip {
+    /* ── SELECT ── */
+    select.field-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A87850' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+
+    /* ── CHIP CHECKBOXES ── */
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
       display: flex; align-items: center; gap: 7px;
-      background: #FFF; border: 1px solid rgba(122,82,48,0.2);
+      background: #FFF; border: 1.5px solid rgba(122,82,48,0.18);
       border-radius: 8px; padding: 8px 14px;
-      cursor: pointer; font-size: 13px; font-weight: 600; color: #4E3219;
-      transition: border-color 0.15s, background 0.15s;
+      cursor: pointer; font-size: 13px; font-weight: 600; color: #555;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
       user-select: none;
     }
-    .check-chip:hover { border-color: #A87850; background: #FAF7F3; }
-    .check-chip input { display: none; }
-    .check-chip .box {
-      width: 16px; height: 16px;
-      border: 2px solid rgba(122,82,48,0.3); border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
+    .chip:hover { border-color: #A87850; color: #4E3219; }
+    .chip input { display: none; }
+    .chip-box {
+      width: 15px; height: 15px; border: 1.5px solid rgba(122,82,48,0.25); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       transition: background 0.15s, border-color 0.15s;
-      flex-shrink: 0;
     }
-    .check-chip input:checked ~ .box { background: #7A5230; border-color: #7A5230; }
-    .check-chip input:checked ~ .box::after { content: ''; width: 9px; height: 5px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
-    .check-chip input:checked ~ span { color: #4E3219; }
-    .check-chip:has(input:checked) { border-color: #7A5230; background: #EFE3D5; }
+    .chip:has(input:checked) { border-color: #7A5230; background: #EFE3D5; color: #4E3219; }
+    .chip:has(input:checked) .chip-box { background: #7A5230; border-color: #7A5230; }
+    .chip:has(input:checked) .chip-box::after { content: ''; width: 8px; height: 4px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
 
-    /* ── SUBMIT BUTTON ── */
-    .btn-submit {
-      width: 100%; background: #7A5230; color: #fff;
-      border: none; padding: 16px 32px; border-radius: 12px;
-      font-family: 'Nunito Sans', sans-serif; font-size: 16px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: background 0.2s, transform 0.15s;
-      position: relative; overflow: hidden;
+    /* ── REVIEW CARD ── */
+    .review-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(122,82,48,0.08); gap: 1rem; }
+    .review-row:last-child { border-bottom: none; }
+    .review-key { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #A87850; flex-shrink: 0; min-width: 110px; }
+    .review-val { font-size: 14px; color: #2E1F0E; text-align: right; line-height: 1.5; }
+
+    /* ── NAV BUTTONS ── */
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-back {
+      background: transparent; color: #7A5230; border: 1.5px solid rgba(122,82,48,0.3);
+      padding: 13px 24px; border-radius: 10px; font-family: 'Nunito Sans', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s;
     }
-    .btn-submit:hover { background: #4E3219; transform: translateY(-2px); }
-    .btn-submit:active { transform: translateY(0); }
-    .btn-submit:disabled { background: #B8A090; cursor: not-allowed; transform: none; }
+    .btn-back:hover { background: rgba(122,82,48,0.06); }
+    .btn-next {
+      flex: 1; background: #7A5230; color: #fff; border: none;
+      padding: 13px 28px; border-radius: 10px; font-family: 'Nunito Sans', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-next:hover { background: #4E3219; transform: translateY(-1px); }
+    .btn-next:disabled { background: #B8A090; cursor: not-allowed; transform: none; }
 
     /* ── SUCCESS ── */
-    #success-panel {
-      display: none; text-align: center; padding: 3rem 2rem;
-    }
-    .success-icon {
-      width: 72px; height: 72px; background: linear-gradient(135deg,#7A5230,#A87850);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    .success-wrap { text-align: center; padding: 3rem 1.5rem; }
+    .success-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg,#7A5230,#A87850);
+      display: flex; align-items: center; justify-content: center;
       margin: 0 auto 24px;
       box-shadow: 0 8px 32px rgba(122,82,48,0.3);
+      animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1);
     }
-
-    /* ── WHY PANEL ── */
-    .perks-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-    .perk-card {
-      background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.2);
-      border-radius: 14px; padding: 24px 20px; text-align: center;
-    }
-    .perk-icon { font-size: 28px; margin-bottom: 12px; }
-    .perk-title { font-size: 14px; font-weight: 700; color: #FAF7F3; margin-bottom: 6px; }
-    .perk-desc { font-size: 13px; color: rgba(250,247,243,0.5); line-height: 1.6; }
-
-    /* ── DIVIDER ── */
-    .section-divider {
-      display: flex; align-items: center; gap: 16px;
-      margin: 28px 0 24px;
-      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #A87850;
-    }
-    .section-divider::before, .section-divider::after {
-      content: ''; flex: 1; height: 1px; background: rgba(122,82,48,0.15);
-    }
+    @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .ref-box { background: #EDE8E0; border-radius: 12px; padding: 14px 24px; display: inline-block; margin: 16px 0 28px; }
 
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #EDE8E0; }
     ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
-
-    @media (max-width: 640px) {
-      .perks-grid { grid-template-columns: 1fr; }
-      .form-card-body { padding: 20px; }
-      .two-col { grid-template-columns: 1fr !important; }
-    }
   </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px">
+  <div class="nav-inner">
     <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
       <img src="brand_Assets/dark-icon.png" alt="Elevate Estates" style="height:34px">
       <span class="font-display" style="font-size:17px;font-weight:700;color:#4E3219;letter-spacing:-0.3px">Elevate Estates</span>
     </a>
-    <div style="display:flex;align-items:center;gap:28px">
-      <a href="listings.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#4E3219;transition:color 0.2s" onmouseover="this.style.color='#7A5230'" onmouseout="this.style.color='#4E3219'">Properties</a>
-      <a href="submit.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#4E3219;transition:color 0.2s" onmouseover="this.style.color='#7A5230'" onmouseout="this.style.color='#4E3219'">List Property</a>
-      <a href="agent-apply.html" style="font-size:14px;font-weight:700;text-decoration:none;color:#7A5230">Join Our Team</a>
-      <a href="listings.html" style="background:#7A5230;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">Browse Listings</a>
+    <div class="nav-links">
+      <a href="listings.html" class="nav-link">Properties</a>
+      <a href="submit.html" class="nav-link">List Property</a>
+      <a href="agent-apply.html" class="nav-link active">Join Our Team</a>
+      <a href="listings.html" class="btn-nav">Browse Listings</a>
     </div>
+    <button id="mob-btn" onclick="document.getElementById('mob-menu').style.display=document.getElementById('mob-menu').style.display==='block'?'none':'block'" aria-label="Menu">
+      <svg width="24" height="24" fill="none" stroke="#4E3219" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="mob-menu">
+    <a href="listings.html">Properties <svg width="14" height="14" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
+    <a href="submit.html">List Property <svg width="14" height="14" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
+    <a href="agent-apply.html" class="active">Join Our Team <svg width="14" height="14" fill="none" stroke="#7A5230" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
+    <a href="listings.html" class="mob-cta">Browse Listings</a>
   </div>
 </nav>
 
@@ -191,189 +206,321 @@
   <div class="hero-grain"></div>
   <div style="position:relative;z-index:1">
     <div class="hero-tag">Agent Careers</div>
-    <h1 class="hero-title">Grow your career with<br><em>Elevate Estates</em></h1>
-    <p class="hero-sub">We're looking for driven, client-first real estate professionals to join our growing team in Lebanon.</p>
-
-    <!-- Perks -->
-    <div class="perks-grid" style="max-width:760px;margin:48px auto 0">
-      <div class="perk-card">
-        <div class="perk-icon">💰</div>
-        <div class="perk-title">Competitive Commission</div>
-        <div class="perk-desc">Among the highest commission structures in the Lebanese market</div>
+    <h1 class="hero-title">Build your career with<br><em>Elevate Estates</em></h1>
+    <p class="hero-sub">Join a team of driven real estate professionals serving Lebanon's most discerning clients.</p>
+    <div class="perks-row">
+      <div class="perk-pill">
+        <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Top commissions
       </div>
-      <div class="perk-card">
-        <div class="perk-icon">🌐</div>
-        <div class="perk-title">Premium Listings</div>
-        <div class="perk-desc">Access to exclusive, verified inventory across all regions</div>
+      <div class="perk-pill">
+        <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Exclusive listings
       </div>
-      <div class="perk-card">
-        <div class="perk-icon">📈</div>
-        <div class="perk-title">Real Growth</div>
-        <div class="perk-desc">Mentorship, marketing support, and a brand that opens doors</div>
+      <div class="perk-pill">
+        <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Real growth
+      </div>
+      <div class="perk-pill">
+        <svg width="14" height="14" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Supportive team
       </div>
     </div>
   </div>
 </div>
 
-<!-- FORM SECTION -->
-<div style="max-width:720px;margin:0 auto;padding:3rem 1.5rem 5rem">
+<!-- FORM -->
+<div class="form-wrap">
+
+  <!-- Progress header -->
+  <div class="progress-header">
+    <div class="step-label" id="step-label">Step 1 of 4</div>
+    <div class="step-title" id="step-title">Personal Information</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+    <div class="step-dots">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+      <div class="step-dot" id="dot-3"></div>
+      <div class="step-dot" id="dot-4"></div>
+    </div>
+  </div>
 
   <!-- Form card -->
-  <div class="form-card" id="form-card">
-    <div class="form-card-header">
-      <div style="width:44px;height:44px;border-radius:10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="20" height="20" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  <div class="form-card">
+
+    <!-- ── STEP 1: Personal ── -->
+    <div id="step-1">
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div class="field">
+          <label class="field-label" for="f-name">Full Name <span style="color:#A32D2D">*</span></label>
+          <input class="field-input" type="text" id="f-name" placeholder="e.g. Rami Haddad" autocomplete="name">
+          <span class="field-error" id="err-name">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter your full name
+          </span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-phone">Phone Number <span style="color:#A32D2D">*</span></label>
+          <input class="field-input" type="tel" id="f-phone" placeholder="+961 71 000 000" autocomplete="tel">
+          <span class="field-error" id="err-phone">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid phone number
+          </span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="f-email">Email Address <span style="color:#A32D2D">*</span></label>
+          <input class="field-input" type="email" id="f-email" placeholder="you@example.com" autocomplete="email">
+          <span class="field-error" id="err-email">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid email address
+          </span>
+        </div>
+
       </div>
-      <div>
-        <div style="font-size:17px;font-weight:700;color:#FAF7F3;font-family:'Playfair Display',serif">Apply to Join</div>
-        <div style="font-size:12px;color:rgba(250,247,243,0.45);margin-top:2px">We review every application within 48 hours</div>
+      <div class="btn-row">
+        <button class="btn-next" onclick="goNext(1)">
+          Continue
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
     </div>
 
-    <!-- FORM -->
-    <div class="form-card-body" id="apply-form">
+    <!-- ── STEP 2: Professional ── -->
+    <div id="step-2" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:16px">
 
-      <div class="section-divider">Personal Information</div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem" class="two-col">
-        <div class="form-group">
-          <label class="form-label">Full Name <span style="color:#A32D2D">*</span></label>
-          <input type="text" id="f-name" class="form-input" placeholder="e.g. Rami Haddad">
-          <span class="form-error" id="err-name">Required</span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Phone Number <span style="color:#A32D2D">*</span></label>
-          <input type="tel" id="f-phone" class="form-input" placeholder="+961 XX XXX XXX">
-          <span class="form-error" id="err-phone">Required</span>
-        </div>
-      </div>
-
-      <div class="form-group" style="margin-bottom:1.25rem">
-        <label class="form-label">Email Address <span style="color:#A32D2D">*</span></label>
-        <input type="email" id="f-email" class="form-input" placeholder="you@example.com">
-        <span class="form-error" id="err-email">Valid email required</span>
-      </div>
-
-      <div class="section-divider">Professional Background</div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem" class="two-col">
-        <div class="form-group">
-          <label class="form-label">Years of Experience <span style="color:#A32D2D">*</span></label>
-          <select id="f-experience" class="form-input">
-            <option value="">Select…</option>
-            <option value="less-than-1">Less than 1 year</option>
+        <div class="field">
+          <label class="field-label" for="f-experience">Years of Experience <span style="color:#A32D2D">*</span></label>
+          <select class="field-input" id="f-experience">
+            <option value="">Select your experience…</option>
+            <option value="less-than-1">Less than 1 year — I'm just starting out</option>
             <option value="1-3">1 – 3 years</option>
             <option value="3-5">3 – 5 years</option>
             <option value="5-10">5 – 10 years</option>
-            <option value="10+">10+ years</option>
+            <option value="10+">10+ years — Senior professional</option>
           </select>
-          <span class="form-error" id="err-exp">Required</span>
+          <span class="field-error" id="err-exp">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please select your experience level
+          </span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Current / Previous Agency</label>
-          <input type="text" id="f-agency" class="form-input" placeholder="Agency name (or Independent)">
+
+        <div class="field">
+          <label class="field-label" for="f-agency">Current or Previous Agency</label>
+          <input class="field-input" type="text" id="f-agency" placeholder="e.g. Century 21, Independent…">
+          <span class="field-hint">Leave blank if not applicable</span>
         </div>
-      </div>
 
-      <div class="form-group" style="margin-bottom:1.25rem">
-        <label class="form-label">LinkedIn or Portfolio URL</label>
-        <input type="url" id="f-linkedin" class="form-input" placeholder="https://linkedin.com/in/…">
-      </div>
-
-      <div class="section-divider">Expertise</div>
-
-      <div class="form-group" style="margin-bottom:1.5rem">
-        <label class="form-label" style="margin-bottom:10px">Languages Spoken</label>
-        <div class="check-grid">
-          <label class="check-chip"><input type="checkbox" name="lang" value="Arabic"><span class="box"></span><span>Arabic</span></label>
-          <label class="check-chip"><input type="checkbox" name="lang" value="English"><span class="box"></span><span>English</span></label>
-          <label class="check-chip"><input type="checkbox" name="lang" value="French"><span class="box"></span><span>French</span></label>
-          <label class="check-chip"><input type="checkbox" name="lang" value="Russian"><span class="box"></span><span>Russian</span></label>
-          <label class="check-chip"><input type="checkbox" name="lang" value="German"><span class="box"></span><span>German</span></label>
-          <label class="check-chip"><input type="checkbox" name="lang" value="Other"><span class="box"></span><span>Other</span></label>
+        <div class="field">
+          <label class="field-label" for="f-linkedin">LinkedIn or Portfolio URL</label>
+          <input class="field-input" type="url" id="f-linkedin" placeholder="https://linkedin.com/in/yourname">
+          <span class="field-hint">Optional but helpful for us to learn more</span>
         </div>
-      </div>
 
-      <div class="form-group" style="margin-bottom:1.5rem">
-        <label class="form-label" style="margin-bottom:10px">Areas of Expertise</label>
-        <div class="check-grid">
-          <label class="check-chip"><input type="checkbox" name="area" value="Beirut"><span class="box"></span><span>Beirut</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="Metn"><span class="box"></span><span>Metn</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="Keserwan"><span class="box"></span><span>Keserwan</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="Mount Lebanon"><span class="box"></span><span>Mount Lebanon</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="Chouf"><span class="box"></span><span>Chouf</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="North Lebanon"><span class="box"></span><span>North Lebanon</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="South Lebanon"><span class="box"></span><span>South Lebanon</span></label>
-          <label class="check-chip"><input type="checkbox" name="area" value="Bekaa"><span class="box"></span><span>Bekaa</span></label>
-        </div>
       </div>
-
-      <div class="form-group" style="margin-bottom:2rem">
-        <label class="form-label">Why do you want to join Elevate Estates? <span style="color:#A32D2D">*</span></label>
-        <textarea id="f-motivation" class="form-input" placeholder="Tell us about yourself and why you'd be a great fit…"></textarea>
-        <span class="form-error" id="err-motivation">Please tell us about yourself</span>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goBack(2)">← Back</button>
+        <button class="btn-next" onclick="goNext(2)">
+          Continue
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
-
-      <!-- Disclaimer -->
-      <div style="background:rgba(122,82,48,0.05);border:1px solid rgba(122,82,48,0.1);border-radius:10px;padding:14px 16px;margin-bottom:1.75rem;display:flex;gap:10px;align-items:flex-start">
-        <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        <p style="font-size:12px;color:#777;line-height:1.6;margin:0">Your information is kept strictly confidential and used only for recruitment purposes. We will contact you via the phone or email provided.</p>
-      </div>
-
-      <button class="btn-submit" onclick="submitApplication(this)">
-        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-        Submit Application
-      </button>
     </div>
 
-    <!-- SUCCESS -->
-    <div id="success-panel">
-      <div class="success-icon">
-        <svg width="32" height="32" fill="none" stroke="#FAF7F3" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    <!-- ── STEP 3: Expertise ── -->
+    <div id="step-3" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:20px">
+
+        <div class="field">
+          <label class="field-label" style="margin-bottom:8px">Languages Spoken</label>
+          <div class="chip-grid">
+            <label class="chip"><input type="checkbox" name="lang" value="Arabic"><span class="chip-box"></span>Arabic</label>
+            <label class="chip"><input type="checkbox" name="lang" value="English"><span class="chip-box"></span>English</label>
+            <label class="chip"><input type="checkbox" name="lang" value="French"><span class="chip-box"></span>French</label>
+            <label class="chip"><input type="checkbox" name="lang" value="Russian"><span class="chip-box"></span>Russian</label>
+            <label class="chip"><input type="checkbox" name="lang" value="German"><span class="chip-box"></span>German</label>
+            <label class="chip"><input type="checkbox" name="lang" value="Spanish"><span class="chip-box"></span>Spanish</label>
+            <label class="chip"><input type="checkbox" name="lang" value="Other"><span class="chip-box"></span>Other</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" style="margin-bottom:8px">Areas You Cover</label>
+          <div class="chip-grid">
+            <label class="chip"><input type="checkbox" name="area" value="Beirut"><span class="chip-box"></span>Beirut</label>
+            <label class="chip"><input type="checkbox" name="area" value="Metn"><span class="chip-box"></span>Metn</label>
+            <label class="chip"><input type="checkbox" name="area" value="Keserwan"><span class="chip-box"></span>Keserwan</label>
+            <label class="chip"><input type="checkbox" name="area" value="Mount Lebanon"><span class="chip-box"></span>Mount Lebanon</label>
+            <label class="chip"><input type="checkbox" name="area" value="Chouf"><span class="chip-box"></span>Chouf</label>
+            <label class="chip"><input type="checkbox" name="area" value="North Lebanon"><span class="chip-box"></span>North Lebanon</label>
+            <label class="chip"><input type="checkbox" name="area" value="South Lebanon"><span class="chip-box"></span>South Lebanon</label>
+            <label class="chip"><input type="checkbox" name="area" value="Bekaa"><span class="chip-box"></span>Bekaa</label>
+          </div>
+          <span class="field-hint" style="margin-top:4px">Select all that apply</span>
+        </div>
+
       </div>
-      <h2 class="font-display" style="font-size:26px;color:#4E3219;margin-bottom:10px">Application Received!</h2>
-      <p style="font-size:15px;color:#777;line-height:1.7;max-width:400px;margin:0 auto 24px">Thank you for your interest. Our team will review your application and get back to you within 48 hours.</p>
-      <div style="background:#FAF7F3;border:1px solid rgba(122,82,48,0.12);border-radius:12px;padding:16px 24px;display:inline-block;margin-bottom:2rem">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-bottom:4px">Reference</div>
-        <div id="success-ref" style="font-size:20px;font-weight:700;color:#4E3219;letter-spacing:3px;font-family:'Playfair Display',serif">—</div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goBack(3)">← Back</button>
+        <button class="btn-next" onclick="goNext(3)">
+          Continue
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
-      <br>
-      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;background:#7A5230;color:#fff;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
-        Back to Home
-      </a>
     </div>
-  </div>
-</div>
+
+    <!-- ── STEP 4: Motivation ── -->
+    <div id="step-4" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div class="field">
+          <label class="field-label" for="f-motivation">Why do you want to join Elevate Estates? <span style="color:#A32D2D">*</span></label>
+          <textarea class="field-input" id="f-motivation" placeholder="Tell us what drives you, what you bring to the table, and why Elevate Estates is the right next step for you…" oninput="updateCharCount(this)"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="field-error" id="err-motivation">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Please write at least 30 characters
+            </span>
+            <span class="char-count" id="char-count">0 / 600</span>
+          </div>
+        </div>
+
+        <!-- Privacy note -->
+        <div style="background:rgba(122,82,48,0.04);border:1px solid rgba(122,82,48,0.1);border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <svg width="15" height="15" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <p style="font-size:12px;color:#888;line-height:1.6">Your details are kept confidential and used only for this application. We will contact you within 48 hours.</p>
+        </div>
+
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goBack(4)">← Back</button>
+        <button class="btn-next" id="submit-btn" onclick="submitApplication(this)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Submit Application
+        </button>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS ── -->
+    <div id="step-success" style="display:none">
+      <div class="success-wrap">
+        <div class="success-ring">
+          <svg width="34" height="34" fill="none" stroke="#FAF7F3" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 class="font-display" style="font-size:26px;color:#4E3219;margin-bottom:10px">Application Sent!</h2>
+        <p style="font-size:15px;color:#777;line-height:1.7;max-width:380px;margin:0 auto">Our team will review your application and reach out within 48 hours.</p>
+        <div class="ref-box">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-bottom:4px">Reference Number</div>
+          <div id="success-ref" style="font-size:22px;font-weight:700;color:#4E3219;letter-spacing:4px;font-family:'Playfair Display',serif">—</div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:#7A5230;color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+            Back to Home
+          </a>
+          <a href="listings.html" style="display:inline-flex;align-items:center;gap:7px;background:transparent;color:#7A5230;border:1.5px solid rgba(122,82,48,0.3);padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='rgba(122,82,48,0.05)'" onmouseout="this.style.background='transparent'">
+            Browse Listings
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /form-card -->
+</div><!-- /form-wrap -->
 
 <script src="data.js"></script>
 <script>
-  const SUPABASE_URL  = window.SUPABASE_URL  || 'https://ikbwslamhyimdcduojuv.supabase.co';
-  const SUPABASE_ANON = window.SUPABASE_ANON || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrb' +
-    'nNsYW1oeWltZGNkdW9qdXYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc0NDEzOTYyMywiZXhwIjoyMDU5NzE1NjIzfQ.Z8r5i4-xT_1-L3b5yBRh5y3v' +
-    'bQ7bKGY8fOhI8vSwDic';
+  const SUPABASE_URL  = (typeof window.SUPABASE_URL  !== 'undefined' && window.SUPABASE_URL)  || 'https://ikbwslamhyimdcduojuv.supabase.co';
+  const SUPABASE_ANON = (typeof window.SUPABASE_ANON !== 'undefined' && window.SUPABASE_ANON) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrb25zbGFtaHlpbWRjZHVvanV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxMzk2MjMsImV4cCI6MjA1OTcxNTYyM30.Z8r5i4-xT_1-L3b5yBRh5y3vbQ7bKGY8fOhI8vSwDic';
 
-  function validate() {
+  const STEPS = ['step-1','step-2','step-3','step-4'];
+  const TITLES = ['Personal Information','Professional Background','Your Expertise','About You'];
+  let current = 1;
+
+  function updateProgress(n) {
+    document.getElementById('step-label').textContent = `Step ${n} of 4`;
+    document.getElementById('step-title').textContent = TITLES[n-1];
+    document.getElementById('progress-fill').style.width = (n * 25) + '%';
+    for (let i = 1; i <= 4; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    }
+  }
+
+  function showStep(n) {
+    STEPS.forEach((id, i) => document.getElementById(id).style.display = (i+1 === n) ? 'block' : 'none');
+    document.getElementById('step-success').style.display = 'none';
+    updateProgress(n);
+    current = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Validation rules per step ──
+  const rules = {
+    1: [
+      { id: 'f-name',  errId: 'err-name',  check: v => v.trim().length > 1 },
+      { id: 'f-phone', errId: 'err-phone', check: v => v.trim().length > 5 },
+      { id: 'f-email', errId: 'err-email', check: v => /^[^@]+@[^@]+\.[^@]+$/.test(v.trim()) },
+    ],
+    2: [
+      { id: 'f-experience', errId: 'err-exp', check: v => v !== '' },
+    ],
+    3: [],
+    4: [
+      { id: 'f-motivation', errId: 'err-motivation', check: v => v.trim().length >= 30 },
+    ],
+  };
+
+  function validateStep(n) {
     let ok = true;
-    const fields = [
-      { id: 'f-name',       errId: 'err-name',       check: v => v.trim().length > 1 },
-      { id: 'f-phone',      errId: 'err-phone',      check: v => v.trim().length > 4 },
-      { id: 'f-email',      errId: 'err-email',      check: v => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
-      { id: 'f-experience', errId: 'err-exp',        check: v => v !== '' },
-      { id: 'f-motivation', errId: 'err-motivation', check: v => v.trim().length > 10 },
-    ];
-    fields.forEach(({ id, errId, check }) => {
+    (rules[n] || []).forEach(({ id, errId, check }) => {
       const el  = document.getElementById(id);
       const err = document.getElementById(errId);
-      const ok2 = check(el.value);
-      el.classList.toggle('error', !ok2);
-      if (err) err.style.display = ok2 ? 'none' : 'block';
-      if (!ok2) ok = false;
+      const pass = check(el.value);
+      el.classList.toggle('invalid', !pass);
+      el.classList.toggle('valid',   pass);
+      if (err) err.classList.toggle('show', !pass);
+      if (!pass) ok = false;
     });
     return ok;
   }
 
+  // Inline validation on blur
+  document.addEventListener('blur', e => {
+    const el = e.target;
+    if (!el.classList.contains('field-input')) return;
+    const id = el.id;
+    const stepRules = Object.values(rules).flat();
+    const rule = stepRules.find(r => r.id === id);
+    if (!rule) return;
+    const pass = rule.check(el.value);
+    el.classList.toggle('invalid', !pass);
+    el.classList.toggle('valid',   pass && el.value.trim().length > 0);
+    const err = document.getElementById(rule.errId);
+    if (err) err.classList.toggle('show', !pass && el.value.trim().length > 0);
+  }, true);
+
+  function goNext(n) {
+    if (!validateStep(n)) return;
+    showStep(n + 1);
+  }
+
+  function goBack(n) {
+    showStep(n - 1);
+  }
+
+  function updateCharCount(ta) {
+    const len = ta.value.length;
+    const el = document.getElementById('char-count');
+    el.textContent = `${len} / 600`;
+    el.className = 'char-count' + (len > 500 ? ' warn' : '');
+    if (len > 600) ta.value = ta.value.slice(0, 600);
+  }
+
   async function submitApplication(btn) {
-    if (!validate()) return;
+    if (!validateStep(4)) return;
     btn.disabled = true;
     btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 0.9s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Submitting…';
 
@@ -412,12 +559,15 @@
       document.getElementById('success-ref').textContent = '—';
     }
 
-    document.getElementById('apply-form').style.display = 'none';
-    document.getElementById('success-panel').style.display = 'block';
+    STEPS.forEach(id => document.getElementById(id).style.display = 'none');
+    document.getElementById('step-success').style.display = 'block';
+    document.getElementById('progress-fill').style.width = '100%';
+    document.getElementById('step-label').textContent = 'Complete';
+    document.getElementById('step-title').textContent = 'Application Submitted';
+    for (let i = 1; i <= 4; i++) document.getElementById(`dot-${i}`).className = 'step-dot done';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
-<style>
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 </body>
 </html>

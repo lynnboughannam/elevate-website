@@ -91,6 +91,13 @@
       #results-grid { grid-template-columns: 1fr !important; }
       #listings-main { padding: 1rem !important; }
     }
+    /* ── COMING SOON ── */
+    #coming-soon-wrap {
+      display: none; min-height: calc(100vh - 70px);
+      align-items: center; justify-content: center;
+      background: #EDE8E0; padding: 3rem 1.5rem; text-align: center;
+    }
+    #coming-soon-wrap.show { display: flex; }
   </style>
 </head>
 <body>
@@ -108,6 +115,29 @@
 </nav>
 
 <!-- PAGE HEADER -->
+<!-- COMING SOON OVERLAY -->
+<div id="coming-soon-wrap">
+  <div style="max-width:520px">
+    <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#4E3219,#7A5230);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;box-shadow:0 8px 32px rgba(78,50,25,0.25)">
+      <svg width="28" height="28" fill="none" stroke="#FAF7F3" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    </div>
+    <div style="display:inline-block;background:rgba(122,82,48,0.1);border:1px solid rgba(122,82,48,0.2);border-radius:100px;padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:20px">Coming Soon</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);color:#4E3219;letter-spacing:-0.5px;line-height:1.15;margin-bottom:16px">Our listings are<br><em style="font-style:italic;color:#7A5230">on their way.</em></h1>
+    <p style="font-size:15px;color:#777;line-height:1.75;margin-bottom:36px;max-width:400px;margin-left:auto;margin-right:auto">We're curating an exceptional portfolio of properties across Lebanon. In the meantime, you can list your property or join our team.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="submit.html" style="display:inline-flex;align-items:center;gap:8px;background:#7A5230;color:#fff;padding:13px 26px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Submit a Property
+      </a>
+      <a href="agent-apply.html" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:#7A5230;border:1.5px solid rgba(122,82,48,0.3);padding:13px 26px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='rgba(122,82,48,0.06)'" onmouseout="this.style.background='transparent'">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Join Our Team
+      </a>
+    </div>
+  </div>
+</div>
+
+<div id="listings-page-content">
 <div style="background:#FAF7F3;padding:3rem 2rem 2.5rem;border-bottom:1px solid rgba(122,82,48,0.1)">
   <div style="max-width:1280px;margin:0 auto">
     <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">All Listings</p>
@@ -232,6 +262,7 @@
   </div>
 </footer>
 
+</div><!-- /listings-page-content -->
 <script src="data.js"></script>
 <script>
   initStore();
@@ -430,9 +461,17 @@
     populateChips('type-chips', 'type', types, t => t.charAt(0).toUpperCase() + t.slice(1));
   }
 
-  populateFilters();
-  renderListings();
-  window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
+  // Coming soon check
+  checkComingSoon().then(on => {
+    if (on) {
+      document.getElementById('coming-soon-wrap').classList.add('show');
+      document.getElementById('listings-page-content').style.display = 'none';
+    } else {
+      populateFilters();
+      renderListings();
+      window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
+    }
+  });
 </script>
 </body>
 </html>

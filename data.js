@@ -287,6 +287,29 @@ async function syncFromSupabase() {
   }
 }
 
+// ── Site settings ──────────────────────────────────────────────
+async function checkComingSoon() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_settings?key=eq.coming_soon&select=value`,
+      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
+    );
+    const data = await res.json();
+    return data[0]?.value === 'true';
+  } catch { return false; }
+}
+
+async function setComingSoon(enabled) {
+  await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.coming_soon`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ value: enabled ? 'true' : 'false' }),
+  });
+}
+
 // ── Store helpers ──────────────────────────────────────────────
 
 function initStore() {

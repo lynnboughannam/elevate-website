@@ -296,8 +296,11 @@
     thumb.style.opacity = '1';
   }
 
-  initStore();
-  window.addEventListener('ee:synced', renderProperty, { once: true });
+  checkComingSoon().then(on => {
+    if (on) { window.location.href = 'listings.html'; return; }
+    initStore();
+    window.addEventListener('ee:synced', renderProperty, { once: true });
+  });
 </script>
 </body>
 </html>

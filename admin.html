@@ -244,6 +244,23 @@
       <p style="font-size:14px;color:#999">Here's what's happening on Elevate Estates today.</p>
     </div>
 
+    <!-- Coming Soon Toggle -->
+    <div id="coming-soon-card" style="background:#FAF7F3;border-radius:14px;padding:1.25rem 1.5rem;border:1px solid rgba(122,82,48,0.12);margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="cs-status-dot" style="width:10px;height:10px;border-radius:50%;background:#3B7A3B;flex-shrink:0;box-shadow:0 0 0 3px rgba(59,122,59,0.2)"></div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#4E3219">Listings Coming Soon Mode</div>
+          <div id="cs-status-text" style="font-size:12px;color:#aaa;margin-top:2px">Properties are visible to visitors</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span id="cs-label" style="font-size:12px;font-weight:700;color:#3B7A3B;letter-spacing:0.5px">OFF</span>
+        <button id="cs-toggle" onclick="toggleComingSoon()" style="width:52px;height:28px;border-radius:100px;border:none;cursor:pointer;position:relative;transition:background 0.25s;background:#DDD5C8;flex-shrink:0">
+          <span id="cs-thumb" style="position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);transition:left 0.25s"></span>
+        </button>
+      </div>
+    </div>
+
     <div id="dash-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:2.5rem"></div>
 
     <!-- Recent activity -->
@@ -983,6 +1000,47 @@
       updatePendingBadge();
       updateAgentsBadge();
     } catch(e) {}
+
+    // Load coming soon state
+    checkComingSoon().then(applyComingSoonUI);
+  }
+
+  let _comingSoon = false;
+
+  function applyComingSoonUI(on) {
+    _comingSoon = on;
+    const dot   = document.getElementById('cs-status-dot');
+    const label = document.getElementById('cs-label');
+    const text  = document.getElementById('cs-status-text');
+    const thumb = document.getElementById('cs-thumb');
+    const track = document.getElementById('cs-toggle');
+    if (on) {
+      dot.style.background   = '#A32D2D';
+      dot.style.boxShadow    = '0 0 0 3px rgba(163,45,45,0.2)';
+      label.textContent      = 'ON';
+      label.style.color      = '#A32D2D';
+      text.textContent       = 'Listings are hidden — Coming Soon is active';
+      track.style.background = '#A32D2D';
+      thumb.style.left       = '28px';
+    } else {
+      dot.style.background   = '#3B7A3B';
+      dot.style.boxShadow    = '0 0 0 3px rgba(59,122,59,0.2)';
+      label.textContent      = 'OFF';
+      label.style.color      = '#3B7A3B';
+      text.textContent       = 'Properties are visible to visitors';
+      track.style.background = '#DDD5C8';
+      thumb.style.left       = '4px';
+    }
+  }
+
+  async function toggleComingSoon() {
+    const btn = document.getElementById('cs-toggle');
+    btn.disabled = true;
+    const next = !_comingSoon;
+    await setComingSoon(next);
+    applyComingSoonUI(next);
+    btn.disabled = false;
+    showToast(next ? '⚠️ Coming Soon mode enabled' : '✓ Listings are now live');
   }
 </script>
 </body>

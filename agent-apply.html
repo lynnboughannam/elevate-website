@@ -314,12 +314,6 @@
           <span class="field-hint">Leave blank if not applicable</span>
         </div>
 
-        <div class="field">
-          <label class="field-label" for="f-linkedin">LinkedIn or Portfolio URL</label>
-          <input class="field-input" type="url" id="f-linkedin" placeholder="https://linkedin.com/in/yourname">
-          <span class="field-hint">Optional but helpful for us to learn more</span>
-        </div>
-
       </div>
       <div class="btn-row">
         <button class="btn-back" onclick="goBack(2)">← Back</button>
@@ -330,36 +324,53 @@
       </div>
     </div>
 
-    <!-- ── STEP 3: Expertise ── -->
+    <!-- ── STEP 3: Personal Details ── -->
     <div id="step-3" style="display:none">
-      <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:16px">
 
-        <div class="field">
-          <label class="field-label" style="margin-bottom:8px">Languages Spoken</label>
-          <div class="chip-grid">
-            <label class="chip"><input type="checkbox" name="lang" value="Arabic"><span class="chip-box"></span>Arabic</label>
-            <label class="chip"><input type="checkbox" name="lang" value="English"><span class="chip-box"></span>English</label>
-            <label class="chip"><input type="checkbox" name="lang" value="French"><span class="chip-box"></span>French</label>
-            <label class="chip"><input type="checkbox" name="lang" value="Russian"><span class="chip-box"></span>Russian</label>
-            <label class="chip"><input type="checkbox" name="lang" value="German"><span class="chip-box"></span>German</label>
-            <label class="chip"><input type="checkbox" name="lang" value="Spanish"><span class="chip-box"></span>Spanish</label>
-            <label class="chip"><input type="checkbox" name="lang" value="Other"><span class="chip-box"></span>Other</label>
+        <div class="two-col">
+          <div class="field">
+            <label class="field-label" for="f-age">Age <span style="color:#A32D2D">*</span></label>
+            <input class="field-input" type="number" id="f-age" placeholder="e.g. 28" min="18" max="75">
+            <span class="field-error" id="err-age">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Please enter your age
+            </span>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="f-transport">Do you have transportation? <span style="color:#A32D2D">*</span></label>
+            <select class="field-input" id="f-transport">
+              <option value="">Select…</option>
+              <option value="yes-own">Yes — I own a car</option>
+              <option value="yes-access">Yes — I have regular access to one</option>
+              <option value="no">No</option>
+            </select>
+            <span class="field-error" id="err-transport">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Please select an option
+            </span>
           </div>
         </div>
 
         <div class="field">
-          <label class="field-label" style="margin-bottom:8px">Areas You Cover</label>
-          <div class="chip-grid">
-            <label class="chip"><input type="checkbox" name="area" value="Beirut"><span class="chip-box"></span>Beirut</label>
-            <label class="chip"><input type="checkbox" name="area" value="Metn"><span class="chip-box"></span>Metn</label>
-            <label class="chip"><input type="checkbox" name="area" value="Keserwan"><span class="chip-box"></span>Keserwan</label>
-            <label class="chip"><input type="checkbox" name="area" value="Mount Lebanon"><span class="chip-box"></span>Mount Lebanon</label>
-            <label class="chip"><input type="checkbox" name="area" value="Chouf"><span class="chip-box"></span>Chouf</label>
-            <label class="chip"><input type="checkbox" name="area" value="North Lebanon"><span class="chip-box"></span>North Lebanon</label>
-            <label class="chip"><input type="checkbox" name="area" value="South Lebanon"><span class="chip-box"></span>South Lebanon</label>
-            <label class="chip"><input type="checkbox" name="area" value="Bekaa"><span class="chip-box"></span>Bekaa</label>
-          </div>
-          <span class="field-hint" style="margin-top:4px">Select all that apply</span>
+          <label class="field-label" for="f-location">Where are you located? <span style="color:#A32D2D">*</span></label>
+          <select class="field-input" id="f-location">
+            <option value="">Select your area…</option>
+            <option value="Beirut">Beirut</option>
+            <option value="Metn">Metn</option>
+            <option value="Keserwan">Keserwan</option>
+            <option value="Mount Lebanon">Mount Lebanon</option>
+            <option value="Chouf">Chouf</option>
+            <option value="North Lebanon">North Lebanon</option>
+            <option value="South Lebanon">South Lebanon</option>
+            <option value="Bekaa">Bekaa</option>
+            <option value="Other">Other</option>
+          </select>
+          <span class="field-error" id="err-location">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please select your location
+          </span>
         </div>
 
       </div>
@@ -435,7 +446,7 @@
   // SUPABASE_URL and SUPABASE_ANON are provided by data.js
 
   const STEPS = ['step-1','step-2','step-3','step-4'];
-  const TITLES = ['Personal Information','Professional Background','Your Expertise','About You'];
+  const TITLES = ['Personal Information','Professional Background','Personal Details','About You'];
   let current = 1;
 
   function updateProgress(n) {
@@ -466,7 +477,11 @@
     2: [
       { id: 'f-experience', errId: 'err-exp', check: v => v !== '' },
     ],
-    3: [],
+    3: [
+      { id: 'f-age',       errId: 'err-age',       check: v => v >= 18 && v <= 75 },
+      { id: 'f-transport', errId: 'err-transport',  check: v => v !== '' },
+      { id: 'f-location',  errId: 'err-location',   check: v => v !== '' },
+    ],
     4: [
       { id: 'f-motivation', errId: 'err-motivation', check: v => v.trim().length >= 30 },
     ],
@@ -523,18 +538,15 @@
     btn.disabled = true;
     btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 0.9s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Submitting…';
 
-    const langs = [...document.querySelectorAll('input[name="lang"]:checked')].map(c => c.value);
-    const areas = [...document.querySelectorAll('input[name="area"]:checked')].map(c => c.value);
-
     const payload = {
       name:           document.getElementById('f-name').value.trim(),
       email:          document.getElementById('f-email').value.trim(),
       phone:          document.getElementById('f-phone').value.trim(),
       experience:     document.getElementById('f-experience').value,
       current_agency: document.getElementById('f-agency').value.trim() || null,
-      linkedin:       document.getElementById('f-linkedin').value.trim() || null,
-      languages:      langs.length ? langs : null,
-      areas:          areas.length ? areas : null,
+      age:            parseInt(document.getElementById('f-age').value) || null,
+      location:       document.getElementById('f-location').value,
+      transportation: document.getElementById('f-transport').value,
       motivation:     document.getElementById('f-motivation').value.trim(),
       status:         'pending',
     };

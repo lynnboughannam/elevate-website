@@ -192,6 +192,11 @@
       Submissions
       <span id="pending-badge" style="margin-left:auto;background:#854F0B;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px"></span>
     </div>
+    <div class="nav-item" onclick="showPanel('agents')" id="nav-agents">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Agent Applications
+      <span id="agents-badge" style="margin-left:auto;background:#1A5276;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px"></span>
+    </div>
     <div class="nav-item" onclick="showPanel('add')" id="nav-add">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
       Add Listing
@@ -318,6 +323,20 @@
       </div>
     </div>
     <div id="submissions-list"></div>
+  </div>
+
+  <!-- ── AGENT APPLICATIONS ── -->
+  <div id="panel-agents" style="display:none;padding:2rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+      <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px">Agent Applications</h1>
+      <div style="display:flex;gap:6px">
+        <button class="tab-btn active" onclick="filterAgents('pending',this)">Pending</button>
+        <button class="tab-btn" onclick="filterAgents('approved',this)">Approved</button>
+        <button class="tab-btn" onclick="filterAgents('rejected',this)">Rejected</button>
+        <button class="tab-btn" onclick="filterAgents('all',this)">All</button>
+      </div>
+    </div>
+    <div id="agents-list"></div>
   </div>
 
   <!-- ── ADD LISTING ── -->
@@ -490,15 +509,16 @@
   let tableFilter = 'all';
 
   function showPanel(name) {
-    ['dashboard','listings','submissions','add'].forEach(p => {
+    ['dashboard','listings','submissions','agents','add'].forEach(p => {
       document.getElementById(`panel-${p}`).style.display = p === name ? 'block' : 'none';
       document.getElementById(`nav-${p}`).classList.toggle('active', p === name);
     });
-    const titles = { dashboard: 'Dashboard', listings: 'All Listings', submissions: 'Submissions', add: 'Add Listing' };
+    const titles = { dashboard: 'Dashboard', listings: 'All Listings', submissions: 'Submissions', agents: 'Agent Applications', add: 'Add Listing' };
     document.getElementById('topbar-title').textContent = titles[name] || name;
     currentPanel = name;
     if (name === 'listings')     renderTable();
     if (name === 'submissions')  loadSubmissions();
+    if (name === 'agents')       loadAgentApplications();
     if (name === 'dashboard')    renderDashboard();
     // Close mobile sidebar after nav
     document.getElementById('sidebar').classList.remove('open');
@@ -652,6 +672,115 @@
       if (action === 'reject')  showToast('Submission rejected');
       if (action === 'delete')  showToast('Submission deleted');
       await loadSubmissions();
+    } catch(e) {
+      showToast('Action failed — check console');
+      console.error(e);
+      btn.textContent = orig;
+      btn.disabled = false;
+    }
+  }
+
+  // ── AGENT APPLICATIONS ──
+  let allAgents = [];
+  let agentsFilter = 'pending';
+
+  async function loadAgentApplications() {
+    const list = document.getElementById('agents-list');
+    list.innerHTML = `<div style="text-align:center;padding:3rem;color:#A87850">Loading…</div>`;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/agent_applications?select=*&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+      });
+      allAgents = await res.json();
+      updateAgentsBadge();
+      renderAgents();
+    } catch(e) {
+      list.innerHTML = `<div style="text-align:center;padding:3rem;color:#A32D2D">Failed to load agent applications</div>`;
+    }
+  }
+
+  function updateAgentsBadge() {
+    const count = allAgents.filter(a => a.status === 'pending').length;
+    const badge = document.getElementById('agents-badge');
+    badge.textContent = count > 0 ? count : '';
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+
+  function filterAgents(status, btn) {
+    agentsFilter = status;
+    document.querySelectorAll('#panel-agents .tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderAgents();
+  }
+
+  function renderAgents() {
+    const list = document.getElementById('agents-list');
+    const data = agentsFilter === 'all' ? allAgents : allAgents.filter(a => a.status === agentsFilter);
+    if (data.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:4rem 2rem;background:#FAF7F3;border-radius:14px;border:1px solid rgba(122,82,48,0.1)">
+        <div style="font-size:48px;margin-bottom:1rem">👥</div>
+        <h3 style="font-size:18px;font-weight:700;color:#4E3219;margin-bottom:8px">No ${agentsFilter === 'all' ? '' : agentsFilter} applications</h3>
+      </div>`;
+      return;
+    }
+    list.innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">` + data.map(a => `
+      <div style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1)">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+              <span style="font-family:monospace;font-size:11px;font-weight:700;color:#1A5276;background:#D6EAF8;padding:2px 8px;border-radius:4px">${a.id.slice(0,8).toUpperCase()}</span>
+              <span class="status-${a.status}" style="${a.status==='approved'?'background:#e6f4ea;color:#2d6a2d;':a.status==='rejected'?'background:#fde8e8;color:#8b1a1a;':'background:#fef3cd;color:#856404;'}">${a.status.charAt(0).toUpperCase()+a.status.slice(1)}</span>
+              <span style="font-size:11px;color:#aaa">${new Date(a.created_at).toLocaleDateString()}</span>
+            </div>
+            <h3 style="font-size:17px;font-weight:700;color:#4E3219;margin-bottom:4px">${a.name}</h3>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:#666;margin-bottom:10px">
+              <a href="mailto:${a.email}" style="color:#7A5230;text-decoration:none">${a.email}</a>
+              <a href="tel:${a.phone}" style="color:#7A5230;text-decoration:none">${a.phone}</a>
+              ${a.linkedin?`<a href="${a.linkedin}" target="_blank" style="color:#1A5276;text-decoration:none">LinkedIn ↗</a>`:''}
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+              <span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">📅 ${a.experience || '—'} exp</span>
+              ${a.current_agency?`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">🏢 ${a.current_agency}</span>`:''}
+              ${(a.languages||[]).map(l=>`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;color:#555">${l}</span>`).join('')}
+            </div>
+            ${(a.areas||[]).length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${(a.areas||[]).map(ar=>`<span style="background:rgba(122,82,48,0.1);border:1px solid rgba(122,82,48,0.2);border-radius:20px;padding:2px 10px;font-size:11px;color:#7A5230;font-weight:600">${ar}</span>`).join('')}</div>`:''}
+            ${a.motivation?`<div style="background:#EDE8E0;border-radius:8px;padding:12px 14px;font-size:13px;color:#555;line-height:1.65;font-style:italic">"${a.motivation.slice(0,320)}${a.motivation.length>320?'…':''}"</div>`:''}
+          </div>
+          ${a.status === 'pending' ? `
+          <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+            <button class="btn-approve" style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="agentAction('approve','${a.id}',this)">✓ Approve</button>
+            <button class="btn-reject"  style="padding:10px 20px;font-size:13px;border-radius:8px" onclick="agentAction('reject','${a.id}',this)">✕ Reject</button>
+            <button class="btn-delete"  style="padding:8px 12px;font-size:12px;border-radius:8px;text-align:center" onclick="agentAction('delete','${a.id}',this)">Delete</button>
+          </div>` : `
+          <div style="flex-shrink:0">
+            <button class="btn-delete" style="padding:8px 12px;font-size:12px;border-radius:8px" onclick="agentAction('delete','${a.id}',this)">Delete</button>
+          </div>`}
+        </div>
+      </div>`).join('') + `</div>`;
+  }
+
+  async function agentAction(action, id, btn) {
+    const orig = btn.textContent;
+    btn.textContent = '…';
+    btn.disabled = true;
+    const newStatus = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : null;
+    try {
+      if (action === 'delete') {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/agent_applications?id=eq.${id}`, {
+          method: 'DELETE',
+          headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+        });
+        if (!res.ok) throw new Error(await res.text());
+        showToast('Application deleted');
+      } else {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/agent_applications?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        showToast(action === 'approve' ? '✓ Application approved' : 'Application rejected');
+      }
+      await loadAgentApplications();
     } catch(e) {
       showToast('Action failed — check console');
       console.error(e);
@@ -840,13 +969,19 @@
 
   async function refreshAll() {
     renderDashboard();
-    // Pre-load submissions for badge count
     try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,status&order=created_at.desc`, {
-        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
-      });
-      allSubmissions = await res.json();
+      const [subRes, agentRes] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,status&order=created_at.desc`, {
+          headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+        }),
+        fetch(`${SUPABASE_URL}/rest/v1/agent_applications?select=id,status&order=created_at.desc`, {
+          headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+        }),
+      ]);
+      allSubmissions = await subRes.json();
+      allAgents = await agentRes.json();
       updatePendingBadge();
+      updateAgentsBadge();
     } catch(e) {}
   }
 </script>

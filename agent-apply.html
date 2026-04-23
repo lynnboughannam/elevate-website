@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Our Team — Elevate Estates</title>
+  <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    nav { background: rgba(250,247,243,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(122,82,48,0.12); box-shadow: 0 2px 20px rgba(78,50,25,0.08); position: sticky; top: 0; z-index: 100; }
+
+    /* ── HERO ── */
+    .hero-band {
+      background: #1A0E06;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 2rem 72px;
+      text-align: center;
+    }
+    .hero-band::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 20% 50%, rgba(201,168,76,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 80% 40%, rgba(122,82,48,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grain {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.4;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.35);
+      color: #C9A84C;
+      font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 6vw, 56px);
+      color: #FAF7F3;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero-title em { color: #C9A84C; font-style: italic; }
+    .hero-sub {
+      font-size: 16px; color: rgba(250,247,243,0.55);
+      max-width: 540px; margin: 0 auto; line-height: 1.75;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: #FAF7F3;
+      border-radius: 20px;
+      border: 1px solid rgba(122,82,48,0.12);
+      box-shadow: 0 8px 40px rgba(46,31,14,0.1), 0 2px 8px rgba(46,31,14,0.05);
+      overflow: hidden;
+    }
+    .form-card-header {
+      background: linear-gradient(135deg, #4E3219 0%, #2E1F0E 100%);
+      padding: 28px 32px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .form-card-body { padding: 32px; }
+
+    /* ── INPUTS ── */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #A87850; }
+    .form-input {
+      width: 100%; padding: 12px 16px;
+      border: 1px solid rgba(122,82,48,0.2); border-radius: 10px;
+      font-family: 'Nunito Sans', sans-serif; font-size: 14px; color: #2E1F0E;
+      background: #FFF; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus { border-color: #7A5230; box-shadow: 0 0 0 3px rgba(122,82,48,0.1); }
+    .form-input.error { border-color: #A32D2D; }
+    .form-error { font-size: 11px; color: #A32D2D; display: none; }
+    textarea.form-input { resize: vertical; min-height: 120px; line-height: 1.65; }
+
+    /* ── CHECKBOXES ── */
+    .check-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .check-chip {
+      display: flex; align-items: center; gap: 7px;
+      background: #FFF; border: 1px solid rgba(122,82,48,0.2);
+      border-radius: 8px; padding: 8px 14px;
+      cursor: pointer; font-size: 13px; font-weight: 600; color: #4E3219;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .check-chip:hover { border-color: #A87850; background: #FAF7F3; }
+    .check-chip input { display: none; }
+    .check-chip .box {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(122,82,48,0.3); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .check-chip input:checked ~ .box { background: #7A5230; border-color: #7A5230; }
+    .check-chip input:checked ~ .box::after { content: ''; width: 9px; height: 5px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px,-1px); display: block; }
+    .check-chip input:checked ~ span { color: #4E3219; }
+    .check-chip:has(input:checked) { border-color: #7A5230; background: #EFE3D5; }
+
+    /* ── SUBMIT BUTTON ── */
+    .btn-submit {
+      width: 100%; background: #7A5230; color: #fff;
+      border: none; padding: 16px 32px; border-radius: 12px;
+      font-family: 'Nunito Sans', sans-serif; font-size: 16px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: background 0.2s, transform 0.15s;
+      position: relative; overflow: hidden;
+    }
+    .btn-submit:hover { background: #4E3219; transform: translateY(-2px); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { background: #B8A090; cursor: not-allowed; transform: none; }
+
+    /* ── SUCCESS ── */
+    #success-panel {
+      display: none; text-align: center; padding: 3rem 2rem;
+    }
+    .success-icon {
+      width: 72px; height: 72px; background: linear-gradient(135deg,#7A5230,#A87850);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 32px rgba(122,82,48,0.3);
+    }
+
+    /* ── WHY PANEL ── */
+    .perks-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .perk-card {
+      background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 14px; padding: 24px 20px; text-align: center;
+    }
+    .perk-icon { font-size: 28px; margin-bottom: 12px; }
+    .perk-title { font-size: 14px; font-weight: 700; color: #FAF7F3; margin-bottom: 6px; }
+    .perk-desc { font-size: 13px; color: rgba(250,247,243,0.5); line-height: 1.6; }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 16px;
+      margin: 28px 0 24px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #A87850;
+    }
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(122,82,48,0.15);
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #EDE8E0; }
+    ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
+
+    @media (max-width: 640px) {
+      .perks-grid { grid-template-columns: 1fr; }
+      .form-card-body { padding: 20px; }
+      .two-col { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <img src="brand_Assets/dark-icon.png" alt="Elevate Estates" style="height:34px">
+      <span class="font-display" style="font-size:17px;font-weight:700;color:#4E3219;letter-spacing:-0.3px">Elevate Estates</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:28px">
+      <a href="listings.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#4E3219;transition:color 0.2s" onmouseover="this.style.color='#7A5230'" onmouseout="this.style.color='#4E3219'">Properties</a>
+      <a href="submit.html" style="font-size:14px;font-weight:600;text-decoration:none;color:#4E3219;transition:color 0.2s" onmouseover="this.style.color='#7A5230'" onmouseout="this.style.color='#4E3219'">List Property</a>
+      <a href="agent-apply.html" style="font-size:14px;font-weight:700;text-decoration:none;color:#7A5230">Join Our Team</a>
+      <a href="listings.html" style="background:#7A5230;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">Browse Listings</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-band">
+  <div class="hero-grain"></div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-tag">Agent Careers</div>
+    <h1 class="hero-title">Grow your career with<br><em>Elevate Estates</em></h1>
+    <p class="hero-sub">We're looking for driven, client-first real estate professionals to join our growing team in Lebanon.</p>
+
+    <!-- Perks -->
+    <div class="perks-grid" style="max-width:760px;margin:48px auto 0">
+      <div class="perk-card">
+        <div class="perk-icon">💰</div>
+        <div class="perk-title">Competitive Commission</div>
+        <div class="perk-desc">Among the highest commission structures in the Lebanese market</div>
+      </div>
+      <div class="perk-card">
+        <div class="perk-icon">🌐</div>
+        <div class="perk-title">Premium Listings</div>
+        <div class="perk-desc">Access to exclusive, verified inventory across all regions</div>
+      </div>
+      <div class="perk-card">
+        <div class="perk-icon">📈</div>
+        <div class="perk-title">Real Growth</div>
+        <div class="perk-desc">Mentorship, marketing support, and a brand that opens doors</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM SECTION -->
+<div style="max-width:720px;margin:0 auto;padding:3rem 1.5rem 5rem">
+
+  <!-- Form card -->
+  <div class="form-card" id="form-card">
+    <div class="form-card-header">
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="20" height="20" fill="none" stroke="#C9A84C" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div>
+        <div style="font-size:17px;font-weight:700;color:#FAF7F3;font-family:'Playfair Display',serif">Apply to Join</div>
+        <div style="font-size:12px;color:rgba(250,247,243,0.45);margin-top:2px">We review every application within 48 hours</div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card-body" id="apply-form">
+
+      <div class="section-divider">Personal Information</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem" class="two-col">
+        <div class="form-group">
+          <label class="form-label">Full Name <span style="color:#A32D2D">*</span></label>
+          <input type="text" id="f-name" class="form-input" placeholder="e.g. Rami Haddad">
+          <span class="form-error" id="err-name">Required</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number <span style="color:#A32D2D">*</span></label>
+          <input type="tel" id="f-phone" class="form-input" placeholder="+961 XX XXX XXX">
+          <span class="form-error" id="err-phone">Required</span>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.25rem">
+        <label class="form-label">Email Address <span style="color:#A32D2D">*</span></label>
+        <input type="email" id="f-email" class="form-input" placeholder="you@example.com">
+        <span class="form-error" id="err-email">Valid email required</span>
+      </div>
+
+      <div class="section-divider">Professional Background</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem" class="two-col">
+        <div class="form-group">
+          <label class="form-label">Years of Experience <span style="color:#A32D2D">*</span></label>
+          <select id="f-experience" class="form-input">
+            <option value="">Select…</option>
+            <option value="less-than-1">Less than 1 year</option>
+            <option value="1-3">1 – 3 years</option>
+            <option value="3-5">3 – 5 years</option>
+            <option value="5-10">5 – 10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
+          <span class="form-error" id="err-exp">Required</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current / Previous Agency</label>
+          <input type="text" id="f-agency" class="form-input" placeholder="Agency name (or Independent)">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.25rem">
+        <label class="form-label">LinkedIn or Portfolio URL</label>
+        <input type="url" id="f-linkedin" class="form-input" placeholder="https://linkedin.com/in/…">
+      </div>
+
+      <div class="section-divider">Expertise</div>
+
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label" style="margin-bottom:10px">Languages Spoken</label>
+        <div class="check-grid">
+          <label class="check-chip"><input type="checkbox" name="lang" value="Arabic"><span class="box"></span><span>Arabic</span></label>
+          <label class="check-chip"><input type="checkbox" name="lang" value="English"><span class="box"></span><span>English</span></label>
+          <label class="check-chip"><input type="checkbox" name="lang" value="French"><span class="box"></span><span>French</span></label>
+          <label class="check-chip"><input type="checkbox" name="lang" value="Russian"><span class="box"></span><span>Russian</span></label>
+          <label class="check-chip"><input type="checkbox" name="lang" value="German"><span class="box"></span><span>German</span></label>
+          <label class="check-chip"><input type="checkbox" name="lang" value="Other"><span class="box"></span><span>Other</span></label>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label" style="margin-bottom:10px">Areas of Expertise</label>
+        <div class="check-grid">
+          <label class="check-chip"><input type="checkbox" name="area" value="Beirut"><span class="box"></span><span>Beirut</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="Metn"><span class="box"></span><span>Metn</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="Keserwan"><span class="box"></span><span>Keserwan</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="Mount Lebanon"><span class="box"></span><span>Mount Lebanon</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="Chouf"><span class="box"></span><span>Chouf</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="North Lebanon"><span class="box"></span><span>North Lebanon</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="South Lebanon"><span class="box"></span><span>South Lebanon</span></label>
+          <label class="check-chip"><input type="checkbox" name="area" value="Bekaa"><span class="box"></span><span>Bekaa</span></label>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:2rem">
+        <label class="form-label">Why do you want to join Elevate Estates? <span style="color:#A32D2D">*</span></label>
+        <textarea id="f-motivation" class="form-input" placeholder="Tell us about yourself and why you'd be a great fit…"></textarea>
+        <span class="form-error" id="err-motivation">Please tell us about yourself</span>
+      </div>
+
+      <!-- Disclaimer -->
+      <div style="background:rgba(122,82,48,0.05);border:1px solid rgba(122,82,48,0.1);border-radius:10px;padding:14px 16px;margin-bottom:1.75rem;display:flex;gap:10px;align-items:flex-start">
+        <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <p style="font-size:12px;color:#777;line-height:1.6;margin:0">Your information is kept strictly confidential and used only for recruitment purposes. We will contact you via the phone or email provided.</p>
+      </div>
+
+      <button class="btn-submit" onclick="submitApplication(this)">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Submit Application
+      </button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="success-panel">
+      <div class="success-icon">
+        <svg width="32" height="32" fill="none" stroke="#FAF7F3" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="font-display" style="font-size:26px;color:#4E3219;margin-bottom:10px">Application Received!</h2>
+      <p style="font-size:15px;color:#777;line-height:1.7;max-width:400px;margin:0 auto 24px">Thank you for your interest. Our team will review your application and get back to you within 48 hours.</p>
+      <div style="background:#FAF7F3;border:1px solid rgba(122,82,48,0.12);border-radius:12px;padding:16px 24px;display:inline-block;margin-bottom:2rem">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#A87850;margin-bottom:4px">Reference</div>
+        <div id="success-ref" style="font-size:20px;font-weight:700;color:#4E3219;letter-spacing:3px;font-family:'Playfair Display',serif">—</div>
+      </div>
+      <br>
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;background:#7A5230;color:#fff;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">
+        Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const SUPABASE_URL  = window.SUPABASE_URL  || 'https://ikbwslamhyimdcduojuv.supabase.co';
+  const SUPABASE_ANON = window.SUPABASE_ANON || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrb' +
+    'nNsYW1oeWltZGNkdW9qdXYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc0NDEzOTYyMywiZXhwIjoyMDU5NzE1NjIzfQ.Z8r5i4-xT_1-L3b5yBRh5y3v' +
+    'bQ7bKGY8fOhI8vSwDic';
+
+  function validate() {
+    let ok = true;
+    const fields = [
+      { id: 'f-name',       errId: 'err-name',       check: v => v.trim().length > 1 },
+      { id: 'f-phone',      errId: 'err-phone',      check: v => v.trim().length > 4 },
+      { id: 'f-email',      errId: 'err-email',      check: v => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
+      { id: 'f-experience', errId: 'err-exp',        check: v => v !== '' },
+      { id: 'f-motivation', errId: 'err-motivation', check: v => v.trim().length > 10 },
+    ];
+    fields.forEach(({ id, errId, check }) => {
+      const el  = document.getElementById(id);
+      const err = document.getElementById(errId);
+      const ok2 = check(el.value);
+      el.classList.toggle('error', !ok2);
+      if (err) err.style.display = ok2 ? 'none' : 'block';
+      if (!ok2) ok = false;
+    });
+    return ok;
+  }
+
+  async function submitApplication(btn) {
+    if (!validate()) return;
+    btn.disabled = true;
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 0.9s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Submitting…';
+
+    const langs = [...document.querySelectorAll('input[name="lang"]:checked')].map(c => c.value);
+    const areas = [...document.querySelectorAll('input[name="area"]:checked')].map(c => c.value);
+
+    const payload = {
+      name:           document.getElementById('f-name').value.trim(),
+      email:          document.getElementById('f-email').value.trim(),
+      phone:          document.getElementById('f-phone').value.trim(),
+      experience:     document.getElementById('f-experience').value,
+      current_agency: document.getElementById('f-agency').value.trim() || null,
+      linkedin:       document.getElementById('f-linkedin').value.trim() || null,
+      languages:      langs.length ? langs : null,
+      areas:          areas.length ? areas : null,
+      motivation:     document.getElementById('f-motivation').value.trim(),
+      status:         'pending',
+    };
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/agent_applications`, {
+        method: 'POST',
+        headers: {
+          'apikey':        SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type':  'application/json',
+          'Prefer':        'return=representation',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const [saved] = await res.json();
+      document.getElementById('success-ref').textContent = saved.id.slice(0,8).toUpperCase();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('success-ref').textContent = '—';
+    }
+
+    document.getElementById('apply-form').style.display = 'none';
+    document.getElementById('success-panel').style.display = 'block';
+  }
+</script>
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>

@@ -755,12 +755,13 @@
               ${a.linkedin?`<a href="${a.linkedin}" target="_blank" style="color:#1A5276;text-decoration:none">LinkedIn ↗</a>`:''}
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-              <span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">📅 ${a.experience || '—'} exp</span>
+              ${a.experience?`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">📅 ${a.experience} exp</span>`:''}
+              ${a.age?`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">🎂 Age ${a.age}</span>`:''}
+              ${a.transportation?`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">🚗 ${a.transportation==='yes'?'Has transport':a.transportation==='no'?'No transport':'Transport: '+a.transportation}</span>`:''}
               ${a.current_agency?`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#4E3219">🏢 ${a.current_agency}</span>`:''}
-              ${(a.languages||[]).map(l=>`<span style="background:#EDE8E0;border-radius:6px;padding:3px 10px;font-size:11px;color:#555">${l}</span>`).join('')}
             </div>
-            ${(a.areas||[]).length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${(a.areas||[]).map(ar=>`<span style="background:rgba(122,82,48,0.1);border:1px solid rgba(122,82,48,0.2);border-radius:20px;padding:2px 10px;font-size:11px;color:#7A5230;font-weight:600">${ar}</span>`).join('')}</div>`:''}
-            ${a.motivation?`<div style="background:#EDE8E0;border-radius:8px;padding:12px 14px;font-size:13px;color:#555;line-height:1.65;font-style:italic">"${a.motivation.slice(0,320)}${a.motivation.length>320?'…':''}"</div>`:''}
+            ${(a.location||[]).length?`<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;margin-bottom:6px">Areas covered</div><div style="display:flex;gap:6px;flex-wrap:wrap">${(a.location||[]).map(ar=>`<span style="background:rgba(122,82,48,0.1);border:1px solid rgba(122,82,48,0.2);border-radius:20px;padding:3px 12px;font-size:12px;color:#7A5230;font-weight:600">${ar}</span>`).join('')}</div></div>`:''}
+            ${a.motivation?`<div style="background:#EDE8E0;border-radius:8px;padding:12px 14px;font-size:13px;color:#555;line-height:1.65;font-style:italic">"${a.motivation}"</div>`:''}
           </div>
           ${a.status === 'pending' ? `
           <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">

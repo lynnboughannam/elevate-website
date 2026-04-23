@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -311,15 +311,17 @@
 
     <!-- Desktop links -->
     <div style="display:flex;align-items:center;gap:32px" class="hidden-mobile">
-      <a href="listings.html" class="nav-link" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Properties</a>
+      <!-- <a href="listings.html" class="nav-link" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Properties</a> -->
       <a href="listings.html?purpose=sale" class="nav-link" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Buy</a>
       <a href="listings.html?purpose=rent" class="nav-link" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Rent</a>
       <a href="#contact" class="nav-link" style="font-size:14px;font-weight:600;text-decoration:none;transition:color 0.2s;letter-spacing:0.3px">Contact</a>
-      <a href="agent-apply.html" style="font-size:14px;font-weight:700;text-decoration:none;color:#7A5230;transition:color 0.2s;letter-spacing:0.3px" onmouseover="this.style.color='#4E3219'" onmouseout="this.style.color='#7A5230'">Join Our Team</a>
+      <!-- <a href="agent-apply.html" style="font-size:14px;font-weight:700;text-decoration:none;color:#7A5230;transition:color 0.2s;letter-spacing:0.3px" onmouseover="this.style.color='#4E3219'" onmouseout="this.style.color='#7A5230'">Join Our Team</a> -->
     </div>
 
     <!-- CTA buttons -->
     <div style="display:flex;align-items:center;gap:10px" class="hidden-mobile">
+    <a href="agent-apply.html" style="font-size:14px;font-weight:700;text-decoration:none;color:#7A5230;transition:color 0.2s;letter-spacing:0.3px" onmouseover="this.style.color='#4E3219'" onmouseout="this.style.color='#7A5230'">Join Our Team</a> 
+   
       <a href="submit.html" class="btn-nav-white" style="text-decoration:none">List Property</a>
       <a href="listings.html" class="btn-nav-solid" style="text-decoration:none">Browse Listings</a>
     </div>
@@ -461,9 +463,29 @@
   </div>
 </section>
 
+
+<!-- Coming Soon banner (hidden by default, shown via JS) -->
+<section id="home-coming-soon" style="display:none;padding:5rem 2rem;background:#0F0905;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;opacity:0.4;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.08%22/%3E%3C/svg%3E')"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:400px;background:radial-gradient(ellipse,rgba(201,168,76,0.10) 0%,transparent 70%);pointer-events:none"></div>
+  <div style="max-width:680px;margin:0 auto;text-align:center;position:relative;z-index:1">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:100px;padding:6px 18px;margin-bottom:2rem">
+      <span style="width:7px;height:7px;border-radius:50%;background:#C9A84C;display:inline-block;animation:pulse-dot 1.8s ease-in-out infinite"></span>
+      <span style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#C9A84C">Coming Soon</span>
+    </div>
+    <h2 class="font-display" style="font-size:clamp(32px,5vw,54px);color:#FAF7F3;letter-spacing:-1px;line-height:1.1;margin-bottom:1.25rem">Listings Launching Soon</h2>
+    <p style="font-size:16px;color:rgba(255,255,255,0.55);line-height:1.75;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto">We're curating a premium selection of properties across Lebanon. Be the first to know when we go live.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="submit.html" style="display:inline-flex;align-items:center;gap:8px;background:#C9A84C;color:#0F0905;font-size:14px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Submit a Listing</a>
+      <a href="agent-apply.html" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:#FAF7F3;font-size:14px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;border:1px solid rgba(255,255,255,0.2);transition:border-color 0.2s,background 0.2s" onmouseover="this.style.borderColor='rgba(255,255,255,0.5)';this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)';this.style.background='transparent'">Join Our Team</a>
+    </div>
+  </div>
+  <style>@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}</style>
+</section>
 <!-- ══════════════════════════════════════════════════════════
      INVESTMENT PICKS — FEATURED
 ══════════════════════════════════════════════════════════ -->
+<div id="home-listings-wrap">
 <section id="investment-section" style="padding:5rem 2rem;background:#0F0905;position:relative;overflow:hidden">
 
   <!-- Grain texture overlay -->
@@ -661,6 +683,7 @@
     <div id="recent-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
   </div>
 </section>
+</div><!-- /home-listings-wrap -->
 
 <!-- ══════════════════════════════════════════════════════════
      TESTIMONIALS
@@ -869,11 +892,12 @@
       </div>
       <div>
         <h4 style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1rem">Company</h4>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <a href="submit.html" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">List a Property</a>
-          <a href="agent-apply.html" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Join Our Team</a>
-          <a href="#contact" style="font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">Contact</a>
-        </div>
+        <div class="nav-links">
+      <a href="listings.html" class="nav-link">Properties</a>
+      <a href="submit.html" class="nav-link">List Property</a>
+      <a href="agent-apply.html" class="nav-link active">Join Our Team</a>
+      <a href="listings.html" class="btn-nav">Browse Listings</a>
+    </div>
       </div>
     </div>
     <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
@@ -1063,8 +1087,16 @@
     populateAreas();
     populateTypes();
   }
-  renderHome();
-  window.addEventListener('ee:synced', renderHome);
+  checkComingSoon().then(on => {
+    const wrap = document.getElementById('home-listings-wrap');
+    if (on) {
+      wrap.style.display = 'none';
+      document.getElementById('home-coming-soon').style.display = 'block';
+    } else {
+      renderHome();
+      window.addEventListener('ee:synced', renderHome);
+    }
+  });
 
   // ── Scroll reveal ──
   const observer = new IntersectionObserver(entries => {

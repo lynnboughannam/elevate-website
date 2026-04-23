@@ -295,18 +295,21 @@ async function checkComingSoon() {
       { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
     );
     const data = await res.json();
+    console.log('[ComingSoon] status:', res.status, 'data:', JSON.stringify(data));
+    if (!res.ok) { console.error('[ComingSoon] fetch error:', data); return false; }
     return data[0]?.value === 'true';
-  } catch { return false; }
+  } catch(e) { console.error('[ComingSoon] exception:', e); return false; }
 }
 
 async function setComingSoon(enabled) {
-  await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.coming_soon`, {
-    method: 'PATCH',
+  await fetch(`${SUPABASE_URL}/rest/v1/site_settings`, {
+    method: 'POST',
     headers: {
       'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`,
       'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates',
     },
-    body: JSON.stringify({ value: enabled ? 'true' : 'false' }),
+    body: JSON.stringify({ key: 'coming_soon', value: enabled ? 'true' : 'false' }),
   });
 }
 

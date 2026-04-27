@@ -6,6 +6,7 @@
   <title>Admin — Elevate Estates</title>
   <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -346,11 +347,15 @@
   <div id="panel-agents" style="display:none;padding:2rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
       <h1 class="font-display" style="font-size:24px;color:#4E3219;letter-spacing:-0.3px">Agent Applications</h1>
-      <div style="display:flex;gap:6px">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
         <button class="tab-btn active" onclick="filterAgents('pending',this)">Pending</button>
         <button class="tab-btn" onclick="filterAgents('approved',this)">Approved</button>
         <button class="tab-btn" onclick="filterAgents('rejected',this)">Rejected</button>
         <button class="tab-btn" onclick="filterAgents('all',this)">All</button>
+        <button onclick="exportAgentsToExcel()" style="margin-left:8px;display:flex;align-items:center;gap:6px;background:#3B6D11;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#2d5409'" onmouseout="this.style.background='#3B6D11'">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Excel
+        </button>
       </div>
     </div>
     <div id="agents-list"></div>
@@ -1032,6 +1037,36 @@
       track.style.background = '#DDD5C8';
       thumb.style.left       = '4px';
     }
+  }
+
+  function exportAgentsToExcel() {
+    if (!allAgents.length) { showToast('No applications to export'); return; }
+    const rows = allAgents.map(a => ({
+      'ID':              a.id,
+      'Name':            a.name || '',
+      'Email':           a.email || '',
+      'Phone':           a.phone || '',
+      'LinkedIn':        a.linkedin || '',
+      'Experience':      a.experience || '',
+      'Age':             a.age || '',
+      'Transportation':  a.transportation || '',
+      'Current Agency':  a.current_agency || '',
+      'Areas Covered':   (a.location || []).join(', '),
+      'Motivation':      a.motivation || '',
+      'Status':          a.status || '',
+      'Submitted':       a.created_at ? new Date(a.created_at).toLocaleDateString() : '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Agent Applications');
+    const colWidths = [
+      {wch:10},{wch:22},{wch:28},{wch:18},{wch:30},{wch:14},{wch:6},
+      {wch:16},{wch:22},{wch:30},{wch:50},{wch:12},{wch:14},
+    ];
+    ws['!cols'] = colWidths;
+    const date = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, `agent-applications-${date}.xlsx`);
+    showToast('Excel file downloaded');
   }
 
   async function toggleComingSoon() {

@@ -98,6 +98,15 @@
       <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
   }
 
+  function formatDesc(text) {
+    if (!text) return '';
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/\n/g,'<br>');
+  }
+
   function renderProperty() {
     const listing = getListing(id);
     if (!listing || listing.status !== 'approved') {
@@ -201,7 +210,6 @@
             <div class="detail-item"><span class="detail-label">Area</span><span class="detail-value">${listing.sqm} m²</span></div>
             <div class="detail-item"><span class="detail-label">Type</span><span class="detail-value">${typeText}</span></div>
             <div class="detail-item"><span class="detail-label">Purpose</span><span class="detail-value">${purposeText}</span></div>
-            ${listing.tag ? `<div class="detail-item"><span class="detail-label">Tag</span><span class="detail-value" style="text-transform:capitalize">${listing.tag === 'luxury' ? 'Luxury' : listing.tag === 'rent' ? 'For Rent' : 'For Sale'}</span></div>` : ''}
             <div class="detail-item"><span class="detail-label">Floor</span><span class="detail-value">${listing.floor || '—'}</span></div>
             <div class="detail-item"><span class="detail-label">Age</span><span class="detail-value">${listing.age || '—'}</span></div>
             ${parking}
@@ -213,7 +221,7 @@
               <span style="width:4px;height:20px;background:#7A5230;border-radius:2px;display:inline-block"></span>
               Description
             </h2>
-            <p style="font-size:15px;line-height:1.8;color:#555">${listing.description}</p>
+            <p style="font-size:15px;line-height:1.8;color:#555">${formatDesc(listing.description)}</p>
           </div>
 
           <!-- Amenities -->
@@ -224,6 +232,21 @@
             </h2>
             <div style="display:flex;flex-wrap:wrap;gap:8px">${amenitiesHtml}</div>
           </div>
+
+          <!-- Tags -->
+          ${(listing.tags||[]).length ? `
+          <div style="background:#FAF7F3;border-radius:16px;padding:2rem;border:1px solid rgba(122,82,48,0.1);margin-bottom:2rem">
+            <h2 style="font-size:16px;font-weight:700;color:#4E3219;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px">
+              <span style="width:4px;height:20px;background:#7A5230;border-radius:2px;display:inline-block"></span>
+              Tags
+            </h2>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              ${(listing.tags||[]).map(t=>`<div class="amenity-chip">
+                <svg width="14" height="14" fill="none" stroke="#7A5230" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                ${t}
+              </div>`).join('')}
+            </div>
+          </div>` : ''}
 
           <!-- Similar listings -->
           ${similar.length > 0 ? `
@@ -268,7 +291,7 @@
               </div>
               <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555">
                 <svg width="14" height="14" fill="none" stroke="#7A5230" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                Direct owner/agent contact
+                Direct agent contact
               </div>
               <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555">
                 <svg width="14" height="14" fill="none" stroke="#7A5230" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>

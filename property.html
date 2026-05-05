@@ -201,6 +201,7 @@
             <div class="detail-item"><span class="detail-label">Area</span><span class="detail-value">${listing.sqm} m²</span></div>
             <div class="detail-item"><span class="detail-label">Type</span><span class="detail-value">${typeText}</span></div>
             <div class="detail-item"><span class="detail-label">Purpose</span><span class="detail-value">${purposeText}</span></div>
+            ${listing.tag ? `<div class="detail-item"><span class="detail-label">Tag</span><span class="detail-value" style="text-transform:capitalize">${listing.tag === 'luxury' ? 'Luxury' : listing.tag === 'rent' ? 'For Rent' : 'For Sale'}</span></div>` : ''}
             <div class="detail-item"><span class="detail-label">Floor</span><span class="detail-value">${listing.floor || '—'}</span></div>
             <div class="detail-item"><span class="detail-label">Age</span><span class="detail-value">${listing.age || '—'}</span></div>
             ${parking}

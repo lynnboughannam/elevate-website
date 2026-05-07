@@ -269,6 +269,7 @@ async function syncFromSupabase() {
         images:      (r.images && r.images.length) ? r.images : [],
         description: r.description || '',
         amenities:   r.amenities   || [],
+        tags:        r.tags        || [],
         submittedBy: r.agent_name  || 'Admin',
         createdAt:   r.created_at  ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
         phone:       r.agent_phone || '',

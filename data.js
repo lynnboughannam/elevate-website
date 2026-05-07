@@ -384,6 +384,18 @@ function tagClass(tag) {
 
 const WA_CENTER = '96171991088';
 
+function trackEvent(eventType, propertyId) {
+  const page = location.pathname.split('/').pop() || 'index.html';
+  fetch(`${SUPABASE_URL}/rest/v1/click_events`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': 'application/json', 'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify({ event_type: eventType, property_id: propertyId || null, page }),
+  }).catch(() => {});
+}
+
 function waLink(l) {
   const url = `${location.origin}/property.html?id=${l.id}`;
   const msg = `Hi, I'm interested in property ${l.id} — ${l.title}.\n\nListing: ${url}`;
@@ -407,17 +419,7 @@ function statusBadge(status) {
   }[status] || '';
 }
 
-// Admin auth
-function isAdminLoggedIn() {
-  return sessionStorage.getItem('ee_admin') === 'true';
-}
-function adminLogin(password) {
-  if (password === 'elevate2025') {
-    sessionStorage.setItem('ee_admin', 'true');
-    return true;
-  }
-  return false;
-}
-function adminLogout() {
-  sessionStorage.removeItem('ee_admin');
-}
+// Admin auth stubs — session logic handled in admin.html
+function isAdminLoggedIn() { return false; }
+function adminLogin()       { return false; }
+function adminLogout()      {}

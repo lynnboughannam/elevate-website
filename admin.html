@@ -152,10 +152,11 @@
   <div style="width:100%;max-width:420px;padding:2rem">
     <div style="text-align:center;margin-bottom:2.5rem">
       <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:40px;width:auto;margin-bottom:1.5rem;display:block;margin-left:auto;margin-right:auto">
-      <h1 class="font-display" style="font-size:28px;color:#fff;letter-spacing:-0.5px;margin-bottom:6px">Admin Login</h1>
-      <p style="font-size:13px;color:rgba(255,255,255,0.4)">Secure access for Elevate Estates staff</p>
+      <h1 class="font-display" style="font-size:28px;color:#fff;letter-spacing:-0.5px;margin-bottom:6px" id="login-title">Admin Login</h1>
+      <p style="font-size:13px;color:rgba(255,255,255,0.4)" id="login-subtitle">Secure access for Elevate Estates staff</p>
     </div>
-    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem">
+    <!-- Login form -->
+    <div id="login-form" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem">
       <div style="margin-bottom:1.25rem">
         <label class="form-label" style="color:rgba(255,255,255,0.4)">Password</label>
         <input type="password" id="login-pw" class="form-input" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
@@ -163,11 +164,28 @@
       <div id="login-error" style="display:none;background:#FCEBEB;color:#A32D2D;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:1rem">
         Incorrect password. Try again.
       </div>
-      <button onclick="doLogin()" style="width:100%;background:#7A5230;color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#A87850'" onmouseout="this.style.background='#7A5230'">
+      <button id="login-btn" onclick="doLogin()" style="width:100%;background:#7A5230;color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#A87850'" onmouseout="this.style.background='#7A5230'">
         Sign In
       </button>
     </div>
-    <p style="text-align:center;margin-top:1rem;font-size:12px;color:rgba(255,255,255,0.25)">Demo password: <strong style="color:rgba(255,255,255,0.45)">elevate2025</strong></p>
+    <!-- First-time setup form (shown when no password hash exists) -->
+    <div id="setup-form" style="display:none;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem">
+      <div style="background:rgba(168,120,80,0.2);border:1px solid rgba(168,120,80,0.4);border-radius:8px;padding:10px 14px;font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:1.25rem">
+        No admin password set. Create one now — it will be stored securely in Supabase.
+      </div>
+      <div style="margin-bottom:1rem">
+        <label class="form-label" style="color:rgba(255,255,255,0.4)">New Password</label>
+        <input type="password" id="setup-pw" class="form-input" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff" placeholder="Choose a strong password">
+      </div>
+      <div style="margin-bottom:1.25rem">
+        <label class="form-label" style="color:rgba(255,255,255,0.4)">Confirm Password</label>
+        <input type="password" id="setup-pw2" class="form-input" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#fff" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doSetupPassword()">
+      </div>
+      <div id="setup-error" style="display:none;background:#FCEBEB;color:#A32D2D;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:1rem"></div>
+      <button onclick="doSetupPassword()" style="width:100%;background:#7A5230;color:#fff;border:none;padding:13px;border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='#A87850'" onmouseout="this.style.background='#7A5230'">
+        Set Password
+      </button>
+    </div>
   </div>
 </div>
 
@@ -263,6 +281,28 @@
     </div>
 
     <div id="dash-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:2.5rem"></div>
+
+    <!-- Click analytics -->
+    <div id="click-stats" style="background:#FAF7F3;border-radius:14px;padding:1.5rem;border:1px solid rgba(122,82,48,0.1);margin-bottom:1.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+        <h3 style="font-size:15px;font-weight:700;color:#4E3219">Contact Button Clicks</h3>
+        <span style="font-size:11px;color:#aaa">All time</span>
+      </div>
+      <div id="click-stats-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+        <div style="text-align:center;padding:1rem;background:#EDE8E0;border-radius:10px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;margin-bottom:6px">WhatsApp</div>
+          <div id="stat-wa" style="font-size:28px;font-weight:700;color:#25D366;font-family:'Playfair Display',serif">—</div>
+        </div>
+        <div style="text-align:center;padding:1rem;background:#EDE8E0;border-radius:10px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;margin-bottom:6px">Phone</div>
+          <div id="stat-ph" style="font-size:28px;font-weight:700;color:#7A5230;font-family:'Playfair Display',serif">—</div>
+        </div>
+        <div style="text-align:center;padding:1rem;background:#EDE8E0;border-radius:10px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A87850;margin-bottom:6px">Total</div>
+          <div id="stat-total" style="font-size:28px;font-weight:700;color:#4E3219;font-family:'Playfair Display',serif">—</div>
+        </div>
+      </div>
+    </div>
 
     <!-- Recent activity -->
     <div id="dash-panels" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
@@ -508,23 +548,113 @@
   }
 
   // ── AUTH ──
-  function doLogin() {
-    const pw = document.getElementById('login-pw').value;
-    if (adminLogin(pw)) {
-      document.getElementById('login-screen').style.display = 'none';
-      refreshAll();
-    } else {
+  const SESSION_KEY = 'ee_admin_session';
+  const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 hours
+
+  async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function fetchStoredHash() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/site_settings?key=eq.admin_password_hash&select=value`, {
+      headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+    });
+    const data = await res.json();
+    return data[0]?.value || null;
+  }
+
+  async function storeHash(hash) {
+    await fetch(`${SUPABASE_URL}/rest/v1/site_settings`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`,
+        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({ key: 'admin_password_hash', value: hash }),
+    });
+  }
+
+  function isAdminLoggedIn() {
+    try {
+      const s = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+      return s && s.expires > Date.now();
+    } catch { return false; }
+  }
+
+  function startSession() {
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,'0')).join('');
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ token, expires: Date.now() + SESSION_TTL }));
+  }
+
+  function clearSession() {
+    sessionStorage.removeItem(SESSION_KEY);
+  }
+
+  async function doLogin() {
+    const pw = document.getElementById('login-pw').value.trim();
+    if (!pw) return;
+    const btn = document.getElementById('login-btn');
+    btn.textContent = '…'; btn.disabled = true;
+    document.getElementById('login-error').style.display = 'none';
+    try {
+      const [entered, stored] = await Promise.all([sha256(pw), fetchStoredHash()]);
+      if (!stored) {
+        // No password set yet — switch to setup
+        showSetupForm(); btn.textContent = 'Sign In'; btn.disabled = false; return;
+      }
+      if (entered === stored) {
+        startSession();
+        document.getElementById('login-screen').style.display = 'none';
+        refreshAll();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    } catch(e) {
+      document.getElementById('login-error').textContent = 'Connection error. Try again.';
       document.getElementById('login-error').style.display = 'block';
     }
+    btn.textContent = 'Sign In'; btn.disabled = false;
   }
-  function doLogout() {
-    adminLogout();
-    document.getElementById('login-screen').style.display = 'flex';
-  }
-  if (isAdminLoggedIn()) {
+
+  async function doSetupPassword() {
+    const pw  = document.getElementById('setup-pw').value;
+    const pw2 = document.getElementById('setup-pw2').value;
+    const err = document.getElementById('setup-error');
+    err.style.display = 'none';
+    if (pw.length < 8)       { err.textContent = 'Password must be at least 8 characters.'; err.style.display='block'; return; }
+    if (pw !== pw2)          { err.textContent = 'Passwords do not match.'; err.style.display='block'; return; }
+    const hash = await sha256(pw);
+    await storeHash(hash);
+    startSession();
     document.getElementById('login-screen').style.display = 'none';
     refreshAll();
   }
+
+  function showSetupForm() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('setup-form').style.display = 'block';
+    document.getElementById('login-title').textContent = 'Set Admin Password';
+    document.getElementById('login-subtitle').textContent = 'First-time setup — choose a secure password';
+  }
+
+  function doLogout() {
+    clearSession();
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('setup-form').style.display = 'none';
+  }
+
+  // Check for existing hash on page load — show setup if none
+  (async () => {
+    if (isAdminLoggedIn()) {
+      document.getElementById('login-screen').style.display = 'none';
+      refreshAll();
+      return;
+    }
+    const stored = await fetchStoredHash();
+    if (!stored) showSetupForm();
+  })();
 
   // ── PANEL NAV ──
   let currentPanel = 'dashboard';
@@ -541,7 +671,7 @@
     if (name === 'listings')     renderTable();
     if (name === 'submissions')  loadSubmissions();
     if (name === 'agents')       loadAgentApplications();
-    if (name === 'dashboard')    renderDashboard();
+    if (name === 'dashboard')    { renderDashboard(); loadClickStats(); }
     // Close mobile sidebar after nav
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebar-overlay').classList.remove('open');
@@ -990,8 +1120,24 @@
     setTimeout(() => { t.style.transform = 'translateY(8px)'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
   }
 
+  async function loadClickStats() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/click_events?select=event_type`, {
+        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }
+      });
+      if (!res.ok) return;
+      const events = await res.json();
+      const wa    = events.filter(e => e.event_type === 'whatsapp_click').length;
+      const ph    = events.filter(e => e.event_type === 'phone_click').length;
+      document.getElementById('stat-wa').textContent    = wa;
+      document.getElementById('stat-ph').textContent    = ph;
+      document.getElementById('stat-total').textContent = wa + ph;
+    } catch(e) {}
+  }
+
   async function refreshAll() {
     renderDashboard();
+    loadClickStats();
     try {
       const [subRes, agentRes] = await Promise.all([
         fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,status&order=created_at.desc`, {

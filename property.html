@@ -315,8 +315,8 @@
 
   checkComingSoon().then(on => {
     if (on) { window.location.href = 'listings.html'; return; }
-    initStore();
     window.addEventListener('ee:synced', renderProperty, { once: true });
+    initStore();
   });
 </script>
 </body>

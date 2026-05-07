@@ -265,8 +265,6 @@
 </div><!-- /listings-page-content -->
 <script src="data.js"></script>
 <script>
-  initStore();
-
   const ITEMS_PER_PAGE = 6;
   let currentPage = 1;
   let filters = { purpose: '', type: '', area: '', beds: 0 };
@@ -467,9 +465,10 @@
       document.getElementById('coming-soon-wrap').classList.add('show');
       document.getElementById('listings-page-content').style.display = 'none';
     } else {
+      window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
+      initStore();
       populateFilters();
       renderListings();
-      window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
     }
   });
 </script>

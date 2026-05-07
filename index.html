@@ -864,7 +864,6 @@
 <script src="data.js"></script>
 <script>
   // ── Init ──
-  initStore();
 
   // ── Responsive ──
   function updateMobileVisibility() {
@@ -1044,8 +1043,9 @@
       wrap.style.display = 'none';
       document.getElementById('home-coming-soon').style.display = 'block';
     } else {
-      renderHome();
       window.addEventListener('ee:synced', renderHome);
+      initStore();
+      renderHome();
     }
   });
 

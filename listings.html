@@ -350,15 +350,16 @@
         ? '<span class="badge badge-rent">For Rent</span>'
         : '<span class="badge badge-sale">For Sale</span>';
     const typeBadge = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${l.type.charAt(0).toUpperCase()+l.type.slice(1)}</span>`;
+    const featuredBadge = l.featured ? `<span class="badge" style="background:#7A5A0B;color:#FAF0DC;display:flex;align-items:center;gap:4px"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Prime Pick</span>` : '';
     const beds  = l.beds  > 0 ? `<span>${l.beds} bed</span>` : '';
     const baths = l.baths > 0 ? `<span>${l.baths} bath</span>` : '';
     return `
-      <article class="listing-card">
+      <article class="listing-card"${l.featured ? ' style="box-shadow:0 0 0 2px #7A5A0B,0 8px 32px rgba(122,90,11,0.18)"' : ''}>
         <a href="property.html?id=${l.id}" style="text-decoration:none">
           <div class="card-img">
             <img src="${l.img}" alt="${l.title}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded');this.style.display='none'">
             <div class="card-overlay"></div>
-            <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px">${badge}${typeBadge}</div>
+            <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap">${featuredBadge}${badge}${typeBadge}</div>
           </div>
           <div style="padding:1.1rem">
             <div style="font-size:20px;font-weight:700;color:#4E3219;letter-spacing:-0.4px;margin-bottom:3px">${formatPrice(l.price,l.purpose)}</div>

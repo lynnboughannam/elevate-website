@@ -256,7 +256,7 @@ async function syncFromSupabase() {
         title:       r.title       || '',
         location:    r.location    || '',
         area:        (r.location   || '').split(',').pop().trim(),
-        type:        (r.type       || 'apartment').toLowerCase(),
+        type:        (['office','warehouse'].includes((r.type||'').toLowerCase()) ? 'commercial' : (r.type || 'apartment').toLowerCase()),
         purpose,
         price:       r.price       || 0,
         beds:        r.beds        || 0,
@@ -370,7 +370,7 @@ function formatPrice(price, purpose) {
 }
 
 function typeLabel(type) {
-  return { villa: 'Villa', apartment: 'Apartment', commercial: 'Commercial', land: 'Land' }[type] || type;
+  return { villa: 'Villa', apartment: 'Apartment', commercial: 'Commercial', land: 'Land', office: 'Commercial', warehouse: 'Commercial' }[type] || type;
 }
 
 function tagClass(tag) {

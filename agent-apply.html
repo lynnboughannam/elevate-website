@@ -562,6 +562,19 @@
       if (!res.ok) throw new Error(await res.text());
       const [saved] = await res.json();
       document.getElementById('success-ref').textContent = saved.id.slice(0,8).toUpperCase();
+
+      // Notify call center via WhatsApp
+      const msg = `👤 *New Agent Application*\n\n`
+        + `*Ref:* ${saved.id.slice(0,8).toUpperCase()}\n`
+        + `*Name:* ${payload.name}\n`
+        + `*Phone:* ${payload.phone}\n`
+        + `*Email:* ${payload.email}\n`
+        + `*Experience:* ${payload.experience}\n`
+        + (payload.age ? `*Age:* ${payload.age}\n` : '')
+        + (payload.current_agency ? `*Agency:* ${payload.current_agency}\n` : '')
+        + (payload.transportation ? `*Transport:* ${payload.transportation}\n` : '')
+        + (payload.location?.length ? `*Areas:* ${payload.location.join(', ')}\n` : '');
+      window.open(`https://wa.me/96171991088?text=${encodeURIComponent(msg)}`, '_blank');
     } catch (e) {
       console.error(e);
       document.getElementById('success-ref').textContent = '—';

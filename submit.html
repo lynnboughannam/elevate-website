@@ -651,6 +651,18 @@
       if (!res.ok) throw new Error(await res.text());
       const [saved] = await res.json();
       document.getElementById('success-ref-num').textContent = saved.id.slice(0, 8).toUpperCase();
+
+      // Notify call center via WhatsApp
+      const msg = `🏠 *New Property Listing Submitted*\n\n`
+        + `*Ref:* ${saved.id.slice(0,8).toUpperCase()}\n`
+        + `*Title:* ${submission.title}\n`
+        + `*Location:* ${submission.location}\n`
+        + `*Type:* ${submission.type} · ${submission.purpose}\n`
+        + `*Price:* $${(submission.price||0).toLocaleString()}\n\n`
+        + `*Contact:* ${submission.submitter_name}\n`
+        + `*Phone:* ${submission.submitter_phone}\n`
+        + `*Role:* ${submission.submitter_role}`;
+      window.open(`https://wa.me/96171991088?text=${encodeURIComponent(msg)}`, '_blank');
     } catch (e) {
       console.error('Submission failed:', e);
       document.getElementById('success-ref-num').textContent = '—';

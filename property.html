@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Property — Elevate Estates</title>
+  <!-- Static fallback: renderProperty() overwrites document.title once the Supabase
+       fetch resolves, but crawlers that don't run JS only ever see what's here. -->
+  <title>Property Details — Elevate Estates</title>
+  <meta name="description" content="View full details, photos, and the reference number for this property in Baabda and Mount Lebanon. WhatsApp Elevate Estates to schedule a viewing.">
+  <meta property="og:title" content="Property Details — Elevate Estates">
+  <meta property="og:description" content="View full details, photos, and the reference number for this property in Baabda and Mount Lebanon.">
+  <meta property="og:image" content="https://elevateestateslb.com/brand_Assets/apartment.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -117,11 +125,14 @@
     {
     document.title = `${listing.title} — Elevate Estates`;
 
-    const badge = listing.tag === 'luxury'
-      ? '<span class="badge badge-luxury">Luxury</span>'
-      : listing.purpose === 'rent'
-        ? '<span class="badge badge-rent">For Rent</span>'
-        : '<span class="badge badge-sale">For Sale</span>';
+    // A closed deal replaces the availability badge — "For Sale" next to a SOLD stamp misleads
+    const badge = isClosedDeal(listing)
+      ? dealChipHtml(listing)
+      : listing.tag === 'luxury'
+        ? '<span class="badge badge-luxury">Luxury</span>'
+        : listing.purpose === 'rent'
+          ? '<span class="badge badge-rent">For Rent</span>'
+          : '<span class="badge badge-sale">For Sale</span>';
 
     const purposeText = listing.purpose === 'rent' ? 'For Rent' : 'For Sale';
     const typeText = listing.type.charAt(0).toUpperCase() + listing.type.slice(1);
@@ -136,9 +147,14 @@
         ${a}
       </div>`).join('');
 
-    // Similar listings
+    // Closed deal (sold / rented) — banner, stamp and muted photos
+    const closed    = isClosedDeal(listing);
+    const plateHtml = dealPlateHtml(listing, `listings.html?type=${listing.type}`);
+    const stampHtml = dealStampHtml(listing);
+
+    // Similar listings — only still-available stock is worth suggesting
     const similar = getListings()
-      .filter(l => l.status === 'approved' && l.id !== listing.id && l.type === listing.type)
+      .filter(l => l.status === 'approved' && l.id !== listing.id && l.type === listing.type && !isClosedDeal(l))
       .slice(0, 3);
     const similarHtml = similar.map(l => `
       <a href="property.html?id=${l.id}" class="similar-card" style="text-decoration:none;display:block">
@@ -163,25 +179,28 @@
         <span style="font-size:13px;color:#777">${listing.title}</span>
       </div>
 
+      ${plateHtml}
+
       <div id="prop-layout" style="display:grid;grid-template-columns:1fr 360px;gap:2.5rem;align-items:start">
 
         <!-- LEFT COLUMN -->
         <div>
           <!-- Main image -->
-          <div id="main-img-wrap" class="img-wrap" style="border-radius:16px;overflow:hidden;height:480px;position:relative;margin-bottom:1rem">
+          <div id="main-img-wrap" class="img-wrap${closed ? ' ee-closed-media' : ''}" style="border-radius:16px;overflow:hidden;height:480px;position:relative;margin-bottom:1rem">
             <img id="main-img" src="${listing.images && listing.images.length ? listing.images[0] : 'brand_Assets/placeholder.svg'}" alt="${listing.title}" style="width:100%;height:100%;object-fit:${listing.images && listing.images.length ? 'cover' : 'contain'};background:#4E3219" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded')" class="loaded">
             <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(46,31,14,0.4) 0%,transparent 50%);pointer-events:none"></div>
             <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px">
               ${badge}
               <span class="badge" style="background:rgba(250,247,243,0.9);color:#4E3219">${typeText}</span>
             </div>
+            ${stampHtml}
             ${listing.images && listing.images.length > 1 ? `<div style="position:absolute;bottom:16px;right:16px;background:rgba(46,31,14,0.7);backdrop-filter:blur(8px);color:rgba(255,255,255,0.8);font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px">📷 ${listing.images.length} photos</div>` : ''}
           </div>
           <!-- Thumbnail strip -->
           ${listing.images && listing.images.length > 1 ? `
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:2rem">
             ${listing.images.map((src, i) => `
-              <div onclick="switchImg('${src}',this)" class="img-wrap" style="height:80px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid ${i===0?'#7A5230':'transparent'};transition:border-color 0.2s,opacity 0.2s;opacity:${i===0?1:0.65}" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=this.style.borderColor==='rgb(122, 82, 48)'?1:0.65">
+              <div onclick="switchImg('${src}',this)" class="img-wrap${closed ? ' ee-closed-media' : ''}" style="height:80px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid ${i===0?'#7A5230':'transparent'};transition:border-color 0.2s,opacity 0.2s;opacity:${i===0?1:0.65}" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=this.style.borderColor==='rgb(122, 82, 48)'?1:0.65">
                 <img src="${src}" alt="Photo ${i+1}" style="width:100%;height:100%;object-fit:cover" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded')">
               </div>`).join('')}
           </div>` : '<div style="margin-bottom:2rem"></div>'}
@@ -268,7 +287,7 @@
               <span class="ref-num">${listing.id}</span>
             </div>
             <div style="margin-bottom:1.5rem">
-              <div style="font-size:13px;color:#999;margin-bottom:4px">Asking price</div>
+              <div style="font-size:13px;color:#999;margin-bottom:4px">${closed ? 'Last asking price' : 'Asking price'}</div>
               <div class="font-display" style="font-size:28px;color:#4E3219;font-weight:700;letter-spacing:-0.5px">${formatPrice(listing.price, listing.purpose)}</div>
             </div>
             <p style="font-size:13px;color:#888;line-height:1.6;margin-bottom:1.5rem">Quote the reference number above when contacting us about this property.</p>
@@ -308,6 +327,9 @@
           </div>
         </aside>
       </div>`;
+
+    // Structured data for this single property (see data.js)
+    injectListingSchema([listing]);
     }
   }
 

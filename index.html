@@ -4,6 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Elevate Estates — Premium Lebanese Real Estate</title>
+  <meta name="description" content="Elevate Estates LB — trusted real estate brokerage in Baabda and Mount Lebanon. Browse apartments, villas, and commercial properties for sale and rent. WhatsApp us for a viewing today.">
+  <meta property="og:title" content="Elevate Estates — Premium Lebanese Real Estate">
+  <meta property="og:description" content="Trusted real estate brokerage in Baabda and Mount Lebanon. Browse apartments, villas, and commercial properties for sale and rent.">
+  <meta property="og:image" content="https://elevateestateslb.com/brand_Assets/villa.jpg">
+  <meta property="og:url" content="https://elevateestateslb.com/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "@id": "https://elevateestateslb.com/#organization",
+    "name": "Elevate Estates",
+    "alternateName": "Elevate Estates LB",
+    "url": "https://elevateestateslb.com/",
+    "logo": "https://elevateestateslb.com/brand_Assets/dark-elevate-logo.png",
+    "image": "https://elevateestateslb.com/brand_Assets/villa.jpg",
+    "description": "Trusted real estate brokerage in Baabda and Mount Lebanon. Apartments, villas, and commercial properties for sale and rent.",
+    "telephone": "+961 71 991 088",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Baabda",
+      "addressRegion": "Mount Lebanon",
+      "addressCountry": "LB"
+    },
+    "areaServed": [
+      { "@type": "City", "name": "Baabda" },
+      { "@type": "AdministrativeArea", "name": "Mount Lebanon" }
+    ],
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "telephone": "+961 71 991 088",
+        "url": "https://wa.me/96171991088",
+        "availableLanguage": ["en", "ar", "fr"]
+      }
+    ],
+    "sameAs": [
+      "https://www.instagram.com/elevate.estates.lb",
+      "https://www.facebook.com/profile.php?id=61583628302302"
+    ]
+  }
+  </script>
   <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -906,11 +951,14 @@
 
   // ── Build card HTML ──
   function buildCard(l) {
-    const badgeHtml = l.tag === 'luxury'
-      ? '<span class="badge badge-luxury">Luxury</span>'
-      : l.purpose === 'rent'
-        ? '<span class="badge badge-rent">For Rent</span>'
-        : '<span class="badge badge-sale">For Sale</span>';
+    const closed = isClosedDeal(l);
+    const badgeHtml = closed
+      ? dealChipHtml(l)
+      : l.tag === 'luxury'
+        ? '<span class="badge badge-luxury">Luxury</span>'
+        : l.purpose === 'rent'
+          ? '<span class="badge badge-rent">For Rent</span>'
+          : '<span class="badge badge-sale">For Sale</span>';
 
     const typeHtml = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${l.type.charAt(0).toUpperCase()+l.type.slice(1)}</span>`;
 
@@ -922,10 +970,11 @@
     return `
       <article class="listing-card">
         <a href="property.html?id=${l.id}" style="text-decoration:none">
-          <div class="card-img">
+          <div class="card-img${closed ? ' ee-closed-media' : ''}">
             <img src="${l.img}" alt="${l.title}" loading="lazy">
             <div class="card-img-overlay"></div>
             <div class="card-badges">${badgeHtml}${typeHtml}</div>
+            ${dealSashHtml(l)}
           </div>
           <div style="padding:1.25rem">
             <div style="font-size:22px;font-weight:700;color:#4E3219;letter-spacing:-0.5px;margin-bottom:4px">${formatPrice(l.price, l.purpose)}</div>
@@ -974,7 +1023,8 @@
   function buildInvestmentCard(l) {
     const price = formatPrice(l.price, l.purpose);
     const typeLabel = l.type.charAt(0).toUpperCase() + l.type.slice(1);
-    const purposeLabel = l.purpose === 'rent' ? 'For Rent' : 'For Sale';
+    const investClosed = isClosedDeal(l);
+    const purposeLabel = investClosed ? dealState(l).label : (l.purpose === 'rent' ? 'For Rent' : 'For Sale');
     const beds  = l.beds  > 0 ? `<span style="display:flex;align-items:center;gap:4px;color:rgba(255,255,255,0.5);font-size:12px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 9V7a2 2 0 012-2h16a2 2 0 012 2v2M2 9h20M2 9v11M22 9v11"/></svg>${l.beds} bed</span>` : '';
     const baths = l.baths > 0 ? `<span style="display:flex;align-items:center;gap:4px;color:rgba(255,255,255,0.5);font-size:12px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12h16M4 12V6a2 2 0 012-2h4"/><path d="M4 12v5a2 2 0 002 2h12a2 2 0 002-2v-5"/></svg>${l.baths} bath</span>` : '';
     const sqm   = l.sqm  > 0 ? `<span style="color:rgba(255,255,255,0.5);font-size:12px">${l.sqm} m²</span>` : '';
@@ -982,7 +1032,7 @@
       <article class="invest-card">
         <a href="property.html?id=${l.id}" style="text-decoration:none;display:block">
           <!-- Image -->
-          <div style="position:relative;height:220px;overflow:hidden">
+          <div class="${investClosed ? 'ee-closed-media' : ''}" style="position:relative;height:220px;overflow:hidden">
             <img src="${l.img}" alt="${l.title}" loading="lazy"
               style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;display:block"
               onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
@@ -991,13 +1041,14 @@
             <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent)"></div>
             <!-- Badges -->
             <div style="position:absolute;top:14px;left:14px;display:flex;gap:6px;flex-wrap:wrap">
-              <span class="invest-badge">★ Investment Pick</span>
+              ${investClosed ? '' : '<span class="invest-badge">★ Investment Pick</span>'}
               <span style="background:rgba(15,9,5,0.7);backdrop-filter:blur(8px);color:rgba(255,255,255,0.7);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px">${typeLabel}</span>
             </div>
             <!-- Ref -->
             <div style="position:absolute;bottom:14px;left:14px">
               <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(201,168,76,0.7);text-transform:uppercase">${l.id}</div>
             </div>
+            ${dealSashHtml(l)}
           </div>
           <!-- Body -->
           <div style="padding:1.25rem">
@@ -1036,6 +1087,8 @@
       grid.innerHTML = featured.map(buildInvestmentCard).join('');
     }
     document.getElementById('recent-grid').innerHTML = recent.map(buildCard).join('');
+    // Structured data for exactly what this page shows (see data.js)
+    injectListingSchema([...featured, ...recent]);
     populateAreas();
     populateTypes();
   }

@@ -43,6 +43,11 @@
     .img-wrap { background: linear-gradient(90deg,#DDD5C8 25%,#EDE8E0 50%,#DDD5C8 75%); background-size:200% 100%; animation: shimmer 1.5s infinite; }
     .img-wrap img { opacity:0; transition:opacity 0.4s ease; }
     .img-wrap img.loaded { opacity:1; }
+    /* Same fix as listings.html: cancel the skeleton once the image is in, rather
+       than leaving background-position animating (and repainting) forever. This
+       page stacks the main image, every thumbnail and the similar-property cards,
+       so it had the most wrappers shimmering at once. */
+    .img-wrap:has(img.loaded) { animation: none; background: none; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #EDE8E0; }

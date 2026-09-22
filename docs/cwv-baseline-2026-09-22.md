@@ -5,38 +5,38 @@ Lab measurements of `https://www.elevateestateslb.com`. The baseline was capture
 identical conditions so the deltas mean something. The conditions below matter as
 much as the numbers.
 
-| | Baseline | Measurement 2 |
-|---|---|---|
-| Date | 2026-09-22 | 2026-09-22 |
-| Commit | `9a7dcf2` | `1f4cd73` |
-| What changed | — | Tailwind precompiled; skeleton shimmer capped |
-| Properties live | 108 | 108 |
-| Browser | Chromium 147.0.7727.57 headless, puppeteer-core | same |
-| Runs per figure | 3, median | 3, median |
+| | Baseline | Measurement 2 | Measurement 3 |
+|---|---|---|---|
+| Date | 2026-09-22 | 2026-09-22 | 2026-09-22 |
+| Commit | `9a7dcf2` | `1f4cd73` | `497f6fa` |
+| What changed | — | Tailwind precompiled; skeleton shimmer capped | Supabase calls parallelised |
+| Properties live | 108 | 108 | 108 |
+| Browser | Chromium 147.0.7727.57 headless, puppeteer-core | same | same |
+| Runs per figure | 3, median | 3, median | 3, median |
 
 ## Results
 
 ### Mobile — 4× CPU throttle, Slow 4G, 390×844 @ DPR 2
 
-| Metric | Home base | Home now | Listings base | Listings now | Threshold |
-|---|---|---|---|---|---|
-| **LCP** | 11.82s POOR | **5.43s** POOR | 10.03s POOR | **6.64s** POOR | ≤2.5s / ≤4.0s |
-| **INP** | — | — | **2416ms** POOR | **2560ms** POOR | ≤200ms / ≤500ms |
-| **CLS** | 0.000 good | 0.000 good | 0.084 good | 0.084 good | ≤0.1 / ≤0.25 |
-| FCP | 8.78s POOR | **3.31s** POOR | 5.67s POOR | **1.14s** good | ≤1.8s / ≤3.0s |
-| TTFB | 207ms good | 191ms good | 497ms good | 198ms good | ≤800ms / ≤1800ms |
-| LCP element | `DIV.hero-bg` | `DIV.hero-bg` | `H3` | `H3` | — |
+| Metric | Home base | Home M2 | Home M3 | Listings base | Listings M2 | Listings M3 | Threshold |
+|---|---|---|---|---|---|---|---|
+| **LCP** | 11.82s POOR | 5.43s POOR | **4.95s** POOR | 10.03s POOR | 6.64s POOR | **2.42s good** | ≤2.5s / ≤4.0s |
+| **INP** | — | — | — | 2416ms POOR | 2560ms POOR | **1272ms** POOR | ≤200ms / ≤500ms |
+| **CLS** | 0.000 good | 0.000 good | 0.000 good | 0.084 good | 0.084 good | **0.001** good | ≤0.1 / ≤0.25 |
+| FCP | 8.78s POOR | 3.31s POOR | **2.07s** needs work | 5.67s POOR | 1.14s good | **0.87s good** | ≤1.8s / ≤3.0s |
+| TTFB | 207ms good | 191ms good | 508ms good | 497ms good | 198ms good | 203ms good | ≤800ms / ≤1800ms |
+| LCP element | `DIV.hero-bg` | `DIV.hero-bg` | `DIV.hero-bg` | `H3` | `H3` | `H3` | — |
 
 ### Desktop — unthrottled, 1440×900 @ DPR 1
 
-| Metric | Home base | Home now | Listings base | Listings now | Threshold |
-|---|---|---|---|---|---|
-| LCP | 1.77s good | **1.38s** good | 3.83s needs work | 4.26s POOR | ≤2.5s / ≤4.0s |
-| INP | — | — | 136ms good | 144ms good | ≤200ms / ≤500ms |
-| CLS | 0.011 good | 0.008 good | 0.016 good | 0.016 good | ≤0.1 / ≤0.25 |
-| FCP | 1.05s good | 0.86s good | 0.93s good | 0.74s good | ≤1.8s / ≤3.0s |
-| TTFB | 194ms good | 202ms good | 214ms good | 205ms good | ≤800ms / ≤1800ms |
-| LCP element | `DIV.hero-bg` | `DIV.hero-bg` | `IMG.loaded` | `IMG.loaded` | — |
+| Metric | Home base | Home M2 | Home M3 | Listings base | Listings M2 | Listings M3 | Threshold |
+|---|---|---|---|---|---|---|---|
+| LCP | 1.77s good | 1.38s good | **1.24s** good | 3.83s needs work | 4.26s POOR | **2.64s** needs work | ≤2.5s / ≤4.0s |
+| INP | — | — | — | 136ms good | 144ms good | **128ms** good | ≤200ms / ≤500ms |
+| CLS | 0.011 good | 0.008 good | 0.008 good | 0.016 good | 0.016 good | 0.016 good | ≤0.1 / ≤0.25 |
+| FCP | 1.05s good | 0.86s good | **0.70s** good | 0.93s good | 0.74s good | **0.53s** good | ≤1.8s / ≤3.0s |
+| TTFB | 194ms good | 202ms good | 244ms good | 214ms good | 205ms good | 203ms good | ≤800ms / ≤1800ms |
+| LCP element | `DIV.hero-bg` | `DIV.hero-bg` | `DIV.hero-bg` | `IMG.loaded` | `IMG.loaded` | `H1.font-display` | — |
 
 INP is measured on `listings.html` only — it needs interactive controls, and the
 filter chips are the realistic interaction.
@@ -61,6 +61,33 @@ shimmering permanently — but it should not be credited with a performance win.
 See mistake 4 below.
 
 **Mobile LCP is much better but still POOR** (5.43s / 6.64s against 2.5s).
+
+## What measurement 3 showed
+
+`initStore()` sat inside `checkComingSoon().then()`, so the properties fetch could
+not begin until an unrelated settings lookup had returned. A waterfall of mobile
+`listings.html` at M2 showed the two Supabase calls running back to back:
+
+```
+    2.40s -> 3.98s  site_settings?key=eq.coming_soon   (1579ms)
+    4.06s -> 5.49s  properties?listed=eq.true          (1430ms)
+    7.14s           LCP
+```
+
+They are independent — the flag decides which view is visible, not whether the
+data is wanted. Starting both together moved DOMContentLoaded from 2.44s to
+1.21s and **mobile listings LCP from 6.64s to 2.42s, under the 2.5s threshold
+and into "good" for the first time.** Mobile listings CLS also dropped from
+0.084 to 0.001, since the grid now fills before the rest of the page settles.
+
+**Mobile INP roughly halved, 2560ms → 1272ms** — below the entire 1840–5880ms
+range observed across the session, so probably a real effect from a less
+congested main thread rather than noise. It is still 6× the threshold, and per
+mistake 4 it deserves confirmation across more runs before being relied on.
+
+Mobile home LCP remains POOR at 4.95s: the homepage LCP element is
+`DIV.hero-bg`, a background image, so it is bound by image delivery rather than
+by the data fetch.
 
 ## What causes the remaining INP is still unknown
 
@@ -164,9 +191,17 @@ is good for.
 
 ## Still outstanding
 
-- Mobile LCP remains POOR on both pages.
-- The Supabase query still fetches all 108 rows with `select=*` (215 KB, of which
-  ~145 KB is fields the cards never use) on every load, and `initStore()` clears
-  `localStorage` before each fetch so the cache never serves a warm read.
+- **Mobile INP, 1272ms against a 200ms threshold** — the largest remaining gap,
+  and still unattributed (see above). Wants a full Chrome trace, not a guess.
+- **Mobile home LCP, 4.95s.** Bound by the hero background image, not by data
+  fetching, so it needs image work (dimensions, format, preload) rather than
+  more request plumbing.
+- The Supabase query still fetches all 108 rows with `select=*` (215 KB raw,
+  55 KB gzipped, of which ~145 KB raw is fields the cards never use). Note the
+  waterfall showed the cost here is round-trip latency, not payload size — the
+  request takes ~1.4s on Slow 4G regardless.
+- `initStore()` still clears `localStorage` before each fetch, so the cache never
+  serves a warm read. Serving stale data immediately and revalidating in the
+  background would take the fetch off the critical path entirely.
 - Raw HTML still contains zero listings, which is the indexability problem from
   the SEO audit rather than a CWV one.

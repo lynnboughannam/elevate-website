@@ -283,11 +283,87 @@ async function syncFromSupabase() {
       };
     });
 
-    localStorage.setItem('ee_listings_v2', JSON.stringify(mapped));
+    writeCache(mapped, signatureFromRows(rows));
     window.dispatchEvent(new CustomEvent('ee:synced'));
   } catch (e) {
     console.warn('Supabase sync failed, using local data:', e);
   }
+}
+
+// ── Cache: stale-while-revalidate ──────────────────────────────
+//
+// initStore() used to clear localStorage and then fetch, so every visitor
+// waited ~1.4s on the network before seeing a single listing. Instead: render
+// whatever is cached immediately, then check freshness in the background and
+// only re-render if the data actually moved.
+//
+// Freshness is a version check rather than a TTL. One 48-byte request returns
+// both the newest updated_at (body) and the exact row count (Content-Range),
+// against 217 KB for the full fetch. A TTL only ever approximates "has this
+// changed?"; here we can ask directly and cheaply, which matters because a
+// property marked sold in the CRM should stop showing as available on the very
+// next page load rather than after a timeout.
+//
+// The signature moves on edits (updated_at), additions (count + updated_at) and
+// deletions or unlisting (count). Verified against live data: all 108 rows have
+// distinct updated_at values and all differ from created_at, so the CRM does
+// maintain the column.
+
+const CACHE_KEY     = 'ee_listings_v3';
+const CACHE_SCHEMA  = 1;              // bump when the mapped row shape changes
+const CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+
+function signatureFromRows(rows) {
+  let max = '';
+  for (const r of rows) if (r.updated_at && r.updated_at > max) max = r.updated_at;
+  return { max, n: rows.length };   // ISO-8601 in a fixed offset sorts lexically
+}
+
+function sameSignature(a, b) {
+  return !!a && !!b && a.max === b.max && a.n === b.n;
+}
+
+function readCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw);
+    // A cache written against an older mapping would be missing fields added
+    // since (dealStatus, for instance), so discard rather than render it.
+    if (!c || c.v !== CACHE_SCHEMA || !Array.isArray(c.rows)) return null;
+    return c;
+  } catch { return null; }
+}
+
+function writeCache(rows, sig) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      v: CACHE_SCHEMA, sig, at: Date.now(), rows,
+    }));
+  } catch (e) {
+    // Quota or private-mode failure is not fatal — the page still has the data
+    // in memory for this pageview, it just will not be there next time.
+    console.warn('Listing cache write failed:', e);
+  }
+}
+
+// 48 bytes: newest updated_at in the body, exact count in Content-Range.
+async function probeSignature() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/properties?listed=eq.true&select=updated_at&order=updated_at.desc&limit=1`,
+      { headers: {
+          'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Prefer': 'count=exact',
+      } }
+    );
+    if (!res.ok) return null;
+    const range = res.headers.get('content-range') || '';   // e.g. "0-0/108"
+    const n = parseInt(range.split('/')[1], 10);
+    const body = await res.json();
+    if (!Array.isArray(body) || !Number.isFinite(n)) return null;
+    return { max: body[0]?.updated_at || '', n };
+  } catch { return null; }
 }
 
 // ── Site settings ──────────────────────────────────────────────
@@ -318,21 +394,40 @@ async function setComingSoon(enabled) {
 
 // ── Store helpers ──────────────────────────────────────────────
 
+// Render from cache first, then revalidate. Callers render synchronously right
+// after calling this and again on 'ee:synced', so a warm cache paints real
+// listings with no network on the critical path at all.
 function initStore() {
-  localStorage.setItem('ee_listings_v2', JSON.stringify([]));
-  syncFromSupabase();
+  const cached = readCache();
+
+  if (!cached) { syncFromSupabase(); return; }          // cold: nothing to show
+
+  // Backstop: if the probe signal were ever wrong (a direct DB edit that did
+  // not touch updated_at, say), a stale cache would otherwise persist forever.
+  if (Date.now() - (cached.at || 0) > CACHE_MAX_AGE) { syncFromSupabase(); return; }
+
+  probeSignature().then(sig => {
+    if (!sig) return;                                   // probe failed: keep cache
+    if (sameSignature(sig, cached.sig)) return;         // unchanged: skip 217 KB
+    syncFromSupabase();                                 // changed: refetch, re-render
+  });
 }
 
 function getListings() {
-  return JSON.parse(localStorage.getItem('ee_listings_v2') || '[]');
+  const c = readCache();
+  return c ? c.rows : [];
 }
 
 function getListing(id) {
   return getListings().find(l => l.id === id) || null;
 }
 
+// Local-only write. Note this does NOT reach Supabase — the admin panel's edit
+// buttons go through here, and the next revalidation overwrites whatever they
+// wrote. admin.html warns about this on screen; see the banner in openEdit().
 function saveListings(listings) {
-  localStorage.setItem('ee_listings_v2', JSON.stringify(listings));
+  const c = readCache();
+  writeCache(listings, c ? c.sig : null);
 }
 
 function addListing(listing) {

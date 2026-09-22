@@ -115,10 +115,19 @@
       display: flex; flex-direction: column; justify-content: center;
       overflow: hidden;
     }
+    /* The hero photo is a real <img> (below) rather than a background-image. A
+       CSS background is only discovered after the stylesheet is parsed and the
+       element matched, so the preload scanner cannot see it and it starts late
+       on the critical path. As an <img> it is found while the HTML is still
+       parsing, and can carry fetchpriority="high". This element now holds only
+       the gradient that sits over the photo. */
+    .hero-img {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%; object-fit: cover;
+    }
     .hero-bg {
-      position: absolute; inset: 0;
-      background: linear-gradient(160deg, rgba(46,31,14,0.88) 0%, rgba(78,50,25,0.55) 50%, rgba(46,31,14,0.82) 100%),
-                  url('https://picsum.photos/seed/hero-lebanese/1920/1080') center/cover no-repeat;
+      position: absolute; inset: 0; z-index: 0;
+      background: linear-gradient(160deg, rgba(46,31,14,0.88) 0%, rgba(78,50,25,0.55) 50%, rgba(46,31,14,0.82) 100%);
     }
     .hero-grain {
       position: absolute; inset: 0; pointer-events: none; z-index: 1;
@@ -395,6 +404,22 @@
      HERO
 ══════════════════════════════════════════════════════════ -->
 <section class="hero">
+  <!-- LCP element. alt is empty because it is decorative — the real heading is
+       the h1 below. fetchpriority="high" because the browser cannot otherwise
+       know this outranks the logo and listing thumbnails it also finds early.
+       The hero is full-bleed and roughly 390x844 on a phone, so a landscape
+       crop would be upscaled to cover it; the narrow viewport gets a portrait
+       crop of the same photo instead. -->
+  <picture>
+    <source media="(max-width: 700px)"
+            srcset="brand_Assets/hero/hero-mobile.webp"
+            width="760" height="1350">
+    <img class="hero-img"
+         src="brand_Assets/hero/hero-1600.webp"
+         srcset="brand_Assets/hero/hero-800.webp 800w, brand_Assets/hero/hero-1600.webp 1600w"
+         sizes="100vw" width="1600" height="900"
+         alt="" fetchpriority="high" decoding="async">
+  </picture>
   <div class="hero-bg"></div>
   <div class="hero-grain"></div>
 
@@ -728,7 +753,7 @@
         <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Found our dream villa in Broumana within two weeks. The team was professional, fast, and genuinely helpful."</p>
         <div style="display:flex;align-items:center;gap:12px">
           <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
-            <img src="https://picsum.photos/seed/t1/40/40" alt="" style="width:100%;height:100%;object-fit:cover">
+            <img src="https://picsum.photos/seed/t1/40/40" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
           </div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#4E3219">Rania K.</div>
@@ -743,7 +768,7 @@
         <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Listed my Achrafieh apartment and had serious inquiries within 48 hours. The EE reference system is brilliant."</p>
         <div style="display:flex;align-items:center;gap:12px">
           <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
-            <img src="https://picsum.photos/seed/t2/40/40" alt="" style="width:100%;height:100%;object-fit:cover">
+            <img src="https://picsum.photos/seed/t2/40/40" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
           </div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#4E3219">Karim M.</div>
@@ -758,7 +783,7 @@
         <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Rented our office space through Elevate. The quality of leads was exceptional — only serious tenants."</p>
         <div style="display:flex;align-items:center;gap:12px">
           <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
-            <img src="https://picsum.photos/seed/t3/40/40" alt="" style="width:100%;height:100%;object-fit:cover">
+            <img src="https://picsum.photos/seed/t3/40/40" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
           </div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#4E3219">Lara H.</div>

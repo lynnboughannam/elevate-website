@@ -641,7 +641,7 @@ function dealChipHtml(l) {
 //  priceCurrency is ISO 4217, image URLs are absolute.
 // ══════════════════════════════════════════════════════════════
 
-const SITE_ORIGIN = 'https://elevateestateslb.com';
+const SITE_ORIGIN = 'https://www.elevateestateslb.com';
 
 // schema.org has no residence type for commercial units or land, so both map to Place.
 const SCHEMA_TYPE_BY_TYPE = {

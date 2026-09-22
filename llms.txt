@@ -1,0 +1,27 @@
+# Elevate Estates
+
+> Real estate brokerage serving Baabda and Mount Lebanon, Lebanon. We list
+> apartments, villas, commercial property and land for sale and rent, and
+> handle viewings and negotiation directly over WhatsApp.
+
+Every listing carries a reference number in the form `ELV-XX-0000`. Quote it
+when enquiring about a specific property.
+
+Contact: +961 71 991 088 (phone and WhatsApp)
+Service area: Baabda, Hazmieh, Biyada, Broummana, Antelias, Dbayeh, Jal el Dib,
+Mansourieh, Mtayleb, Rabieh and surrounding Mount Lebanon towns.
+
+## Pages
+
+- [Home](https://www.elevateestateslb.com/): Overview, featured listings and property search by area, type and budget.
+- [Browse Properties](https://www.elevateestateslb.com/listings.html): Full searchable portfolio, filterable by purpose (sale or rent), property type, area, bedrooms and price.
+- [List Your Property](https://www.elevateestateslb.com/submit.html): Submission form for owners and agents wanting to list with us.
+- [Join Our Team](https://www.elevateestateslb.com/agent-apply.html): Application form for agents wanting to work with Elevate Estates.
+
+## Notes for automated readers
+
+- Individual property pages are served from `https://www.elevateestateslb.com/property.html?id=<reference>`, one page per reference number.
+- Listing data on those pages is populated client-side after page load, so a fetch without JavaScript execution will not include property details. Structured data (schema.org `RealEstateListing`) is emitted in the rendered DOM.
+- Prices are in US dollars. Rental prices are monthly.
+- `www.elevateestateslb.com` is the canonical host; the apex domain redirects to it.
+- `/admin.html` is a private back office, excluded in robots.txt and marked noindex.

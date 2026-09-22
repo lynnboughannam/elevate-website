@@ -9,7 +9,7 @@
   <meta name="description" content="View full details, photos, and the reference number for this property in Baabda and Mount Lebanon. WhatsApp Elevate Estates to schedule a viewing.">
   <meta property="og:title" content="Property Details — Elevate Estates">
   <meta property="og:description" content="View full details, photos, and the reference number for this property in Baabda and Mount Lebanon.">
-  <meta property="og:image" content="https://elevateestateslb.com/brand_Assets/og/og-apartment.jpg">
+  <meta property="og:image" content="https://www.elevateestateslb.com/brand_Assets/og/og-apartment.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:type" content="website">
@@ -126,6 +126,20 @@
     document.title = `${listing.title} — Elevate Estates`;
     {
     document.title = `${listing.title} — Elevate Estates`;
+
+    // Self-referencing canonical, including the id. Deliberately set here rather
+    // than as a static tag in <head>: every property shares this one file, so a
+    // static canonical would declare all 108 listings duplicates of one URL.
+    // No canonical at all is neutral; a wrong one is actively harmful.
+    (function setCanonical() {
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'canonical';
+        document.head.appendChild(link);
+      }
+      link.href = `${SITE_ORIGIN}/property.html?id=${encodeURIComponent(listing.id)}`;
+    })();
 
     // A closed deal replaces the availability badge — "For Sale" next to a SOLD stamp misleads
     const badge = isClosedDeal(listing)

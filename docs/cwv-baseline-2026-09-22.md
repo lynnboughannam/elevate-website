@@ -5,38 +5,38 @@ Lab measurements of `https://www.elevateestateslb.com`. The baseline was capture
 identical conditions so the deltas mean something. The conditions below matter as
 much as the numbers.
 
-| | Baseline | Measurement 2 | Measurement 3 |
-|---|---|---|---|
-| Date | 2026-09-22 | 2026-09-22 | 2026-09-22 |
-| Commit | `9a7dcf2` | `1f4cd73` | `497f6fa` |
-| What changed | — | Tailwind precompiled; skeleton shimmer capped | Supabase calls parallelised |
-| Properties live | 108 | 108 | 108 |
-| Browser | Chromium 147.0.7727.57 headless, puppeteer-core | same | same |
-| Runs per figure | 3, median | 3, median | 3, median |
+| | Baseline | M2 | M3 | M4 |
+|---|---|---|---|---|
+| Date | 2026-09-22 | 2026-09-22 | 2026-09-22 | 2026-09-22 |
+| Commit | `9a7dcf2` | `1f4cd73` | `497f6fa` | `6cea505` |
+| What changed | — | Tailwind precompiled; shimmer capped | Supabase calls parallelised | Hero image local, WebP, `<img>` |
+| Properties live | 108 | 108 | 108 | 108 |
+| Browser | Chromium 147.0.7727.57 headless, puppeteer-core | same | same | same |
+| Runs per figure | 3, median | 3, median | 3, median | 3, median |
 
 ## Results
 
 ### Mobile — 4× CPU throttle, Slow 4G, 390×844 @ DPR 2
 
-| Metric | Home base | Home M2 | Home M3 | Listings base | Listings M2 | Listings M3 | Threshold |
-|---|---|---|---|---|---|---|---|
-| **LCP** | 11.82s POOR | 5.43s POOR | **4.95s** POOR | 10.03s POOR | 6.64s POOR | **2.42s good** | ≤2.5s / ≤4.0s |
-| **INP** | — | — | — | 2416ms POOR | 2560ms POOR | **1272ms** POOR | ≤200ms / ≤500ms |
-| **CLS** | 0.000 good | 0.000 good | 0.000 good | 0.084 good | 0.084 good | **0.001** good | ≤0.1 / ≤0.25 |
-| FCP | 8.78s POOR | 3.31s POOR | **2.07s** needs work | 5.67s POOR | 1.14s good | **0.87s good** | ≤1.8s / ≤3.0s |
-| TTFB | 207ms good | 191ms good | 508ms good | 497ms good | 198ms good | 203ms good | ≤800ms / ≤1800ms |
-| LCP element | `DIV.hero-bg` | `DIV.hero-bg` | `DIV.hero-bg` | `H3` | `H3` | `H3` | — |
+| Metric | Home base | M2 | M3 | **M4** | Listings base | M2 | M3 | **M4** | Threshold |
+|---|---|---|---|---|---|---|---|---|---|
+| **LCP** | 11.82s POOR | 5.43s | 4.95s POOR | **2.39s good** | 10.03s POOR | 6.64s | 2.42s | **2.56s** needs work | ≤2.5s / ≤4.0s |
+| **INP** | — | — | — | — | 2416ms POOR | 2560ms | 1272ms | **1216ms** POOR | ≤200ms / ≤500ms |
+| **CLS** | 0.000 good | 0.000 | 0.000 | **0.000** good | 0.084 good | 0.084 | 0.001 | **0.001** good | ≤0.1 / ≤0.25 |
+| FCP | 8.78s POOR | 3.31s | 2.07s | **1.34s good** | 5.67s POOR | 1.14s | 0.87s | **0.92s good** | ≤1.8s / ≤3.0s |
+| TTFB | 207ms good | 191ms | 508ms | **201ms** good | 497ms good | 198ms | 203ms | **212ms** good | ≤800ms / ≤1800ms |
+| LCP element | `DIV.hero-bg` | same | same | **`IMG.hero-img`** | `H3` | `H3` | `H3` | `H3` | — |
 
 ### Desktop — unthrottled, 1440×900 @ DPR 1
 
-| Metric | Home base | Home M2 | Home M3 | Listings base | Listings M2 | Listings M3 | Threshold |
-|---|---|---|---|---|---|---|---|
-| LCP | 1.77s good | 1.38s good | **1.24s** good | 3.83s needs work | 4.26s POOR | **2.64s** needs work | ≤2.5s / ≤4.0s |
-| INP | — | — | — | 136ms good | 144ms good | **128ms** good | ≤200ms / ≤500ms |
-| CLS | 0.011 good | 0.008 good | 0.008 good | 0.016 good | 0.016 good | 0.016 good | ≤0.1 / ≤0.25 |
-| FCP | 1.05s good | 0.86s good | **0.70s** good | 0.93s good | 0.74s good | **0.53s** good | ≤1.8s / ≤3.0s |
-| TTFB | 194ms good | 202ms good | 244ms good | 214ms good | 205ms good | 203ms good | ≤800ms / ≤1800ms |
-| LCP element | `DIV.hero-bg` | `DIV.hero-bg` | `DIV.hero-bg` | `IMG.loaded` | `IMG.loaded` | `H1.font-display` | — |
+| Metric | Home base | M2 | M3 | **M4** | Listings base | M2 | M3 | **M4** | Threshold |
+|---|---|---|---|---|---|---|---|---|---|
+| LCP | 1.77s good | 1.38s | 1.24s | **0.62s good** | 3.83s needs work | 4.26s | 2.64s | **2.34s good** | ≤2.5s / ≤4.0s |
+| INP | — | — | — | — | 136ms good | 144ms | 128ms | **112ms good** | ≤200ms / ≤500ms |
+| CLS | 0.011 good | 0.008 | 0.008 | **0.011** good | 0.016 good | 0.016 | 0.016 | **0.016** good | ≤0.1 / ≤0.25 |
+| FCP | 1.05s good | 0.86s | 0.70s | **0.60s good** | 0.93s good | 0.74s | 0.53s | **0.55s good** | ≤1.8s / ≤3.0s |
+| TTFB | 194ms good | 202ms | 244ms | **203ms** good | 214ms good | 205ms | 203ms | **187ms** good | ≤800ms / ≤1800ms |
+| LCP element | `DIV.hero-bg` | same | same | **`IMG.hero-img`** | `IMG.loaded` | same | `H1.font-display` | `IMG.loaded` | — |
 
 INP is measured on `listings.html` only — it needs interactive controls, and the
 filter chips are the realistic interaction.
@@ -88,6 +88,42 @@ mistake 4 it deserves confirmation across more runs before being relied on.
 Mobile home LCP remains POOR at 4.95s: the homepage LCP element is
 `DIV.hero-bg`, a background image, so it is bound by image delivery rather than
 by the data fetch.
+
+## What measurement 4 showed
+
+The homepage LCP element was a CSS `background-image` pointing at
+`picsum.photos` — a random-image placeholder service that had never been
+replaced with a real asset. It served **150 KB of JPEG at 1920×1080 to a 390px
+viewport**, via a redirect to `fastly.picsum.photos`, and the DNS/TCP/TLS
+handshake to that third origin cost **0.86s before the first image byte**.
+
+Three separate problems, fixed together:
+
+| | Before | After |
+|---|---|---|
+| Origin | `picsum.photos` → redirect → `fastly.picsum.photos` | same-origin |
+| Format | JPEG | WebP |
+| Mobile bytes | 150 KB | 49 KB (−67%) |
+| Mobile dimensions | 1920×1080 landscape, upscaled to cover a tall viewport | 760×1350 portrait crop |
+| Discovery | CSS `background-image` — invisible to the preload scanner | `<img>` in markup, `fetchpriority="high"` |
+
+**Mobile home LCP 4.95s → 2.39s, into "good"** — an 80% cut from the 11.82s
+baseline. Desktop home LCP 1.24s → 0.62s.
+
+The discovery change is the part that generalises: a `background-image` is only
+found once the stylesheet is parsed *and* the element is matched, so it can
+never start early. An `<img>` high in the markup is found while the HTML is
+still being parsed.
+
+No `<link rel="preload">` was added. With `<picture>`/`srcset` a preload has to
+match `imagesrcset`, `imagesizes` and `media` exactly or the browser downloads
+twice; the element is already preload-scanner visible, and `fetchpriority`
+covers the priority half. Verified: exactly one hero image is downloaded per
+viewport.
+
+Mobile listings LCP moved 2.42s → 2.56s, i.e. sat still around the 2.5s
+threshold — run-to-run variance, not a regression from this change, which did
+not touch that page's critical path.
 
 ## What causes the remaining INP is still unknown
 
@@ -191,11 +227,13 @@ is good for.
 
 ## Still outstanding
 
-- **Mobile INP, 1272ms against a 200ms threshold** — the largest remaining gap,
-  and still unattributed (see above). Wants a full Chrome trace, not a guess.
-- **Mobile home LCP, 4.95s.** Bound by the hero background image, not by data
-  fetching, so it needs image work (dimensions, format, preload) rather than
-  more request plumbing.
+- **Mobile INP, 1216ms against a 200ms threshold** — now the only metric still
+  failing, and still unattributed (see above). Wants a full Chrome trace, not a
+  guess. Everything else is "good" or within a rounding error of it.
+- The three testimonial avatars on the homepage are still `picsum.photos`
+  images — random stock faces shown beside customer quotes. They are deferred
+  with `loading="lazy"` so they no longer compete during load, but they remain a
+  third-party origin and, more importantly, a content-integrity question.
 - The Supabase query still fetches all 108 rows with `select=*` (215 KB raw,
   55 KB gzipped, of which ~145 KB raw is fields the cards never use). Note the
   waterfall showed the cost here is round-trip latency, not payload size — the

@@ -369,10 +369,13 @@
     thumb.style.opacity = '1';
   }
 
+  // Same parallelisation as index and listings: the property fetch does not
+  // depend on the coming-soon flag, so it no longer waits for it.
+  window.addEventListener('ee:synced', renderProperty, { once: true });
+  initStore();
+
   checkComingSoon().then(on => {
-    if (on) { window.location.href = 'listings.html'; return; }
-    window.addEventListener('ee:synced', renderProperty, { once: true });
-    initStore();
+    if (on) window.location.href = 'listings.html';
   });
 </script>
 </body>

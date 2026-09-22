@@ -485,16 +485,22 @@
     populateChips('type-chips', 'type', types, t => t.charAt(0).toUpperCase() + t.slice(1));
   }
 
-  // Coming soon check
+  // Start the listings fetch immediately. It does not depend on the coming-soon
+  // flag, but it used to sit inside checkComingSoon().then(), which made the two
+  // Supabase calls serial: settings 2.40s->3.98s, then properties 4.06s->5.49s.
+  // Running them in parallel takes ~1.5s off the critical path.
+  window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
+  initStore();
+  populateFilters();
+  renderListings();
+
+  // Coming soon check — now only controls which view is visible. It resolves
+  // before the properties data arrives, so the listings view is swapped out
+  // before it has anything to show.
   checkComingSoon().then(on => {
     if (on) {
       document.getElementById('coming-soon-wrap').classList.add('show');
       document.getElementById('listings-page-content').style.display = 'none';
-    } else {
-      window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
-      initStore();
-      populateFilters();
-      renderListings();
     }
   });
 </script>

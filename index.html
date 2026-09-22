@@ -1074,15 +1074,16 @@
     populateAreas();
     populateTypes();
   }
+  // Fetch listings immediately rather than waiting on the coming-soon lookup —
+  // the two are independent, and chaining them made the Supabase calls serial.
+  window.addEventListener('ee:synced', renderHome);
+  initStore();
+  renderHome();
+
   checkComingSoon().then(on => {
-    const wrap = document.getElementById('home-listings-wrap');
     if (on) {
-      wrap.style.display = 'none';
+      document.getElementById('home-listings-wrap').style.display = 'none';
       document.getElementById('home-coming-soon').style.display = 'block';
-    } else {
-      window.addEventListener('ee:synced', renderHome);
-      initStore();
-      renderHome();
     }
   });
 

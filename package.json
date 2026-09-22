@@ -1,0 +1,14 @@
+{
+  "name": "elevate-estates-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Elevate Estates — static property site. Tailwind is compiled at build time; there is no other build step.",
+  "scripts": {
+    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --minify",
+    "dev": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --watch",
+    "serve": "node serve.mjs"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

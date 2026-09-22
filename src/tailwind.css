@@ -1,0 +1,11 @@
+/* Tailwind input. Built to ../assets/tailwind.css by `npm run build`.
+ *
+ * The site uses almost no Tailwind utility classes — its styling lives in inline
+ * style attributes and per-page <style> blocks. What it does depend on is
+ * `base` (Preflight, Tailwind's reset): removing it entirely shifts layout by up
+ * to 408px on the homepage as default heading and paragraph margins return.
+ * So base is the part that matters here; components and utilities are kept so
+ * utility classes still work if any are added later. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

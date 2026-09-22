@@ -238,6 +238,20 @@
     .testimonial-card {
       background: #FAF7F3; border: 1px solid rgba(122,82,48,0.12); border-radius: 16px; padding: 2rem;
     }
+    /* Initials rather than a photo. These replaced picsum.photos placeholder
+       faces — stock portraits standing in for named clients. Initials are drawn
+       from the name shown beside them, so the avatar asserts nothing that the
+       card does not already say. Uniform treatment: the letters carry the
+       distinction, not the colour.
+       #7A5230 on #EFE3D5 is 5.4:1, past AA for 13px bold.
+       Explicit line-height, per the font-swap lesson in docs/cwv-baseline. */
+    .testi-avatar {
+      width: 40px; height: 40px; border-radius: 50%; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      background: #EFE3D5; color: #7A5230;
+      border: 1px solid rgba(122,82,48,0.18);
+      font-size: 13px; font-weight: 700; letter-spacing: 0.5px; line-height: 1;
+    }
 
     /* ── HOW IT WORKS ── */
     .step-num {
@@ -752,9 +766,7 @@
         </div>
         <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Found our dream villa in Broumana within two weeks. The team was professional, fast, and genuinely helpful."</p>
         <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
-            <img src="https://picsum.photos/seed/t1/40/40" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
-          </div>
+          <div class="testi-avatar" aria-hidden="true">RK</div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#4E3219">Rania K.</div>
             <div style="font-size:11px;color:#999">Purchased in Broumana</div>
@@ -767,9 +779,7 @@
         </div>
         <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Listed my Achrafieh apartment and had serious inquiries within 48 hours. The EE reference system is brilliant."</p>
         <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
-            <img src="https://picsum.photos/seed/t2/40/40" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
-          </div>
+          <div class="testi-avatar" aria-hidden="true">KM</div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#4E3219">Karim M.</div>
             <div style="font-size:11px;color:#999">Sold in Achrafieh</div>
@@ -782,9 +792,7 @@
         </div>
         <p class="font-display" style="font-size:18px;color:#4E3219;line-height:1.4;margin-bottom:1.25rem;font-style:italic">"Rented our office space through Elevate. The quality of leads was exceptional — only serious tenants."</p>
         <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:40px;height:40px;border-radius:50%;background:#DDD5C8;overflow:hidden">
-            <img src="https://picsum.photos/seed/t3/40/40" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
-          </div>
+          <div class="testi-avatar" aria-hidden="true">LH</div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#4E3219">Lara H.</div>
             <div style="font-size:11px;color:#999">Leased in Hamra</div>

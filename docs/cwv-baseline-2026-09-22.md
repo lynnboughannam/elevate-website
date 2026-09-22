@@ -5,14 +5,19 @@ Lab measurements of `https://www.elevateestateslb.com`. The baseline was capture
 identical conditions so the deltas mean something. The conditions below matter as
 much as the numbers.
 
-| | Baseline | M2 | M3 | M4 |
-|---|---|---|---|---|
-| Date | 2026-09-22 | 2026-09-22 | 2026-09-22 | 2026-09-22 |
-| Commit | `9a7dcf2` | `1f4cd73` | `497f6fa` | `6cea505` |
-| What changed | — | Tailwind precompiled; shimmer capped | Supabase calls parallelised | Hero image local, WebP, `<img>` |
-| Properties live | 108 | 108 | 108 | 108 |
-| Browser | Chromium 147.0.7727.57 headless, puppeteer-core | same | same | same |
-| Runs per figure | 3, median | 3, median | 3, median | 3, median |
+| | Baseline | M2 | M3 | M4 | M5 |
+|---|---|---|---|---|---|
+| Date | 2026-09-22 | 2026-09-22 | 2026-09-22 | 2026-09-22 | 2026-09-22 |
+| Commit | `9a7dcf2` | `1f4cd73` | `497f6fa` | `6cea505` | `0711518` |
+| What changed | — | Tailwind precompiled; shimmer capped | Supabase calls parallelised | Hero image local, WebP, `<img>` | Stale-while-revalidate cache |
+| Properties live | 108 | 108 | 108 | 108 | 108 |
+| Browser | Chromium 147.0.7727.57 headless, puppeteer-core | same | same | same | same |
+| Runs per figure | 3, median | 3, median | 3, median | 3, median | 3, median |
+
+> **Do not compare absolute LCP across measurements.** They were taken in
+> different sessions and the network to Supabase and Vercel varies enough to
+> swamp the changes being measured — see mistake 5. Compare within a
+> measurement (cold vs warm), or re-run both arms together.
 
 ## Results
 
@@ -125,6 +130,55 @@ Mobile listings LCP moved 2.42s → 2.56s, i.e. sat still around the 2.5s
 threshold — run-to-run variance, not a regression from this change, which did
 not touch that page's critical path.
 
+## What measurement 5 showed
+
+`initStore()` cleared localStorage and then fetched, so every visitor waited on
+the network before seeing a listing — including returning ones who already had
+the data. It now renders the cache immediately and revalidates in the
+background, using a 48-byte version probe rather than a TTL.
+
+Both arms measured in one session, mobile, 4× CPU, Slow 4G, HTTP cache disabled
+throughout (so "warm" isolates the listings cache, not browser asset caching):
+
+| | Home cold | Home warm | Listings cold | **Listings warm** |
+|---|---|---|---|---|
+| LCP | 2.40s good | 2.38s good | 2.90s needs work | **0.93s good** |
+| FCP | 1.28s good | 0.87s good | 0.79s good | **0.53s good** |
+| CLS | 0.000 | 0.000 | 0.001 | 0.004 |
+| `properties` full fetches | 1 | **0** | 1 | **0** |
+| `properties` probes | 0 | **1** | 0 | **1** |
+
+**Listings LCP for a returning visitor: 2.90s → 0.93s, a 68% cut**, because the
+fetch is no longer on the critical path at all. The request counts confirm the
+mechanism: a warm load issues the 48-byte probe and skips the 217 KB entirely.
+
+Home is unchanged cold-to-warm (2.40s → 2.38s), as expected — its LCP element is
+the hero image, which the listings cache has nothing to do with.
+
+### The cache caused a CLS regression, since fixed
+
+Worth recording because the cause was not obvious. Rendering cards from cache at
+`DOMContentLoaded` means they lay out using *fallback* font metrics, then
+re-lay-out when Playfair and Nunito swap in. Warm CLS spiked to **0.212–0.271**
+against a 0.1 threshold, 6/6 runs; cold was 0.001, 5/5. The shift landed
+consistently 90–200ms before `document.fonts.ready`.
+
+Cold never showed it because the grid only filled *after* the fonts had settled.
+The cache did not create the reflow — it exposed one that was always there.
+
+The cause was line boxes sizing from glyph metrics rather than from a ratio.
+Fixed in two passes: card text first (6/6 spiking → 3/5), then, after proving
+with an injected global rule that explicit line-heights give 0.004 in 5/5, the
+same treatment scoped to the `h1` and results bar above the grid. Both scoped
+rather than global, so badge and chip spacing is untouched.
+
+Now 0.004 warm and 0.001 cold, 5/5 each, with no individual shift above 0.005.
+
+**The general lesson: making content render earlier moves it before other
+asynchronous work — fonts here — and can surface layout instability that was
+previously hidden by the delay.** Anything that speeds up first render on this
+site should be re-checked for CLS, not just LCP.
+
 ## What causes the remaining INP is still unknown
 
 The baseline version of this file asserted that INP was caused by
@@ -152,7 +206,7 @@ CLS is genuinely fine and worth protecting in any rendering rewrite: 0.084 on
 mobile listings is inside budget but not by much, and listing images still carry
 no intrinsic `width`/`height`.
 
-## Methodology, and four ways measurements went wrong
+## Methodology, and five ways measurements went wrong
 
 Recorded because each of these produced a confidently wrong number, and a later
 run made the same way would show a fake win.
@@ -190,6 +244,25 @@ message; `1f4cd73` corrects it.
 The rule this implies: **any A/B on INP needs at least 3 runs per side and a
 median**, the same as every other figure in this file. Load metrics (LCP, FCP)
 have been far more stable, but get the same treatment for consistency.
+
+**5. LCP is not comparable across sessions.** At M5 every figure initially read
+far worse than M4 — including the *cold* path, which the change being tested
+barely touches. Rather than assume a regression, the old and new `data.js` were
+served against the same live site, interleaved run by run:
+
+```
+    old data.js (744127f)   LCP 4.80s
+    new data.js (ebbafce)   LCP 4.84s
+```
+
+Identical. The old code also measured ~4.8s at that moment against 2.56s at M4,
+so the network was simply slower — nothing had regressed. A later session gave
+2.90s for the same commit.
+
+The rule: **to attribute an LCP change to a code change, run both arms in the
+same session, interleaved.** Comparing a number taken now against one taken
+hours ago mostly measures the network. That is why the M5 table above reports
+cold against warm rather than M5 against M4.
 
 Page weight is taken from CDP `Network.loadingFinished` (`encodedDataLength`),
 not `PerformanceResourceTiming.transferSize`, which reports 0 for cached and
@@ -234,12 +307,13 @@ is good for.
   images — random stock faces shown beside customer quotes. They are deferred
   with `loading="lazy"` so they no longer compete during load, but they remain a
   third-party origin and, more importantly, a content-integrity question.
-- The Supabase query still fetches all 108 rows with `select=*` (215 KB raw,
-  55 KB gzipped, of which ~145 KB raw is fields the cards never use). Note the
-  waterfall showed the cost here is round-trip latency, not payload size — the
-  request takes ~1.4s on Slow 4G regardless.
-- `initStore()` still clears `localStorage` before each fetch, so the cache never
-  serves a warm read. Serving stale data immediately and revalidating in the
-  background would take the fetch off the critical path entirely.
+- The Supabase query still fetches all 108 rows with `select=*` on a cold load
+  (215 KB raw, 55 KB gzipped, ~145 KB of it fields the cards never use). The
+  waterfall showed the cost is round-trip latency rather than payload size — the
+  request takes ~1.4s on Slow 4G regardless — so trimming the field list is
+  worth less than the raw byte count suggests. It is also entangled with search:
+  `description` and `amenities` are unused by the cards but feed the keyword
+  filter, so dropping them means moving search server-side. Warm loads already
+  skip this request entirely.
 - Raw HTML still contains zero listings, which is the indexability problem from
   the SEO audit rather than a CWV one.

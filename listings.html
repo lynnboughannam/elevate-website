@@ -80,8 +80,19 @@
     .btn-wa { display: inline-flex; align-items: center; gap: 5px; background: #25D366; color: #fff; border: none; padding: 7px 13px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
     .btn-wa:hover { background: #1da851; }
 
+    /* Everything above the grid, for the same font-swap reason as the cards.
+       When these line boxes resize on swap, the grid, sort bar and footer all
+       move — which is what produced the intermittent CLS 0.24 on a warm cache.
+       Scoped to the header so card and badge spacing is untouched. */
+    .listings-header h1 { line-height: 1.15; }
+    .listings-header p,
+    .listings-header a,
+    .listings-header span,
+    .listings-header input { line-height: 1.4; }
+
     /* Sort/count bar */
-    .results-bar { background: #FAF7F3; border-radius: 12px; padding: 12px 16px; border: 1px solid rgba(122,82,48,0.1); display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .results-bar { background: #FAF7F3; border-radius: 12px; padding: 12px 16px; border: 1px solid rgba(122,82,48,0.1); display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; line-height: 1.4; }
+    .results-bar span, .results-bar select, .results-bar label { line-height: 1.4; }
 
     /* Empty state */
     .empty-state { text-align: center; padding: 4rem 2rem; background: #FAF7F3; border-radius: 16px; border: 1px solid rgba(122,82,48,0.1); }
@@ -161,7 +172,7 @@
 </div>
 
 <div id="listings-page-content">
-<div style="background:#FAF7F3;padding:3rem 2rem 2.5rem;border-bottom:1px solid rgba(122,82,48,0.1)">
+<div class="listings-header" style="background:#FAF7F3;padding:3rem 2rem 2.5rem;border-bottom:1px solid rgba(122,82,48,0.1)">
   <div style="max-width:1280px;margin:0 auto">
     <p style="font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#A87850;margin-bottom:8px">All Listings</p>
     <h1 class="font-display" style="font-size:clamp(28px,4vw,42px);color:#4E3219;letter-spacing:-0.5px">Browse Properties</h1>

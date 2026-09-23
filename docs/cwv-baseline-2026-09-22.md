@@ -179,6 +179,102 @@ asynchronous work — fonts here — and can surface layout instability that was
 previously hidden by the delay.** Anything that speeds up first render on this
 site should be re-checked for CLS, not just LCP.
 
+## Measurement 6 — the DevTools trace, and a null result on INP
+
+Commit `f1f305a`, 2026-09-23. A full trace was taken across one filter tap on
+mobile listings at 4× CPU, since the CPU profile had already ruled out
+JavaScript at ~0.5% of time.
+
+**Paint dominates, and it is not reflow.** Over the interaction:
+
+| Event | Count | Total ms |
+|---|---|---|
+| **Paint** | **1305** | **1275.0** |
+| UpdateLayoutTree (style recalc) | 280 | 294.7 |
+| Layerize | 277 | 152.5 |
+| PrePaint | 288 | 133.1 |
+| Commit | 276 | 105.1 |
+| FunctionCall (site JS) | 4 | 51.1 |
+| **Layout** | **5** | **21.6** |
+
+`invalidationTracking` attributed it outright:
+
+```
+1044x  StyleRecalcInvalidationTracking | Animation | DIV class='card-img'
+ 278x  StyleRecalcInvalidationTracking | Animation | ::before
+  50x  StyleRecalcInvalidationTracking | Animation | IMG class='loaded'
+```
+
+Isolating each animation:
+
+| Arm | Paint ms | Paint events |
+|---|---|---|
+| as deployed | 1665 | 1847 |
+| **card animation off** | **261** | **86** |
+| WhatsApp pulse off | 2577 | 1743 |
+| both off | 409 | 87 |
+
+The card skeleton was ~84% of paint time and ~95% of paint events. The
+`::before` entries are the WhatsApp button's infinite pulse: 278 invalidations
+but measurably irrelevant, because it is a 56px element.
+
+**Why the earlier iteration cap had not solved it.** The cap applies per
+*element*, and `renderListings()` replaces `grid.innerHTML` on every filter
+change, so each tap built fresh nodes that started the animation again from
+zero. Confirmed directly:
+
+```
+16s after load (cap is 12s) : {cards:6, animRunning:0, imgLoaded:4}
+600ms after a filter tap    : {cards:6, animRunning:2, imgLoaded:4}
+5.1s after that tap         : {cards:6, animRunning:2, imgLoaded:4}
+```
+
+The two that keep running are the cards whose lazy below-fold images never
+load, so `:has(img.loaded)` never fires and they run the full 12s.
+
+Replaced with a static gradient placeholder. Verified: 0 cards animating after
+taps, against 4–5 before.
+
+### The INP result: unchanged
+
+Measured by the documented methodology, both arms in one session:
+
+```
+  animated (previous)  INP runs [1128, 112, 1096]  median 1096ms
+  static (deployed)    INP runs [1096, 1144, 128]  median 1096ms
+```
+
+**No change.** The paint work was real and is genuinely gone, but it was not
+what INP was measuring.
+
+This is the second attempt on this animation to produce no INP movement. The
+first (M2) was justified by a single-run A/B and retracted as noise. This one
+rests on a trace and holds up *as a paint claim* — Paint 1665ms → 261ms is
+solid — but the INP outcome is the same null, and the better evidence does not
+change that. The fix is still worth keeping: a permanently animating skeleton
+that restarts on every interaction is a defect regardless of which metric names
+it.
+
+### The new lead: INP is bimodal
+
+Interactions are either ~110ms or ~1100–1600ms, never in between. Logging every
+tap shows the slow one is reproducibly the *first* tap that actually changes the
+result set:
+
+```
+  tap 1 "All"          worst     0ms   -> 108 properties found
+  tap 2 "For Sale"     worst  1608ms   -> 90 properties found
+  tap 3 "For Rent"     worst   112ms   -> 18 properties found
+  tap 4 "All"          worst     0ms   -> 18 properties found
+  tap 5 "Apartment"    worst     0ms   -> 9 properties found
+  tap 6 "Commercial"   worst  3192ms   -> 8 properties found
+```
+
+Later taps change the result set just as much and stay fast, so this is a
+one-time cost on first re-render, not proportional to the work done. New image
+requests were 2 on fast and slow taps alike, so it is not image fetching.
+`:has()` was tested as a suspect and ruled out (1184ms vs 1216ms).
+
 ## What causes the remaining INP is still unknown
 
 The baseline version of this file asserted that INP was caused by
@@ -195,12 +291,24 @@ native style, layout and paint — and only ~0.5% in site JavaScript:
        19     0.1%   injectListingSchema
 ```
 
-`renderListings()` itself costs ~100ms per call. Ruled out by direct measurement
-so far: site JavaScript, images (blocked them, no change), tap congestion
-(spacing taps 4s apart made it *worse*), Tailwind's MutationObserver, and the
-shimmer animation. The cost is native rendering work whose source has not been
-isolated — a full Chrome trace is the next step, and no INP fix should be
-attempted before that.
+`renderListings()` itself costs ~100ms per call.
+
+Ruled out by direct measurement so far:
+
+| Suspect | How it was ruled out |
+|---|---|
+| Site JavaScript | 0.5% of CPU profile; `renderListings` ~100ms/call |
+| Images | Blocked all image requests — INP 2544ms, no change |
+| Tap congestion | Spacing taps 4s apart made it *worse* (5880ms) |
+| Tailwind MutationObserver | Blocked the CDN — INP 2408ms, no change |
+| The card skeleton animation | Removed it — Paint −84%, INP unchanged (M6) |
+| `:has(img.loaded)` | 1184ms vs 1216ms with it overridden |
+
+The trace did locate a genuine and large source of *paint* work, which is now
+fixed. It did not explain INP. The live lead is the bimodal distribution in M6:
+one-time cost on the first re-render, ~1.1–1.6s, cause unknown. A trace narrowed
+to that single interaction — rather than the whole tap sequence — is the next
+step, and no further INP fix should be attempted before it.
 
 CLS is genuinely fine and worth protecting in any rendering rewrite: 0.084 on
 mobile listings is inside budget but not by much, and listing images still carry
@@ -300,9 +408,10 @@ is good for.
 
 ## Still outstanding
 
-- **Mobile INP, 1216ms against a 200ms threshold** — now the only metric still
-  failing, and still unattributed (see above). Wants a full Chrome trace, not a
-  guess. Everything else is "good" or within a rounding error of it.
+- **Mobile INP, ~1100ms against a 200ms threshold** — the only metric still
+  failing. The trace (M6) found and fixed a real paint problem without moving
+  it. Next step is a trace scoped to the single slow interaction identified in
+  M6, not another guess. Everything else is "good" or within a rounding error.
 - The three testimonial avatars on the homepage are still `picsum.photos`
   images — random stock faces shown beside customer quotes. They are deferred
   with `loading="lazy"` so they no longer compete during load, but they remain a

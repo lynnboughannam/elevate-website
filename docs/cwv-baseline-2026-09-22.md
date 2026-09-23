@@ -275,6 +275,93 @@ one-time cost on first re-render, not proportional to the work done. New image
 requests were 2 on fast and slow taps alike, so it is not image fetching.
 `:has()` was tested as a suspect and ruled out (1184ms vs 1216ms).
 
+## M7 — scoped traces, and the diff/patch confirmation test
+
+2026-09-23. Two follow-ups to M6: traces scoped to a single interaction, and a
+throwaway build to test the fix before committing to it.
+
+### The "first tap is slow" pattern was not real
+
+M6 suggested the slow interaction was reproducibly the first tap that changed
+the result set. Testing it by swapping which chip goes first refutes that:
+
+| | A tap1 (first) | A tap2 (later) | B tap1 (first) | B tap2 (later) |
+|---|---|---|---|---|
+| Layout | 139.4 | **302.4** | 94.3 | 47.3 |
+| UpdateLayoutTree | 306.6 | 257.6 | 219.0 | 295.2 |
+| Paint | 593.5 | 231.9 | 337.0 | 158.9 |
+
+No first-versus-later pattern — the largest Layout is on a *later* tap, and in
+session B neither tap was slow. The M6 reading came from two runs of a six-tap
+sequence; it was a pattern read into noise. No first-call overhead, no cold
+library, no one-time layer promotion.
+
+### What is consistent: one long task per tap
+
+Every interaction is a single main-thread task of 246–553ms with the same shape.
+The slow one, broken down:
+
+```
+longest RunTask: 445.3ms
+  EventDispatch       15x  114.1ms   (max 112.8 — the handler)
+   └ v8.callFunction   1x  111.0ms
+      └ FunctionCall   1x   98.9ms   ← renderListings
+  ParseHTML            6x   38.9ms   ← innerHTML being parsed
+  UpdateLayoutTree     4x   65.9ms
+  Layout               1x  113.8ms   ← dirtyObjects=369 totalObjects=598
+  Paint                4x   88.5ms
+```
+
+`dirtyObjects=369 / totalObjects=598`, `partialLayout=false`, on every tap:
+`grid.innerHTML = page.map(buildCard).join('')` destroys and recreates the whole
+subtree, so the browser re-lays-out essentially the whole page to change six
+cards.
+
+### The confirmation test
+
+A throwaway branch (`perf/diff-render-test`, commit `f22c881`, not for merge)
+replaced the innerHTML rebuild with rough keyed reconciliation: reuse the
+existing `<article>` for any listing already on screen, build nodes only for
+genuinely new ones. Both versions served from the same local server, one tap
+traced at a time:
+
+| version | tap | cards changed | rebuilt | dirtyObjects/total | Layout ms | ParseHTML | Paint ms |
+|---|---|---|---|---|---|---|---|
+| full | For Sale | 2/6 | all 6 | **369**/598 | 64.9 | 28.7 | 209.2 |
+| diff | For Sale | 2/6 | **2** | **168**/609 | **26.1** | **5.9** | 198.4 |
+| full | For Rent | 6/6 | all 6 | 321/550 | 100.5 | 25.9 | 151.3 |
+| diff | For Rent | 6/6 | 6 | 321/561 | 88.0 | 13.4 | 126.6 |
+
+**Diagnosis confirmed.** When only 2 of 6 cards genuinely change, dirtyObjects
+falls 369 → 168 (−54%), Layout 64.9 → 26.1ms (−60%), ParseHTML 28.7 → 5.9ms
+(−79%). When all 6 change, dirtyObjects is identical at 321 — exactly as it
+should be, since everything really did change.
+
+**But it also bounds the win.** Paint barely moves (209 → 198ms, 151 → 127ms):
+it is driven by the visible area, not by how many nodes were touched. And
+filters that swap the entire visible page — which purpose filters do — get
+nothing from diffing. The benefit is real but proportional to result-set
+overlap, so a production diff/patch is worth building and will not be a silver
+bullet.
+
+The INP figures from this test (176–328ms) are **not** comparable to the ~1100ms
+baseline: localhost, no network emulation, tracing active. The dirtyObjects,
+Layout and ParseHTML comparisons are the valid result.
+
+### Reversing the earlier recommendation against diff/patch
+
+An earlier note here argued against diff/patch because the CPU profile put site
+JavaScript at ~0.5% of time. That was wrong, and the reason is instructive:
+**the profile aggregated across ~14 seconds that were mostly idle.** Averaged
+over that window the JS looks negligible, and it genuinely is as *execution*.
+What the wide scope hid is that the JS is the **cause** of the Layout,
+ParseHTML and Paint that follow it inside the same task. Scoping the trace to
+one interaction makes the chain visible.
+
+The lesson for later profiling here: **scope a profile to the interaction being
+diagnosed.** A whole-session profile answers "what is the CPU doing?", not "what
+is this interaction doing?", and for INP only the second question matters.
+
 ## What causes the remaining INP is still unknown
 
 The baseline version of this file asserted that INP was caused by
@@ -297,18 +384,22 @@ Ruled out by direct measurement so far:
 
 | Suspect | How it was ruled out |
 |---|---|
-| Site JavaScript | 0.5% of CPU profile; `renderListings` ~100ms/call |
+| ~~Site JavaScript~~ | ~~0.5% of CPU profile~~ — **reversed in M7**: the profile was scoped too wide. The JS is the cause of the Layout/Paint that follow it in the same task. |
 | Images | Blocked all image requests — INP 2544ms, no change |
 | Tap congestion | Spacing taps 4s apart made it *worse* (5880ms) |
 | Tailwind MutationObserver | Blocked the CDN — INP 2408ms, no change |
 | The card skeleton animation | Removed it — Paint −84%, INP unchanged (M6) |
 | `:has(img.loaded)` | 1184ms vs 1216ms with it overridden |
 
-The trace did locate a genuine and large source of *paint* work, which is now
-fixed. It did not explain INP. The live lead is the bimodal distribution in M6:
-one-time cost on the first re-render, ~1.1–1.6s, cause unknown. A trace narrowed
-to that single interaction — rather than the whole tap sequence — is the next
-step, and no further INP fix should be attempted before it.
+**M7 resolved this.** The cause is the wholesale `innerHTML` rebuild on every
+filter change: one main-thread task containing the handler, HTML parsing, style
+recalc, a full-page Layout over ~600 objects, and Paint. The M6 "first tap"
+lead was a false pattern and is withdrawn.
+
+Remaining unknown is not the mechanism but the ceiling: diffing cuts
+dirtyObjects proportionally to result-set overlap, and does nothing when a
+filter swaps the whole visible page. How much that helps in practice depends on
+how users actually filter, which is not known from lab runs.
 
 CLS is genuinely fine and worth protecting in any rendering rewrite: 0.084 on
 mobile listings is inside budget but not by much, and listing images still carry
@@ -409,9 +500,11 @@ is good for.
 ## Still outstanding
 
 - **Mobile INP, ~1100ms against a 200ms threshold** — the only metric still
-  failing. The trace (M6) found and fixed a real paint problem without moving
-  it. Next step is a trace scoped to the single slow interaction identified in
-  M6, not another guess. Everything else is "good" or within a rounding error.
+  failing. Cause identified in M7: the wholesale `innerHTML` rebuild per filter
+  change. A production diff/patch of `renderListings()` is the fix, confirmed by
+  the throwaway test, with the caveat that the gain scales with result-set
+  overlap and Paint barely moves. Everything else is "good" or within a rounding
+  error.
 - The three testimonial avatars on the homepage are still `picsum.photos`
   images — random stock faces shown beside customer quotes. They are deferred
   with `loading="lazy"` so they no longer compete during load, but they remain a

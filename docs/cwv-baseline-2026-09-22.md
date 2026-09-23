@@ -362,6 +362,72 @@ The lesson for later profiling here: **scope a profile to the interaction being
 diagnosed.** A whole-session profile answers "what is the CPU doing?", not "what
 is this interaction doing?", and for INP only the second question matters.
 
+## M8 — decision on diff/patch: deferred, with the reasoning
+
+2026-09-23. The M7 test confirmed diff/patch works; the question was whether
+real filter behaviour makes it worth building. It is not, yet.
+
+### There is no usage data, and the tracking is broken
+
+`click_events` returns **404 on read and on write** — the table does not exist.
+`trackEvent()` swallows the failure with `.catch(() => {})`, so every WhatsApp
+and phone click has been silently discarded since launch, and the admin panel's
+"Click analytics" section reads the same missing table. No GA, GTM, Plausible or
+Meta Pixel either. Separately, all nine `trackEvent` call sites are WhatsApp or
+phone clicks — **filters were never instrumented**, so even a working table
+would not answer this.
+
+### Estimate from stock composition
+
+Simulating the real `getFiltered()` against all 108 listings. Stock is heavily
+concentrated: apartments 92/108 (85%), sale 90/108 (83%), and **18 of 24 areas
+hold ≤6 listings**, so an area filter usually lands on one page of entirely
+different properties.
+
+| Transition | Results | Page-1 cards kept |
+|---|---|---|
+| All → type=apartment | 92 | 5/6 |
+| All → beds≥3 | 82 | 5/6 |
+| All → purpose=sale | 90 | 4/6 |
+| All → purpose=rent | 18 | 2/6 |
+| All → area=Hazmieh | 21 | 3/6 |
+| All → area=Jamhour | 14 | 0/6 |
+| All → area=Yarzeh | 10 | 0/6 |
+| All → type=land / duplex / villa / shop | 1–4 | 0/6 |
+
+**Mean 1.8 of 6 preserved across 20 sampled transitions; half preserve zero.**
+
+### Why that is not good enough
+
+The high-overlap transitions are the ones that do the least work for the user.
+Filtering to "apartment" keeps 5/6 cards *because 85% of stock is already
+apartments* — barely a narrowing. The filters that genuinely narrow, above all
+area, return 0/6. **Diff/patch helps most exactly where the filter matters
+least.**
+
+Combined with the M7 ceiling — even at 4/6 kept, Layout fell 60% and ParseHTML
+79% but Paint only 5%, and Paint is the largest single component — the expected
+value does not justify a multi-day rewrite.
+
+### Decision
+
+Deferred. Logged as a known, bounded improvement with a working reference
+implementation on branch `perf/diff-render-test` (`f22c881`, local only, not
+merged).
+
+**Revisit when any of these change:**
+
+- Filter usage is instrumented and shows users narrowing within a category
+  (type → area → beds) rather than toggling purpose.
+- Stock diversifies. The 85% apartment / 83% sale concentration is what makes
+  the useful filters zero-overlap; a broader mix raises reuse.
+- `ITEMS_PER_PAGE` rises above 6. More cards per page means more absolute
+  savings per reused card.
+
+**The cheaper next step** is to create `click_events` and instrument
+`applyChip()` — roughly an hour, restores conversion tracking that is currently
+zero, and converts this decision from inference to measurement within weeks.
+
 ## What causes the remaining INP is still unknown
 
 The baseline version of this file asserted that INP was caused by
@@ -500,11 +566,14 @@ is good for.
 ## Still outstanding
 
 - **Mobile INP, ~1100ms against a 200ms threshold** — the only metric still
-  failing. Cause identified in M7: the wholesale `innerHTML` rebuild per filter
-  change. A production diff/patch of `renderListings()` is the fix, confirmed by
-  the throwaway test, with the caveat that the gain scales with result-set
-  overlap and Paint barely moves. Everything else is "good" or within a rounding
-  error.
+  failing. Cause identified in M7 (wholesale `innerHTML` rebuild per filter
+  change); fix confirmed but **deferred in M8** because real filter behaviour
+  does not support it yet. See M8 for the revisit conditions. Everything else is
+  "good" or within a rounding error.
+- **Click tracking is broken and has always been.** `click_events` does not
+  exist, so `trackEvent()` has silently discarded every WhatsApp and phone click
+  since launch, and the admin analytics panel reads nothing. This is a data
+  loss, not a performance issue, and is the cheapest high-value fix outstanding.
 - The three testimonial avatars on the homepage are still `picsum.photos`
   images — random stock faces shown beside customer quotes. They are deferred
   with `loading="lazy"` so they no longer compete during load, but they remain a

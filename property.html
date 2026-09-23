@@ -40,17 +40,13 @@
     .sticky-cta { position: sticky; top: 86px; }
     .similar-card { background: #FAF7F3; border-radius: 14px; overflow: hidden; border: 1px solid rgba(122,82,48,0.1); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
     .similar-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(122,82,48,0.15); }
-    /* Capped at 8 iterations for the same reason as listings.html: thumbnails and
-       similar-property images that never load would otherwise shimmer forever. */
-    .img-wrap { background: linear-gradient(90deg,#DDD5C8 25%,#EDE8E0 50%,#DDD5C8 75%); background-size:200% 100%; animation: shimmer 1.5s 8; }
+    /* Static, for the same reason as listings.html — this page stacks the main
+       image, every thumbnail and the similar-property cards, so it had the most
+       wrappers animating at once. */
+    .img-wrap { background: linear-gradient(105deg,#DDD5C8 0%,#EDE8E0 45%,#DDD5C8 100%); }
     .img-wrap img { opacity:0; transition:opacity 0.4s ease; }
     .img-wrap img.loaded { opacity:1; }
-    /* Same fix as listings.html: cancel the skeleton once the image is in, rather
-       than leaving background-position animating (and repainting) forever. This
-       page stacks the main image, every thumbnail and the similar-property cards,
-       so it had the most wrappers shimmering at once. */
-    .img-wrap:has(img.loaded) { animation: none; background: none; }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .img-wrap:has(img.loaded) { background: none; }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #EDE8E0; }
     ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }

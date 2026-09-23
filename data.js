@@ -481,16 +481,84 @@ function tagClass(tag) {
 
 const WA_CENTER = '96171991088';
 
-function trackEvent(eventType, propertyId) {
-  const page = location.pathname.split('/').pop() || 'index.html';
+// ── Analytics ──────────────────────────────────────────────────
+// Writes to public.click_events; schema in docs/click_events.sql.
+//
+// That table did not exist for the life of the site, and the original
+// `.catch(() => {})` here meant every WhatsApp and phone click was discarded in
+// silence. Failures are now reported. Tracking must never break the page, so
+// they are logged, never thrown, and never awaited.
+
+// Per-tab id so a filter journey can be reconstructed. sessionStorage, so it
+// dies with the tab: not a cookie, not cross-session, not tied to a person.
+function eeSessionId() {
+  try {
+    let s = sessionStorage.getItem('ee_session_id');
+    if (!s) {
+      s = (crypto.randomUUID && crypto.randomUUID()) ||
+          Date.now().toString(36) + Math.random().toString(36).slice(2);
+      sessionStorage.setItem('ee_session_id', s);
+    }
+    return s;
+  } catch { return null; }          // private mode, or storage blocked
+}
+
+let _trackWarned = false;
+const _trackSent = [];
+const TRACK_MAX_PER_MIN = 60;
+
+function reportTrackFailure(status, detail) {
+  if (status === 404) {
+    if (_trackWarned) return;
+    _trackWarned = true;
+    console.error('[track] public.click_events is missing — every event is being ' +
+                  'discarded. Run docs/click_events.sql in the Supabase SQL editor.');
+    return;
+  }
+  console.warn(`[track] event not recorded (HTTP ${status}):`, String(detail).slice(0, 200));
+}
+
+function trackEvent(eventType, propertyId, extra) {
+  // Self-protection only: guards against our own code misfiring — a handler in
+  // a loop, or rapid repeated taps. It is NOT an abuse control; the anon key is
+  // public, so anyone can POST directly and bypass this entirely.
+  const now = Date.now();
+  while (_trackSent.length && now - _trackSent[0] > 60000) _trackSent.shift();
+  if (_trackSent.length >= TRACK_MAX_PER_MIN) {
+    if (!_trackWarned) {
+      _trackWarned = true;
+      console.warn(`[track] over ${TRACK_MAX_PER_MIN} events/min — dropping. Likely a loop.`);
+    }
+    return;
+  }
+  _trackSent.push(now);
+
+  const body = {
+    event_type:  eventType,
+    property_id: propertyId || null,
+    page:        location.pathname.split('/').pop() || 'index.html',
+    session_id:  eeSessionId(),
+    ...(extra || {}),
+  };
+  // Enrich from the listing rather than making every call site pass it.
+  if (body.property_id && body.area === undefined) {
+    try { body.area = (getListing(body.property_id) || {}).area || null; } catch { body.area = null; }
+  }
+
   fetch(`${SUPABASE_URL}/rest/v1/click_events`, {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`,
       'Content-Type': 'application/json', 'Prefer': 'return=minimal',
     },
-    body: JSON.stringify({ event_type: eventType, property_id: propertyId || null, page }),
-  }).catch(() => {});
+    body: JSON.stringify(body),
+    // WhatsApp and tel: links navigate away immediately; without keepalive the
+    // request is cancelled mid-flight and the click is lost even once the table
+    // exists. This is very likely a second reason clicks went missing.
+    keepalive: true,
+  })
+    .then(res => { if (!res.ok) return res.text().then(t => reportTrackFailure(res.status, t)); })
+    .catch(err => reportTrackFailure(0, String(err)));
 }
 
 function waLink(l) {
@@ -563,6 +631,26 @@ function readDealStatus(r) {
 
 function dealState(l)    { return (l && DEAL_STATES[l.dealStatus]) || null; }
 function isClosedDeal(l) { return !!dealState(l); }
+
+// Every listing belongs to exactly one of two streams. Open listings are still
+// on the market and drive everything a buyer browses — Latest Listings,
+// Undermarket, the Properties grid and every filter built from it. Closed deals
+// surface only on sold.html, so a sold property stops appearing as available the
+// moment the CRM marks it, including in the area and type dropdowns it used to
+// leave a dead entry in.
+function getOpenListings()   { return getListings().filter(l => l.status === 'approved' && !isClosedDeal(l)); }
+function getClosedListings() { return getListings().filter(l => l.status === 'approved' &&  isClosedDeal(l)); }
+
+// The Recently Sold links ship hidden and appear only once there is something
+// behind them. Nav markup renders before Supabase answers, so this runs again on
+// every sync rather than once at load. It toggles a class on <html> instead of
+// writing element styles, because the mobile nav links carry their own inline
+// display:flex that a style reset here would wipe out.
+function refreshSoldNavLinks() {
+  document.documentElement.classList.toggle('ee-has-closed', getClosedListings().length > 0);
+}
+window.addEventListener('ee:synced', refreshSoldNavLinks);
+document.addEventListener('DOMContentLoaded', refreshSoldNavLinks);
 
 // Corner sash for listing cards — sits inside any .card-img / .img-wrap
 function dealSashHtml(l) {
@@ -715,6 +803,12 @@ function dealChipHtml(l) {
     border:1px solid var(--chip-accent,#C8A24A);
     font:700 9px/1.5 'Nunito Sans',sans-serif; letter-spacing:1.4px; text-transform:uppercase;
   }
+
+  /* Recently Sold entry points stay out of the nav and footer until at least one
+     deal has actually closed, so nobody is ever sent to an empty page. Hiding is
+     the default and the class lifts it, which leaves each link's own display
+     intact rather than overwriting it. */
+  html:not(.ee-has-closed) [data-ee-sold-link] { display:none !important; }
 
   @media (prefers-reduced-motion: reduce) {
     .ee-stamp { animation:none; }

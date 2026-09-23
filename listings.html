@@ -309,6 +309,21 @@
   const ITEMS_PER_PAGE = 6;
   let currentPage = 1;
   let filters = { purpose: '', type: '', area: '', beds: 0 };
+  let lastResultCount = 0;
+
+  // Instrumentation only — never affects filtering. Reads lastResultCount,
+  // which renderListings() has just set, rather than calling getFiltered()
+  // again: re-filtering here would add real work to the very interaction the
+  // performance work has been trimming.
+  function trackFilter(type, key, value) {
+    if (typeof trackEvent !== 'function') return;
+    trackEvent(type, null, {
+      filters:      { ...filters },
+      filter_key:   key   == null ? null : String(key),
+      filter_value: value == null ? null : String(value),
+      result_count: lastResultCount,
+    });
+  }
 
   // ── Parse URL params on load ──
   const params = new URLSearchParams(location.search);
@@ -338,6 +353,7 @@
     btn.classList.add('active');
     currentPage = 1;
     renderListings();
+    trackFilter('filter_change', f, v);
   }
 
   function clearFilters() {
@@ -350,6 +366,7 @@
     });
     currentPage = 1;
     renderListings();
+    trackFilter('filter_clear', null, null);
   }
 
   function updatePriceLabel(v) {
@@ -363,7 +380,7 @@
     const maxP    = parseInt(document.getElementById('price-range')?.value || 2000000);
     const sort    = document.getElementById('sort-select')?.value || 'recent';
 
-    let list = getListings().filter(l => l.status === 'approved');
+    let list = getOpenListings();
 
     if (filters.purpose) list = list.filter(l => l.purpose === filters.purpose);
     if (filters.type)    list = list.filter(l => l.type    === filters.type);
@@ -437,6 +454,7 @@
   function renderListings() {
     const all     = getFiltered();
     const total   = all.length;
+    lastResultCount = total;   // for instrumentation; avoids re-running getFiltered()
     const pages   = Math.ceil(total / ITEMS_PER_PAGE);
     if (currentPage > pages) currentPage = 1;
     const start   = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -490,12 +508,14 @@
       c.classList.toggle('active', c.dataset.value === '' || c.dataset.value === '0');
     });
     renderListings();
+    trackFilter('filter_clear', key, null);
   }
 
   function goPage(n) {
     currentPage = n;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     renderListings();
+    trackFilter('page_change', 'page', n);
   }
 
   function populateChips(containerId, filterKey, values, labelFn) {
@@ -506,7 +526,7 @@
   }
 
   function populateFilters() {
-    const listings = getListings().filter(l => l.status === 'approved');
+    const listings = getOpenListings();
     const areas = [...new Set(listings.map(l => l.area).filter(Boolean))].sort();
     const types = [...new Set(listings.map(l => l.type).filter(Boolean))].sort();
     populateChips('area-chips', 'area', areas, a => a);

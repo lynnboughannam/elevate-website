@@ -392,6 +392,11 @@
   // rather than spinning forever.
   function showLoadError(reason) {
     if (settled || !id) return;
+    // A baked /property/<id>.html page already has the listing on screen, and
+    // the bake seeds it inside #page-content -- the element this would
+    // overwrite. A failed background refresh is no reason to replace real
+    // content with an error, so leave it be and stay unsettled for a later sync.
+    if (document.getElementById('baked-content')) return;
     settled = true;
     if (reason) console.warn('property load failed:', reason);
     document.getElementById('page-content').innerHTML = `

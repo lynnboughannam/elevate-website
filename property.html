@@ -96,11 +96,13 @@
 <script src="data.js"></script>
 <script src="whatsapp-float.js"></script>
 <script>
-  const id = new URLSearchParams(location.search).get('id');
+  // Static pages under /property/ carry their id in __LISTING_ID__; the legacy
+  // property.html?id= URLs still resolve through the query string.
+  const id = new URLSearchParams(location.search).get('id') || window.__LISTING_ID__ || null;
 
   if (!id) {
     document.getElementById('not-found').style.display = 'block';
-  } else {
+  } else if (!document.getElementById('baked-content')) {
     document.getElementById('page-content').innerHTML = `
       <div style="display:flex;align-items:center;justify-content:center;padding:8rem 2rem;gap:12px;color:#A87850">
         <svg style="animation:spin 1s linear infinite" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
@@ -147,7 +149,9 @@
         link.rel = 'canonical';
         document.head.appendChild(link);
       }
-      link.href = `${SITE_ORIGIN}/property.html?id=${encodeURIComponent(listing.id)}`;
+      // The static /property/<id>.html page is the indexable one; the legacy
+      // query-string URL points at it so the two do not compete.
+      link.href = `${SITE_ORIGIN}/property/${encodeURIComponent(listing.id)}.html`;
     })();
 
     // A closed deal replaces the availability badge — "For Sale" next to a SOLD stamp misleads

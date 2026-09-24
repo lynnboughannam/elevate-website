@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Recently Sold Property in Baabda &amp; Mount Lebanon | Elevate Estates</title>
+  <meta name="description" content="Apartments, villas and commercial property sold and rented through Elevate Estates in Baabda, Hazmieh and Mount Lebanon.">
+  <meta property="og:title" content="Recently Sold — Elevate Estates">
+  <meta property="og:description" content="Apartments, villas and commercial property sold and rented through Elevate Estates in Baabda, Hazmieh and Mount Lebanon.">
+  <meta property="og:image" content="https://www.elevateestateslb.com/brand_Assets/og/og-apartment.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://www.elevateestateslb.com/sold.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://www.elevateestateslb.com/sold.html">
+  <link rel="icon" type="image/png" href="brand_Assets/dark-icon.png">
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Nunito Sans', sans-serif; background: #EDE8E0; color: #2E1F0E; margin: 0; }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    nav { background: rgba(250,247,243,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(122,82,48,0.12); box-shadow: 0 2px 20px rgba(78,50,25,0.08); position: sticky; top: 0; z-index: 100; }
+
+    /* Header — dark, to sit with the sash palette in data.js rather than with
+       the browse pages. A closed deal reads as record, not inventory. */
+    .sold-header { background: linear-gradient(160deg,#2E1F0E 0%,#221507 100%); padding: 3.5rem 2rem 3rem; position: relative; }
+    .sold-header::after { content:''; position:absolute; left:0; right:0; bottom:0; height:2px; background:linear-gradient(90deg,transparent,#C8A24A,transparent); }
+    .sold-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase; color: #C8A24A; margin-bottom: 12px; line-height: 1.4; }
+    .sold-header h1 { font-size: clamp(30px,4.5vw,50px); color: #FAF7F3; letter-spacing: -1px; line-height: 1.1; margin: 0 0 14px; }
+    .sold-header p  { font-size: 15px; color: rgba(250,247,243,0.6); line-height: 1.7; max-width: 58ch; margin: 0; }
+
+    /* Cards — same system as the Properties grid so a closed deal is recognisably
+       the same object, only muted and sashed (both from data.js). */
+    .listing-card { background: #FAF7F3; border-radius: 16px; overflow: hidden; border: 1px solid rgba(122,82,48,0.1); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease; }
+    .listing-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(122,82,48,0.18), 0 4px 16px rgba(122,82,48,0.08); }
+    .card-img { position: relative; overflow: hidden; height: 200px; background: linear-gradient(105deg,#DDD5C8 0%,#EDE8E0 45%,#DDD5C8 100%); }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease, opacity 0.4s ease; opacity: 0; }
+    .card-img img.loaded { opacity: 1; }
+    .card-img:has(img.loaded) { background: none; }
+    .listing-card:hover .card-img img { transform: scale(1.05); }
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(46,31,14,0.45) 0%, transparent 55%); }
+
+    /* Explicit line-heights for the same font-swap reason as listings.html:
+       without them every card resizes when Playfair and Nunito replace the
+       fallbacks, and the grid below jumps. */
+    .card-price { font-size: 20px; font-weight: 700; color: #4E3219; letter-spacing: -0.4px; margin-bottom: 3px; line-height: 1.3; }
+    .card-title {
+      font-size: 14px; font-weight: 700; color: #2E1F0E; margin: 0 0 4px; line-height: 1.35;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; height: calc(1.35em * 2);
+    }
+    .card-loc  { font-size: 12px; color: #999; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; line-height: 1.4; }
+    /* Reserve the line even when a property carries no bed/bath/area figures,
+       which several closed deals do not. Without it those cards pull their ref
+       block up and the row stops aligning. */
+    .card-meta { display: flex; gap: 10px; font-size: 11px; color: #aaa; margin-bottom: 10px; flex-wrap: wrap; line-height: 1.4; min-height: 15px; }
+    .badge { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
+    .ref-block { background: #EFE3D5; border: 1px solid #D4B89A; border-radius: 8px; padding: 4px 10px; display: inline-flex; flex-direction: column; gap: 1px; }
+    .ref-label { font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #7A5230; }
+    .ref-num   { font-size: 12px; font-weight: 700; color: #4E3219; letter-spacing: 2px; }
+
+    /* Muted brown rather than WhatsApp green: this asks for something similar,
+       it does not enquire about a property that is already gone. */
+    .btn-similar { display: inline-flex; align-items: center; gap: 5px; background: #7A5230; color: #fff; border: none; padding: 7px 13px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+    .btn-similar:hover { background: #4E3219; }
+    .btn-similar:focus-visible { outline: 2px solid #C8A24A; outline-offset: 2px; }
+    .listing-card a:focus-visible { outline: 2px solid #7A5230; outline-offset: 3px; }
+
+    .results-bar { background: #FAF7F3; border-radius: 12px; padding: 12px 16px; border: 1px solid rgba(122,82,48,0.1); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 1.25rem; line-height: 1.4; }
+    .results-bar span { line-height: 1.4; }
+
+    .empty-state { text-align: center; padding: 4rem 2rem; background: #FAF7F3; border-radius: 16px; border: 1px solid rgba(122,82,48,0.1); }
+
+    footer a:hover { color: #A87850; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #EDE8E0; }
+    ::-webkit-scrollbar-thumb { background: #A87850; border-radius: 3px; }
+
+    @media (max-width: 900px) {
+      #sold-grid { grid-template-columns: repeat(2,1fr) !important; }
+    }
+    @media (max-width: 600px) {
+      #sold-grid { grid-template-columns: 1fr !important; }
+      #sold-main { padding: 1rem !important; }
+      .sold-header { padding: 2.5rem 1.5rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="nav.js"></script>
+<script>renderNav('sold')</script>
+
+<header class="sold-header">
+  <div style="max-width:1280px;margin:0 auto">
+    <p class="sold-eyebrow">Track record</p>
+    <h1 class="font-display">Recently Sold</h1>
+    <p>Properties sold and rented through Elevate Estates. Each one keeps the reference number it was listed under.</p>
+  </div>
+</header>
+
+<main id="sold-main" style="max-width:1280px;margin:0 auto;padding:2rem">
+  <div class="results-bar">
+    <span id="sold-count" style="font-size:13px;font-weight:700;color:#4E3219"></span>
+    <a href="listings.html" style="font-size:13px;font-weight:700;color:#7A5230;text-decoration:none;display:flex;align-items:center;gap:6px">
+      Browse available properties
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div id="sold-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+
+  <div id="sold-empty" class="empty-state" style="display:none">
+    <h2 class="font-display" style="font-size:22px;color:#4E3219;margin:0 0 10px">Nothing closed yet</h2>
+    <p style="font-size:14px;color:#7A5230;line-height:1.7;margin:0 0 20px">Sold and rented properties appear here once a deal closes.</p>
+    <a href="listings.html" style="display:inline-block;background:#7A5230;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:background 0.2s" onmouseover="this.style.background='#4E3219'" onmouseout="this.style.background='#7A5230'">Browse available properties</a>
+  </div>
+</main>
+
+<footer style="background:#2E1F0E;color:rgba(255,255,255,0.55);padding:2.5rem 2rem;margin-top:3rem">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <img src="brand_Assets/white-elevate-logo.png" alt="Elevate Estates" style="height:28px;width:auto">
+    <p style="font-size:13px">© 2025 Elevate Estates · Beirut, Lebanon</p>
+    <div style="display:flex;gap:1.25rem">
+      <a href="index.html" style="font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">Home</a>
+      <a href="submit.html" style="font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none" onmouseover="this.style.color='#A87850'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">List Property</a>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="whatsapp-float.js"></script>
+<script>
+  function buildSoldCard(l) {
+    const typeBadge = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${typeLabel(l.type)}</span>`;
+    const beds  = l.beds  > 0 ? `<span>${l.beds} bed</span>`  : '';
+    const baths = l.baths > 0 ? `<span>${l.baths} bath</span>` : '';
+    return `
+      <article class="listing-card">
+        <a href="property.html?id=${l.id}" style="text-decoration:none">
+          <div class="card-img ee-closed-media">
+            <img src="${l.img}" alt="${l.title}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded');this.style.display='none'">
+            <div class="card-overlay"></div>
+            <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap">${dealChipHtml(l)}${typeBadge}</div>
+            ${dealSashHtml(l)}
+          </div>
+          <div style="padding:1.1rem">
+            <div class="card-price">${formatPrice(l.price, l.purpose)}</div>
+            <h3 class="card-title">${l.title}</h3>
+            <p class="card-loc">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${l.location}
+            </p>
+            <div class="card-meta">${beds}${baths}${l.sqm > 0 ? `<span>${l.sqm} m²</span>` : ''}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="ref-block"><span class="ref-label">Ref</span><span class="ref-num">${l.id}</span></div>
+              <a href="${waLink(l)}" class="btn-similar" onclick="event.stopPropagation();trackEvent('whatsapp_click','${l.id}')">
+                <svg width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+                Find similar
+              </a>
+            </div>
+          </div>
+        </a>
+      </article>`;
+  }
+
+  function renderSold() {
+    // Newest first. createdAt is the listing date, which is the only date the
+    // CRM gives us — there is no closed-at field, so nothing here claims to be
+    // the date the deal closed.
+    const closed = getClosedListings().slice().sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+    const grid  = document.getElementById('sold-grid');
+    const empty = document.getElementById('sold-empty');
+    const count = document.getElementById('sold-count');
+
+    if (closed.length === 0) {
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      empty.style.display = 'block';
+      count.textContent = '';
+      return;
+    }
+
+    grid.style.display = 'grid';
+    empty.style.display = 'none';
+    grid.innerHTML = closed.map(buildSoldCard).join('');
+
+    const sold   = closed.filter(l => l.dealStatus === 'sold').length;
+    const rented = closed.length - sold;
+    const parts  = [];
+    if (sold)   parts.push(`${sold} sold`);
+    if (rented) parts.push(`${rented} rented`);
+    count.textContent = parts.join(' · ');
+  }
+
+  window.addEventListener('ee:synced', renderSold);
+  initStore();
+  renderSold();
+</script>
+
+</body>
+</html>

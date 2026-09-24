@@ -2,13 +2,20 @@
   "name": "elevate-estates-web",
   "version": "1.0.0",
   "private": true,
-  "description": "Elevate Estates — static property site. Tailwind is compiled at build time; there is no other build step.",
+  "description": "Elevate Estates \u2014 static property site. Listings are baked into the HTML at build time and Tailwind is precompiled; there is no framework.",
   "scripts": {
-    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --minify",
+    "bake": "node scripts/bake-listings.mjs",
+    "build": "npm run bake && npm run bake:properties && npm run bake:sitemap && tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --minify",
     "dev": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --watch",
-    "serve": "node serve.mjs"
+    "serve": "node serve.mjs",
+    "publish:site": "node scripts/publish.mjs",
+    "bake:properties": "node scripts/bake-properties.mjs",
+    "bake:sitemap": "node scripts/bake-sitemap.mjs"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

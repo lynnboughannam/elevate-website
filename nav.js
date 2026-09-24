@@ -1,15 +1,25 @@
 // Shared navigation — injected into every page via renderNav(activePage)
 (function () {
+  // `sold: true` marks a link that stays hidden until a deal has actually
+  // closed — data.js lifts them all at once via the .ee-has-closed class.
   const LINKS = {
     listings: [
       { href: 'listings.html',      label: 'Properties', active: true },
+      { href: 'sold.html',          label: 'Recently Sold', sold: true },
       { href: 'index.html#contact', label: 'Contact' },
     ],
     property: [
       { href: 'listings.html',      label: '← All Properties' },
+      { href: 'sold.html',          label: 'Recently Sold', sold: true },
     ],
     submit: [
       { href: 'listings.html',      label: 'Browse Properties' },
+      { href: 'sold.html',          label: 'Recently Sold', sold: true },
+      { href: 'index.html#contact', label: 'Contact' },
+    ],
+    sold: [
+      { href: 'listings.html',      label: 'Properties' },
+      { href: 'sold.html',          label: 'Recently Sold', active: true, sold: true },
       { href: 'index.html#contact', label: 'Contact' },
     ],
   };
@@ -17,6 +27,7 @@
   const CTA = {
     listings: { href: 'submit.html', label: 'List Property' },
     property: { href: 'submit.html', label: 'List Property' },
+    sold:     { href: 'submit.html', label: 'List Property' },
     submit:   null,
   };
 
@@ -28,7 +39,7 @@
     const ctaDef = CTA[page];
 
     const desktopLinks = links.map(l =>
-      `<a href="${l.href}" style="font-size:14px;font-weight:${l.active?'700':'600'};color:${l.active?'#7A5230':'#4E3219'};text-decoration:none">${l.label}</a>`
+      `<a href="${l.href}"${l.sold?' data-ee-sold-link':''} style="font-size:14px;font-weight:${l.active?'700':'600'};color:${l.active?'#7A5230':'#4E3219'};text-decoration:none">${l.label}</a>`
     ).join('');
 
     const desktopCta = ctaDef
@@ -36,7 +47,7 @@
       : '';
 
     const mobileLinks = links.map(l =>
-      `<a href="${l.href}" style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(122,82,48,0.08);font-size:16px;font-weight:${l.active?'700':'600'};color:${l.active?'#7A5230':'#4E3219'};text-decoration:none">
+      `<a href="${l.href}"${l.sold?' data-ee-sold-link':''} style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(122,82,48,0.08);font-size:16px;font-weight:${l.active?'700':'600'};color:${l.active?'#7A5230':'#4E3219'};text-decoration:none">
         ${l.label}
         <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
       </a>`

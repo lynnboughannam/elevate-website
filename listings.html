@@ -142,6 +142,23 @@
 </head>
 <body>
 
+<!-- Icon sprite. Defined once and referenced with <use> from every card. One
+     rendered card is ~3.4 KB of HTML but only ~137 characters of visible text —
+     the rest was these icons, inlined per card. With 108 cards baked into this
+     page at build time that repetition would have added ~359 KB. -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="ee-i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+  </symbol>
+  <symbol id="ee-i-star" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </symbol>
+  <symbol id="ee-i-wa" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+  </symbol>
+</svg>
+
 <div id="site-nav"></div>
 <script src="nav.js"></script>
 <script>renderNav('listings')</script>
@@ -185,7 +202,7 @@
     <!-- Search bar -->
     <div style="position:relative;margin-top:1.5rem;max-width:560px">
       <svg width="16" height="16" fill="none" stroke="#A87850" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="top-search" placeholder="Search by title, location, type, tags…" oninput="renderListings()" style="width:100%;padding:13px 16px 13px 42px;border:1.5px solid rgba(122,82,48,0.2);border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:#2E1F0E;background:#EDE8E0;outline:none;transition:border-color 0.2s,background 0.2s" onfocus="this.style.borderColor='#7A5230';this.style.background='#fff'" onblur="this.style.borderColor='rgba(122,82,48,0.2)';this.style.background='#EDE8E0'">
+      <input type="text" id="top-search" placeholder="Search by title, location, type, tags…" oninput="leaveBaked();renderListings()" style="width:100%;padding:13px 16px 13px 42px;border:1.5px solid rgba(122,82,48,0.2);border-radius:10px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:#2E1F0E;background:#EDE8E0;outline:none;transition:border-color 0.2s,background 0.2s" onfocus="this.style.borderColor='#7A5230';this.style.background='#fff'" onblur="this.style.borderColor='rgba(122,82,48,0.2)';this.style.background='#EDE8E0'">
     </div>
   </div>
 </div>
@@ -253,7 +270,7 @@
       <!-- Search keyword -->
       <div>
         <span class="filter-label">Keyword</span>
-        <input type="text" id="keyword-input" placeholder="e.g. pool, balcony, sea view..." class="filter-input" oninput="renderListings()">
+        <input type="text" id="keyword-input" placeholder="e.g. pool, balcony, sea view..." class="filter-input" oninput="leaveBaked();renderListings()">
       </div>
     </div>
   </aside>
@@ -267,10 +284,10 @@
     </button>
     <!-- Sort bar -->
     <div class="results-bar">
-      <span id="result-count" style="font-size:13px;font-weight:700;color:#4E3219"></span>
+      <span id="result-count" style="font-size:13px;font-weight:700;color:#4E3219"><!--BAKE:COUNT--></span>
       <div style="display:flex;align-items:center;gap:8px">
         <span style="font-size:12px;color:#999">Sort by:</span>
-        <select id="sort-select" onchange="renderListings()" style="border:1px solid rgba(122,82,48,0.2);border-radius:8px;padding:6px 10px;font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;color:#4E3219;background:#EDE8E0;outline:none;cursor:pointer">
+        <select id="sort-select" onchange="leaveBaked();renderListings()" style="border:1px solid rgba(122,82,48,0.2);border-radius:8px;padding:6px 10px;font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;color:#4E3219;background:#EDE8E0;outline:none;cursor:pointer">
           <option value="recent">Most Recent</option>
           <option value="price-asc">Price: Low → High</option>
           <option value="price-desc">Price: High → Low</option>
@@ -283,7 +300,11 @@
     <div id="active-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem"></div>
 
     <!-- Grid -->
-    <div id="results-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px"></div>
+    <!-- Cards between the markers are generated at build time by
+         scripts/bake-listings.mjs so the raw HTML contains real property text.
+         data-bake-sig is the {max updated_at|count} of the source data; the
+         client compares it and skips re-rendering when it still matches. -->
+    <div id="results-grid" data-bake-sig="" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px"><!--BAKE:CARDS_START--><!--BAKE:CARDS_END--></div>
 
     <!-- Pagination -->
     <div id="pagination" style="display:flex;gap:6px;justify-content:center;margin-top:2rem;flex-wrap:wrap"></div>
@@ -310,6 +331,49 @@
   let currentPage = 1;
   let filters = { purpose: '', type: '', area: '', beds: 0 };
   let lastResultCount = 0;
+
+  // ── Baked HTML ────────────────────────────────────────────────
+  // scripts/bake-listings.mjs writes the cards into this page's source at build
+  // time so crawlers see real property text. Without the guard below the client
+  // would overwrite that within milliseconds of load — crawlers would index
+  // content that real visitors never see, and re-rendering identical cards is
+  // exactly the paint-then-replace pattern that caused the CLS regression in
+  // docs/cwv-baseline-2026-09-22.md (M5).
+  //
+  // So: while the view is untouched and the baked signature still matches the
+  // data we hold, leave the baked DOM alone. Any filter, sort, search or page
+  // change hands control back to renderListings() permanently.
+  let viewIsPristine = true;
+
+  function bakedSignature() {
+    const g = document.getElementById('results-grid');
+    return (g && g.dataset.bakeSig) || '';
+  }
+
+  function bakedMatchesData() {
+    const baked = bakedSignature();
+    if (!baked) return false;                       // nothing was baked
+    if (typeof readCache !== 'function') return false;
+    const c = readCache();
+    if (!c || !c.sig) return false;
+    return baked === `${c.sig.max}|${c.sig.n}`;
+  }
+
+  // Called instead of renderListings() on load and on sync.
+  function renderIfNeeded() {
+    if (!viewIsPristine) { renderListings(); return; }
+
+    // No data yet (cold cache, fetch still in flight). Rendering now would
+    // replace the baked cards with an empty grid, which is strictly worse than
+    // leaving them — so hold until ee:synced.
+    if (bakedSignature() && typeof getOpenListings === 'function' && !getOpenListings().length) return;
+
+    if (bakedMatchesData()) { lastResultCount = Number(document.getElementById('results-grid').childElementCount) || lastResultCount; return; }
+    renderListings();
+  }
+
+  // Any interaction means the baked default view no longer applies.
+  function leaveBaked() { viewIsPristine = false; }
 
   // Instrumentation only — never affects filtering. Reads lastResultCount,
   // which renderListings() has just set, rather than calling getFiltered()
@@ -345,6 +409,7 @@
 
   // ── Filter chip handler ──
   function applyChip(btn) {
+    leaveBaked();
     const f = btn.dataset.filter;
     const v = btn.dataset.value;
     if (f === 'beds') filters.beds = parseInt(v);
@@ -357,6 +422,7 @@
   }
 
   function clearFilters() {
+    leaveBaked();
     filters = { purpose: '', type: '', area: '', beds: 0 };
     document.getElementById('price-range').value = 2000000;
     document.getElementById('keyword-input').value = '';
@@ -399,8 +465,9 @@
     if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
     if (sort === 'sqm')        list.sort((a,b) => b.sqm - a.sqm);
 
-    // Available stock leads; sold and rented settle at the end of the list
-    list.sort((a,b) => (isClosedDeal(a) ? 1 : 0) - (isClosedDeal(b) ? 1 : 0));
+    // No closed-deal sort here any more: getOpenListings() above already
+    // excludes them, so this list cannot contain one. It ran on every filter
+    // change for nothing.
 
     return list;
   }
@@ -417,7 +484,7 @@
     const typeBadge = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${l.type.charAt(0).toUpperCase()+l.type.slice(1)}</span>`;
     // A closed deal is not a Prime Pick — drop the promotion once it is off the market
     const promoted = l.featured && !closed;
-    const featuredBadge = promoted ? `<span class="badge" style="background:#7A5A0B;color:#FAF0DC;display:flex;align-items:center;gap:4px"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Prime Pick</span>` : '';
+    const featuredBadge = promoted ? `<span class="badge" style="background:#7A5A0B;color:#FAF0DC;display:flex;align-items:center;gap:4px"><svg width="10" height="10" aria-hidden="true"><use href="#ee-i-star"/></svg>Prime Pick</span>` : '';
     const beds  = l.beds  > 0 ? `<span>${l.beds} bed</span>` : '';
     const baths = l.baths > 0 ? `<span>${l.baths} bath</span>` : '';
     return `
@@ -433,7 +500,7 @@
             <div class="card-price">${formatPrice(l.price,l.purpose)}</div>
             <h3 class="card-title">${l.title}</h3>
             <p class="card-loc">
-              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg width="11" height="11" aria-hidden="true"><use href="#ee-i-pin"/></svg>
               ${l.location}
             </p>
             <div class="card-meta">
@@ -442,7 +509,7 @@
             <div style="display:flex;align-items:center;justify-content:space-between">
               <div class="ref-block"><span class="ref-label">Ref</span><span class="ref-num">${l.id}</span></div>
               <a href="${waLink(l)}" class="btn-wa" onclick="event.stopPropagation();trackEvent('whatsapp_click','${l.id}')">
-                <svg width="12" height="12" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.428a.75.75 0 00.921.921l5.573-1.475A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.953-1.355l-.355-.212-3.683.974.974-3.565-.23-.368A9.72 9.72 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+                <svg width="12" height="12" style="color:#fff" aria-hidden="true"><use href="#ee-i-wa"/></svg>
                 WhatsApp
               </a>
             </div>
@@ -502,6 +569,7 @@
   }
 
   function clearFilter(key) {
+    leaveBaked();
     if (key === 'beds') filters.beds = 0;
     else filters[key] = '';
     document.querySelectorAll(`[data-filter="${key}"]`).forEach(c => {
@@ -512,6 +580,7 @@
   }
 
   function goPage(n) {
+    leaveBaked();
     currentPage = n;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     renderListings();
@@ -537,10 +606,10 @@
   // flag, but it used to sit inside checkComingSoon().then(), which made the two
   // Supabase calls serial: settings 2.40s->3.98s, then properties 4.06s->5.49s.
   // Running them in parallel takes ~1.5s off the critical path.
-  window.addEventListener('ee:synced', () => { populateFilters(); renderListings(); });
+  window.addEventListener('ee:synced', () => { populateFilters(); renderIfNeeded(); });
   initStore();
   populateFilters();
-  renderListings();
+  renderIfNeeded();
 
   // Coming soon check — now only controls which view is visible. It resolves
   // before the properties data arrives, so the listings view is swapped out

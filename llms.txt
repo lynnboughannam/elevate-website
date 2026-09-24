@@ -15,13 +15,14 @@ Mansourieh, Mtayleb, Rabieh and surrounding Mount Lebanon towns.
 
 - [Home](https://www.elevateestateslb.com/): Overview, featured listings and property search by area, type and budget.
 - [Browse Properties](https://www.elevateestateslb.com/listings.html): Full searchable portfolio, filterable by purpose (sale or rent), property type, area, bedrooms and price.
+- [Recently Sold](https://www.elevateestateslb.com/sold.html): Properties already sold or rented through Elevate Estates. These are a closed record and are not available; they are excluded from the browse and search pages.
 - [List Your Property](https://www.elevateestateslb.com/submit.html): Submission form for owners and agents wanting to list with us.
 - [Join Our Team](https://www.elevateestateslb.com/agent-apply.html): Application form for agents wanting to work with Elevate Estates.
 
 ## Notes for automated readers
 
-- Individual property pages are served from `https://www.elevateestateslb.com/property.html?id=<reference>`, one page per reference number.
-- Listing data on those pages is populated client-side after page load, so a fetch without JavaScript execution will not include property details. Structured data (schema.org `RealEstateListing`) is emitted in the rendered DOM.
+- Individual property pages are static files at `https://www.elevateestateslb.com/property/<reference>.html`, one page per reference number. The legacy `property.html?id=<reference>` URLs still resolve and canonicalise to the static page.
+- Property details, price, location and structured data (schema.org `RealEstateListing` plus `BreadcrumbList`) are pre-rendered into the HTML at build time, so a fetch without JavaScript execution returns the full listing. The page then hydrates client-side for interactive features.
 - Prices are in US dollars. Rental prices are monthly.
 - `www.elevateestateslb.com` is the canonical host; the apex domain redirects to it.
 - `/admin.html` is a private back office, excluded in robots.txt and marked noindex.

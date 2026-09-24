@@ -680,6 +680,98 @@
   </div>
 </section>
 
+<style>
+  /* ── CATEGORY RAIL ON PHONES ────────────────────────────────
+     Categories swipe sideways like Undermarket and Latest Listings
+     instead of breaking into a 2x2 block and then a stack. Four tiles
+     stacked pushed Latest Listings off the first screen; a rail keeps
+     the chooser one row tall and shows the whole set is browsable.
+
+     Tiles are narrower than listing cards on purpose: a category is a
+     one-word destination, not a card to read, so two and a half fit in
+     view and the set reads as a set.
+
+     Declared here, after the section, on purpose: the head pins
+     #cats-grid with !important at 1024, 768 and 480, so matching that
+     weight is not enough -- this has to come later in the cascade.
+  */
+  @media (max-width: 768px) {
+    #cats-grid {
+      grid-template-columns: none !important;   /* drop the 2-up block */
+      grid-auto-flow: column;
+      grid-auto-columns: 38%;                   /* tablets: two and a half per view */
+      gap: 12px;
+
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;           /* no back-swipe, no scroll chaining */
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: 1.25rem;             /* snap to the text gutter */
+      -webkit-overflow-scrolling: touch;
+
+      /* Full-bleed track, gutter given back as padding: the rail runs
+         to both screen edges while tile one still lines up with the
+         heading above it. */
+      margin-left: -1.25rem;
+      margin-right: -1.25rem;
+      padding: 2px 1.25rem 6px;
+    }
+
+    #cats-grid > * { scroll-snap-align: start; }
+
+    /* The scroll-reveal observer watches the viewport, so a tile parked
+       past the rail's right edge never reaches its 0.1 threshold and
+       would sit at opacity 0 for good -- two visible tiles, two blank
+       slots. The rail arrives as one unit anyway, so the heading above
+       carries the entrance and the tiles are simply present. */
+    #cats-grid .reveal {
+      opacity: 1;
+      transform: none;
+      /* .reveal's 0.7s ease would otherwise own transform here and
+         drag out the press; hand it back to the card's spring. */
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* The peek and the snap are the affordance; a scrollbar under the
+       rail is just noise on a phone. */
+    #cats-grid { scrollbar-width: none; }
+    #cats-grid::-webkit-scrollbar { height: 0; width: 0; }
+
+    /* The -6px hover lift means nothing on touch and gets clipped by
+       the rail's overflow, so swap it for a press state that stays
+       inside the box. */
+    #cats-grid .cat-card:hover { transform: none; }
+    #cats-grid .cat-card:active { transform: scale(0.985); }
+
+    /* Keyboard focus has to stay visible once the rail can scroll. */
+    #cats-grid a:focus-visible {
+      outline: 3px solid #A87850;
+      outline-offset: 3px;
+      border-radius: 16px;
+    }
+  }
+
+  /* Tile width is the only thing that changes down the scale. Below
+     480px the tile grows as a percentage so it stays roughly square
+     and the peek survives instead of shrinking away with the screen. */
+  @media (max-width: 480px) {
+    #cats-grid { grid-auto-columns: 43%; }
+    .cat-card { height: 170px !important; }
+
+    /* "Apartments" and "Commercial" are the widest labels and the tile
+       is now narrower than the 22px inline size assumes. Stepping the
+       display face down keeps both inside the tile on a 360px screen
+       instead of running to the edges. Inline sizes, hence !important. */
+    #cats-grid .cat-overlay .font-display { font-size: 19px !important; }
+    #cats-grid .cat-overlay svg { width: 26px; height: 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #cats-grid { scroll-behavior: auto; }
+  }
+</style>
+
+
 <!-- ══════════════════════════════════════════════════════════
      RECENT LISTINGS
 ══════════════════════════════════════════════════════════ -->

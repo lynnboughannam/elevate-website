@@ -118,13 +118,19 @@
       .replace(/\n/g,'<br>');
   }
 
+  // Set once the page reaches a terminal state, so a sync that fails *after*
+  // the cache already painted cannot replace real content with an error.
+  let settled = false;
+
   function renderProperty() {
     const listing = getListing(id);
     if (!listing || listing.status !== 'approved') {
+      settled = true;
       document.getElementById('page-content').innerHTML = '';
       document.getElementById('not-found').style.display = 'block';
       return;
     }
+    settled = true;
 
     document.title = `${listing.title} — Elevate Estates`;
     {
@@ -367,8 +373,54 @@
 
   // Same parallelisation as index and listings: the property fetch does not
   // depend on the coming-soon flag, so it no longer waits for it.
-  window.addEventListener('ee:synced', renderProperty, { once: true });
+  //
+  // Render from cache too, not only on sync. initStore() only dispatches
+  // 'ee:synced' when it actually refetches, so on a warm cache whose signature
+  // still matches it never fires at all -- waiting on it alone left this page
+  // on the loading spinner forever. index/listings/sold already render right
+  // after initStore() for exactly this reason; property.html did not.
+  //
+  // Held back on a cold cache: getListing() would find nothing and flash
+  // "Property not found" before the fetch lands. The spinner is the honest
+  // state there, and 'ee:synced' fills it in.
+  // The spinner is not a terminal state. If the fetch fails there is nothing
+  // to render and no further event is coming, so say so and offer a retry
+  // rather than spinning forever.
+  function showLoadError(reason) {
+    if (settled || !id) return;
+    settled = true;
+    if (reason) console.warn('property load failed:', reason);
+    document.getElementById('page-content').innerHTML = `
+      <div style="text-align:center;padding:6rem 2rem">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#A87850" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1.25rem;display:block;opacity:0.9" aria-hidden="true">
+          <path d="M17.5 19a4.5 4.5 0 0 0 1.3-8.8 6 6 0 0 0-9.4-3.6"/>
+          <path d="M6.3 8.6A4.5 4.5 0 0 0 6.5 19h11"/>
+          <line x1="3" y1="3" x2="21" y2="21"/>
+        </svg>
+        <h2 style="font-family:'Playfair Display',serif;font-size:30px;color:#4E3219;margin-bottom:0.75rem">Couldn&rsquo;t load this property</h2>
+        <p style="color:#999;margin-bottom:2rem;line-height:1.7">The connection timed out or the listing service is unreachable.<br>Check your connection and try again.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button type="button" onclick="location.reload()"
+            style="background:#7A5230;color:#fff;padding:12px 28px;border:0;border-radius:10px;font-weight:700;font-family:inherit;font-size:15px;cursor:pointer;transition:transform .2s cubic-bezier(.34,1.56,.64,1),opacity .2s ease"
+            onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"
+            onfocus="this.style.outline='3px solid #A87850';this.style.outlineOffset='2px'" onblur="this.style.outline='none'"
+            onmousedown="this.style.transform='translateY(0)';this.style.opacity='0.85'" onmouseup="this.style.opacity='1'">Try again</button>
+          <a href="listings.html"
+            style="background:transparent;color:#7A5230;padding:12px 28px;border:1.5px solid #7A5230;border-radius:10px;font-weight:700;text-decoration:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1),opacity .2s ease"
+            onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"
+            onfocus="this.style.outline='3px solid #A87850';this.style.outlineOffset='2px'" onblur="this.style.outline='none'">Browse all listings</a>
+        </div>
+      </div>`;
+  }
+
+  window.addEventListener('ee:synced', renderProperty);
+  window.addEventListener('ee:syncfailed', e => showLoadError(e.detail && e.detail.reason));
   initStore();
+  if (id && getListings().length) renderProperty();
+
+  // Backstop: fetch() has no timeout of its own, so a request that hangs
+  // rather than erroring would never reach 'ee:syncfailed'.
+  setTimeout(() => showLoadError('timed out after 15s'), 15000);
 
   checkComingSoon().then(on => {
     if (on) window.location.href = 'listings.html';

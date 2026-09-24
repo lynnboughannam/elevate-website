@@ -238,15 +238,24 @@ const _UNUSED = [
 const SUPABASE_URL  = 'https://ikbwslamhyimdcduojuv.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrYndzbGFtaHlpbWRjZHVvanV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2ODk5NTUsImV4cCI6MjA5MjI2NTk1NX0.KjzD0FJw0rjkAtU7uGmNcFdQv0Fz4S8MbqMOb3vN8r0';
 
+// A sync that fails has to say so. It used to return silently on every failure
+// path, which left any page showing a loading state waiting on an 'ee:synced'
+// that was never coming -- property.html spun its spinner forever. Additive:
+// pages that do not listen for 'ee:syncfailed' behave exactly as before.
+function failSync(reason) {
+  console.warn('Supabase sync failed:', reason);
+  window.dispatchEvent(new CustomEvent('ee:syncfailed', { detail: { reason } }));
+}
+
 async function syncFromSupabase() {
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/properties?listed=eq.true&select=*&order=created_at.desc`,
       { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
     );
-    if (!res.ok) return;
+    if (!res.ok) return failSync(`HTTP ${res.status}`);
     const rows = await res.json();
-    if (!Array.isArray(rows) || rows.length === 0) return;
+    if (!Array.isArray(rows) || rows.length === 0) return failSync('no rows returned');
 
     const mapped = rows.map(r => {
       const purpose = (r.purpose || 'sale').toLowerCase();
@@ -286,7 +295,7 @@ async function syncFromSupabase() {
     writeCache(mapped, signatureFromRows(rows));
     window.dispatchEvent(new CustomEvent('ee:synced'));
   } catch (e) {
-    console.warn('Supabase sync failed, using local data:', e);
+    failSync((e && e.message) || 'network error');
   }
 }
 

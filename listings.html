@@ -391,10 +391,19 @@
 
   // ── Parse URL params on load ──
   const params = new URLSearchParams(location.search);
-  if (params.get('purpose')) filters.purpose = params.get('purpose');
-  if (params.get('type'))    filters.type    = params.get('type');
-  if (params.get('area'))    filters.area    = params.get('area');
-  if (params.get('maxPrice')) document.getElementById('price-range').value = params.get('maxPrice');
+  let urlNarrowedView = false;
+  if (params.get('purpose')) { filters.purpose = params.get('purpose'); urlNarrowedView = true; }
+  if (params.get('type'))    { filters.type    = params.get('type');    urlNarrowedView = true; }
+  if (params.get('area'))    { filters.area    = params.get('area');    urlNarrowedView = true; }
+  if (params.get('maxPrice')) { document.getElementById('price-range').value = params.get('maxPrice'); urlNarrowedView = true; }
+
+  // A filter that arrives in the URL is still a filter. The baked cards are the
+  // unfiltered default view, so landing on ?type=villa from a category tile has
+  // to hand control to renderListings() exactly as clicking the Villa chip
+  // does. Without this the guard above sees a pristine view whose signature
+  // still matches the data and leaves all 105 baked cards sitting there, so
+  // every category tile led to the same unfiltered page.
+  if (urlNarrowedView) leaveBaked();
 
   // ── Sync chip states with URL params ──
   function syncChips() {

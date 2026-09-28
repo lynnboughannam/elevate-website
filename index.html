@@ -491,7 +491,11 @@
   </div>
 </section>
 
-<!-- Coming Soon banner (hidden by default, shown via JS) -->
+<!-- Launch-pending banner (hidden by default, revealed by JS).
+     The body between the BAKE markers is stripped at build time when the
+     coming_soon flag is false, so a crawler that does not run JS cannot read a
+     launch-pending heading off a site that has in fact launched. -->
+<!--BAKE:COMINGSOON_START-->
 <section id="home-coming-soon" style="display:none;padding:5rem 2rem;background:#0F0905;position:relative;overflow:hidden">
   <div style="position:absolute;inset:0;opacity:0.4;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.08%22/%3E%3C/svg%3E')"></div>
   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:400px;background:radial-gradient(ellipse,rgba(201,168,76,0.10) 0%,transparent 70%);pointer-events:none"></div>
@@ -509,6 +513,7 @@
   </div>
   <style>@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}</style>
 </section>
+<!--BAKE:COMINGSOON_END-->
 <!-- ══════════════════════════════════════════════════════════
      INVESTMENT PICKS — FEATURED
 ══════════════════════════════════════════════════════════ -->
@@ -541,7 +546,7 @@
     </div>
 
     <!-- Featured grid -->
-    <div id="featured-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+    <div id="featured-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"><!--BAKE:FEATURED_START--><!--BAKE:FEATURED_END--></div>
 
     <!-- Empty state -->
     <div id="featured-empty" style="display:none;text-align:center;padding:3rem;color:rgba(255,255,255,0.3);font-size:14px">No featured properties at the moment.</div>
@@ -745,7 +750,7 @@
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
-    <div id="recent-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+    <div id="recent-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"><!--BAKE:RECENT_START--><!--BAKE:RECENT_END--></div>
   </div>
 </section>
 
@@ -1254,9 +1259,12 @@
   renderHome();
 
   checkComingSoon().then(on => {
-    if (on) {
+    // The banner is stripped from the HTML at build time when the flag is off,
+    // so it may legitimately not exist here.
+    const banner = document.getElementById('home-coming-soon');
+    if (on && banner) {
       document.getElementById('home-listings-wrap').style.display = 'none';
-      document.getElementById('home-coming-soon').style.display = 'block';
+      banner.style.display = 'block';
     }
   });
 

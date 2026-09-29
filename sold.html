@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1075507168622895');
+  fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
   <title>Recently Sold Property in Baabda &amp; Mount Lebanon | Elevate Estates</title>
   <meta name="description" content="Apartments, villas and commercial property sold and rented through Elevate Estates in Baabda, Hazmieh and Mount Lebanon.">
   <meta property="og:title" content="Recently Sold — Elevate Estates">
@@ -91,6 +105,10 @@
   </style>
 </head>
 <body>
+<!-- Meta Pixel fallback for browsers with JavaScript off -->
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=1075507168622895&amp;ev=PageView&amp;noscript=1"
+/></noscript>
 
 <div id="site-nav"></div>
 <script src="nav.js"></script>
@@ -135,6 +153,7 @@
 
 <script src="data.js"></script>
 <script src="whatsapp-float.js"></script>
+<script src="pixel-events.js"></script>
 <script>
   function buildSoldCard(l) {
     const typeBadge = `<span class="badge" style="background:#FAF7F3;color:#4E3219;border:1px solid rgba(122,82,48,0.18)">${typeLabel(l.type)}</span>`;

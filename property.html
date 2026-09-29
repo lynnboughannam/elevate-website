@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1075507168622895');
+  fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
   <!-- Static fallback: renderProperty() overwrites document.title once the Supabase
        fetch resolves, but crawlers that don't run JS only ever see what's here. -->
   <title>Property Details — Elevate Estates</title>
@@ -68,6 +82,11 @@
   </style>
 </head>
 <body>
+<!-- Meta Pixel fallback for browsers with JavaScript off -->
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=1075507168622895&amp;ev=PageView&amp;noscript=1"
+/></noscript>
+
 <div id="site-nav"></div>
 <script src="nav.js"></script>
 <script>renderNav('property')</script>
@@ -94,6 +113,7 @@
 
 <script src="data.js"></script>
 <script src="whatsapp-float.js"></script>
+<script src="pixel-events.js"></script>
 <script>
   // Static pages under /property/ carry their id in __LISTING_ID__; the legacy
   // property.html?id= URLs still resolve through the query string.
@@ -132,6 +152,11 @@
       return;
     }
     settled = true;
+
+    // Meta Pixel: a real, approved listing is about to paint. eePixel keeps
+    // this to one ViewContent per view, though renderProperty() runs again
+    // on every ee:synced.
+    if (window.eePixel) eePixel.viewContent(listing);
 
     document.title = `${listing.title} — Elevate Estates`;
     {

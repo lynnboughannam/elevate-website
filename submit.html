@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1075507168622895');
+  fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
   <title>List Your Property for Sale in Baabda &amp; Mount Lebanon | Elevate Estates</title>
   <meta name="description" content="Selling property in Baabda or Mount Lebanon? Submit your listing with Elevate Estates and reach qualified local and diaspora buyers.">
   <meta property="og:title" content="List Your Property — Elevate Estates">
@@ -96,6 +110,10 @@
   </style>
 </head>
 <body>
+<!-- Meta Pixel fallback for browsers with JavaScript off -->
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=1075507168622895&amp;ev=PageView&amp;noscript=1"
+/></noscript>
 
 <div id="site-nav"></div>
 <script src="nav.js"></script>
@@ -414,6 +432,7 @@
 
 <script src="data.js"></script>
 <script src="whatsapp-float.js"></script>
+<script src="pixel-events.js"></script>
 <script>
   initStore();
 
@@ -662,6 +681,11 @@
       if (!res.ok) throw new Error(await res.text());
       const [saved] = await res.json();
       document.getElementById('success-ref-num').textContent = saved.id.slice(0, 8).toUpperCase();
+
+      // Meta Pixel: the row is in Supabase, so this is the only genuine
+      // success path — the success screen below also renders after a failed
+      // POST, which is why the event cannot live down there.
+      if (window.eePixel) eePixel.lead({ content_category: 'seller_listing' });
 
       // Notify call center via WhatsApp
       const msg = `🏠 *New Property Listing Submitted*\n\n`

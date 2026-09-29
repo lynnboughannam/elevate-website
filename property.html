@@ -68,7 +68,6 @@
   </style>
 </head>
 <body>
-
 <div id="site-nav"></div>
 <script src="nav.js"></script>
 <script>renderNav('property')</script>
@@ -216,7 +215,7 @@
         <div>
           <!-- Main image -->
           <div id="main-img-wrap" class="img-wrap${closed ? ' ee-closed-media' : ''}" style="border-radius:16px;overflow:hidden;height:480px;position:relative;margin-bottom:1rem">
-            <img id="main-img" src="${listing.images && listing.images.length ? listing.images[0] : 'brand_Assets/placeholder.svg'}" alt="${listing.title}" style="width:100%;height:100%;object-fit:${listing.images && listing.images.length ? 'cover' : 'contain'};background:#4E3219" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded')" class="loaded">
+            <img id="main-img" src="${listing.images && listing.images.length ? listing.images[0] : '/brand_Assets/placeholder.svg'}" alt="${listing.title}" style="width:100%;height:100%;object-fit:${listing.images && listing.images.length ? 'cover' : 'contain'};background:#4E3219" onload="this.classList.add('loaded')" onerror="this.classList.add('loaded')" class="loaded">
             <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(46,31,14,0.4) 0%,transparent 50%);pointer-events:none"></div>
             <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px">
               ${badge}

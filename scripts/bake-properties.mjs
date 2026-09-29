@@ -212,8 +212,16 @@ function bakedBody(l) {
 // Generated pages sit in /property/, so same-directory relative asset paths in
 // the template would resolve to /property/<asset> and 404. Rewrite them to
 // root-absolute. Leaves absolute URLs, anchors, and protocol links alone.
+//
+// Also leaves `${...}` alone. Those are template literals the page fills in at
+// runtime, and their values are already absolute — Supabase image URLs and
+// wa.me links. Slash-prefixing the placeholder produced /https://wa.me/... and
+// /https://<project>.supabase.co/..., which broke every WhatsApp button and
+// every photo on these pages the moment the client render replaced the baked
+// markup. Any relative fallback inside such a placeholder has to be written
+// root-absolute at its source instead (see data.js `img` and #main-img).
 function toRootRelative(html) {
-  return html.replace(/\b(href|src)="(?!https?:|\/\/|\/|#|mailto:|tel:|data:|javascript:)([^"]+)"/g,
+  return html.replace(/\b(href|src)="(?!https?:|\/\/|\/|#|mailto:|tel:|data:|javascript:|\$\{)([^"]+)"/g,
     (_m, attr, url) => `${attr}="/${url}"`);
 }
 

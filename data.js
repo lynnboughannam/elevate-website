@@ -274,7 +274,9 @@ async function syncFromSupabase() {
         tag:         tags.includes('luxury') ? 'luxury' : (purpose === 'rent' ? 'rent' : 'sale'),
         status:      'approved',
         featured:    r.featured    || false,
-        img:         (r.images && r.images[0]) || 'brand_Assets/placeholder.svg',
+        // Root-absolute: this value is rendered into /property/<id>.html too,
+        // where a same-directory path would resolve to /property/brand_Assets/.
+        img:         (r.images && r.images[0]) || '/brand_Assets/placeholder.svg',
         images:      (r.images && r.images.length) ? r.images : [],
         description: r.description || '',
         amenities:   r.amenities   || [],

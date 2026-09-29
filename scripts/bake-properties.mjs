@@ -115,7 +115,13 @@ function jsonLd(l) {
     : 'https://schema.org/InStock';
   const obj = {
     '@context': 'https://schema.org',
-    '@type': ['RealEstateListing', 'Product'],
+    // RealEstateListing only. Adding Product put these pages into Google's
+    // Merchant listings report, which then asked for a global identifier,
+    // hasMerchantReturnPolicy and shippingDetails — retail fields for an
+    // apartment. There is no honest value for any of them, and real estate
+    // is not eligible for product or merchant rich results, so Product was
+    // costing three Search Console warnings and buying nothing.
+    '@type': 'RealEstateListing',
     '@id': `${SITE}/property/${l.id}.html#listing`,
     name: englishHalf(l.title) || metaTitle(l),
     description: String(l.description || '').replace(/\s+/g, ' ').trim().slice(0, 600),

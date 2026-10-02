@@ -28,6 +28,7 @@ const staticPages = [
   { file: 'sold.html', loc: '/sold.html', changefreq: 'weekly', priority: '0.5' },
   { file: 'submit.html', loc: '/submit.html', changefreq: 'monthly', priority: '0.7' },
   { file: 'agent-apply.html', loc: '/agent-apply.html', changefreq: 'monthly', priority: '0.6' },
+  { file: 'privacy.html', loc: '/privacy.html', changefreq: 'yearly', priority: '0.2' },
 ];
 
 const entries = [];

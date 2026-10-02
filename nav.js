@@ -17,6 +17,10 @@
       { href: 'sold.html',          label: 'Recently Sold', sold: true },
       { href: 'index.html#contact', label: 'Contact' },
     ],
+    privacy: [
+      { href: 'listings.html',      label: 'Properties' },
+      { href: 'index.html#contact', label: 'Contact' },
+    ],
     sold: [
       { href: 'listings.html',      label: 'Properties' },
       { href: 'sold.html',          label: 'Recently Sold', active: true, sold: true },
@@ -28,6 +32,7 @@
     listings: { href: 'submit.html', label: 'List Property' },
     property: { href: 'submit.html', label: 'List Property' },
     sold:     { href: 'submit.html', label: 'List Property' },
+    privacy:  { href: 'submit.html', label: 'List Property' },
     submit:   null,
   };
 
